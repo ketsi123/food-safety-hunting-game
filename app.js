@@ -1,4 +1,4 @@
-(()=>{"use strict";console.info("Food Safety Hunting Game V12.2 ROBUST BACKEND");
+(()=>{"use strict";console.info("Food Safety Hunting Game V12.3 FAST ENTRY");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null;
@@ -60,19 +60,50 @@ async function loadQuestions(force=false){
   try{return await questionsPromise}finally{questionsPromise=null}
 }
 function warmQuestions(){if(!cachedQuestions())loadQuestions().catch(()=>{})}
-async function login(){const email=e.emailInput.value.trim().toLowerCase();if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}e.loginBtn.disabled=true;busy(true,"กำลังเข้าสู่เกม...","เชื่อมบัญชีและเตรียมคำถาม");try{
-  e.loginBackendText.textContent="กำลังตรวจบัญชี...";
-  const d=await api({action:"login",email});
-  saveUser(d.user);
-  e.loginBackendText.textContent="กำลังโหลดคำถาม...";
-  await loadQuestions();
-  setBackend(true);
-  openGame();
-}catch(err){
-  setBackend(false);
-  e.loginBackendText.textContent=`เข้าสู่ระบบไม่ได้ • ${err.message}`;
-  toast(`เข้าสู่ระบบไม่สำเร็จ: ${err.message}`,5000);
-}finally{e.loginBtn.disabled=false;busy(false)}}
+async function login(){
+  const email=e.emailInput.value.trim().toLowerCase();
+  if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}
+
+  e.loginBtn.disabled=true;
+  busy(true,"กำลังเข้าสู่เกม...","เตรียมบัญชีและคำถาม");
+
+  try{
+    // If questions are already cached, login only.
+    const cached=cachedQuestions();
+    if(cached?.length){
+      questions=cached;
+      preload(cached);
+      e.loginBackendText.textContent="กำลังตรวจบัญชี...";
+      const d=await api({action:"login",email});
+      saveUser(d.user);
+    }else{
+      // First entry: one request returns both user + questions.
+      e.loginBackendText.textContent="กำลังเตรียมเกม...";
+      const d=await api({action:"bootstrap",email});
+      saveUser(d.user);
+
+      const enabled=new Set(C.ENABLED_QUESTION_IDS);
+      questions=(d.questions||[]).filter(x=>enabled.has(x.questionId));
+      if(!questions.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
+
+      localStorage.setItem(S_Q,JSON.stringify(questions));
+      localStorage.setItem(S_QT,String(Date.now()));
+      preload(questions);
+    }
+
+    setBackend(true);
+    e.loginBackendText.textContent="ระบบพร้อมใช้งาน";
+    openGame();
+
+  }catch(err){
+    setBackend(false);
+    e.loginBackendText.textContent=`เข้าสู่ระบบไม่ได้ • ${err.message}`;
+    toast(`เข้าสู่ระบบไม่สำเร็จ: ${err.message}`,5000);
+  }finally{
+    e.loginBtn.disabled=false;
+    busy(false);
+  }
+}
 function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
 function setTotal(v){e.totalScore.textContent=v||0;e.sideTotalScore.textContent=`${v||0} คะแนน`}
 async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");if(!questions.length){busy(true,"กำลังโหลดเกม...");try{await loadQuestions()}finally{busy(false)}}startSession()}
@@ -183,4 +214,4 @@ async function history(){busy(true,"กำลังโหลดประวั�
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
 function logout(){clearInterval(timer);clearUser();e.emailInput.value="";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden")}
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>e.questionImage.classList.remove("loading");e.questionImage.onerror=()=>{e.questionImage.classList.remove("loading");toast(`ไม่พบภาพ ${q?.imageFile||""}`)};
-const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}ping();})();
+const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("offline");})();
