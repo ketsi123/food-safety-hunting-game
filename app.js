@@ -65,40 +65,80 @@ async function login(){
   if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}
 
   e.loginBtn.disabled=true;
-  busy(true,"กำลังเข้าสู่เกม...","เตรียมบัญชีและคำถาม");
+  busy(true,"กำลังเข้าสู่เกม...","เชื่อมบัญชีผู้เล่น");
 
   try{
-    // If questions are already cached, login only.
-    const cached=cachedQuestions();
-    if(cached?.length){
-      questions=cached;
-      preload(cached);
-      e.loginBackendText.textContent="กำลังตรวจบัญชี...";
-      const d=await api({action:"login",email});
-      saveUser(d.user);
-    }else{
-      // First entry: one request returns both user + questions.
-      e.loginBackendText.textContent="กำลังเตรียมเกม...";
-      const d=await api({action:"bootstrap",email});
-      saveUser(d.user);
+    // Stable path: login route exists in every backend version.
+    e.loginBackendText.textContent="กำลังตรวจบัญชี...";
+    const loginData=await api({action:"login",email});
+    saveUser(loginData.user);
+    setBackend(true);
+
+    // Use browser cache first so repeat visits need only ONE backend request.
+    let qs=cachedQuestions();
+
+    if(!qs?.length){
+      e.loginBackendText.textContent="กำลังโหลดคำถาม...";
+      const qData=await request(
+        `${C.BACKEND_URL}?action=questions&t=${Date.now()}`,
+        {timeoutMs:45000}
+      );
 
       const enabled=new Set(C.ENABLED_QUESTION_IDS);
-      questions=(d.questions||[]).filter(x=>enabled.has(x.questionId));
-      if(!questions.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
+      qs=(qData.questions||[]).filter(x=>enabled.has(x.questionId));
+      if(!qs.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
 
-      localStorage.setItem(S_Q,JSON.stringify(questions));
+      localStorage.setItem(S_Q,JSON.stringify(qs));
       localStorage.setItem(S_QT,String(Date.now()));
-      preload(questions);
     }
 
-    setBackend(true);
+    questions=qs;
+    preload(questions);
+
     e.loginBackendText.textContent="ระบบพร้อมใช้งาน";
     openGame();
 
   }catch(err){
     setBackend(false);
-    e.loginBackendText.textContent=`เข้าสู่ระบบไม่ได้ • ${err.message}`;
-    toast(`เข้าสู่ระบบไม่สำเร็จ: ${err.message}`,5000);
+
+    // One gentle retry for transient Apps Script cold-start/network errors.
+    const msg=String(err?.message||err||"");
+    if(!/EMAIL_|INVALID_EMAIL|DOMAIN/i.test(msg)){
+      try{
+        e.loginBackendText.textContent="กำลังเชื่อมต่ออีกครั้ง...";
+        await new Promise(r=>setTimeout(r,900));
+
+        const retry=await api({action:"login",email});
+        saveUser(retry.user);
+        setBackend(true);
+
+        let qs=cachedQuestions();
+        if(!qs?.length){
+          const qData=await request(
+            `${C.BACKEND_URL}?action=questions&t=${Date.now()}`,
+            {timeoutMs:45000}
+          );
+          const enabled=new Set(C.ENABLED_QUESTION_IDS);
+          qs=(qData.questions||[]).filter(x=>enabled.has(x.questionId));
+          if(!qs.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
+          localStorage.setItem(S_Q,JSON.stringify(qs));
+          localStorage.setItem(S_QT,String(Date.now()));
+        }
+
+        questions=qs;
+        preload(questions);
+        e.loginBackendText.textContent="ระบบพร้อมใช้งาน";
+        openGame();
+        return;
+      }catch(retryErr){
+        err=retryErr;
+      }
+    }
+
+    const finalMsg=String(err?.message||err||"เชื่อมต่อไม่สำเร็จ");
+    e.loginBackendText.textContent=`เข้าสู่ระบบไม่ได้ • ${finalMsg}`;
+    toast(`เข้าสู่ระบบไม่สำเร็จ: ${finalMsg}`,5000);
+
   }finally{
     e.loginBtn.disabled=false;
     busy(false);
@@ -214,4 +254,4 @@ async function history(){busy(true,"กำลังโหลดประวั�
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
 function logout(){clearInterval(timer);clearUser();e.emailInput.value="";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden")}
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>e.questionImage.classList.remove("loading");e.questionImage.onerror=()=>{e.questionImage.classList.remove("loading");toast(`ไม่พบภาพ ${q?.imageFile||""}`)};
-const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("offline");})();
+const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
