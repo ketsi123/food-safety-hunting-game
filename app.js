@@ -238,7 +238,7 @@
   }
 
   function imagePath(q) {
-    return `${C.QUESTION_IMAGE_DIR}${q.imageFile}`;
+    return `${C.QUESTION_IMAGE_DIR}${q.imageFile}?v=${encodeURIComponent(C.ASSET_VERSION || "1")}`;
   }
 
   function loadCurrentQuestion() {
