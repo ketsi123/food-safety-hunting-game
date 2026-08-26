@@ -6,7 +6,7 @@ window.FS_CONFIG = {
     { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260826-1220",
+  ASSET_VERSION: "20260826-IMAGEFIX-15",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: false,
   AUTO_NEXT_SECONDS: 0,
