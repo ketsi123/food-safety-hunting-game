@@ -1,6 +1,11 @@
 <!doctype html>
 <html lang="th">
 <head>
+<meta name="fs-build" content="V16.1-GAME-THEME-20260826-1630">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<!-- V16.1-GAME-THEME-20260826-1630 -->
 <meta name="fs-build" content="V15.3-HISTORY-DATE-SCORE-20260826">
 <!-- Food Safety Hunting Game V15.3 HISTORY DATE SCORE -->
   <meta charset="utf-8">
@@ -1192,6 +1197,14 @@ body:before{
 }
 
 </style>
+
+<style id="v161-build-marker">
+#fsBuildMarker{
+  position:fixed;right:10px;bottom:8px;z-index:9998;
+  font:700 9px/1 Arial,sans-serif;color:#5d7890;
+  opacity:.28;pointer-events:none;
+}
+</style>
 </head>
 <body>
 
@@ -1901,5 +1914,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-</body>
+<div id="fsBuildMarker">V16.1-GAME-THEME-20260826-1630</div></body>
 </html>
