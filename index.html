@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V15.2-INSTANTSTART-20260826">
-<!-- Food Safety Hunting Game V15.2 INSTANT START -->
+<meta name="fs-build" content="V15.3-HISTORY-DATE-SCORE-20260826">
+<!-- Food Safety Hunting Game V15.3 HISTORY DATE SCORE -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
   <meta name="theme-color" content="#f2fbff">
@@ -695,6 +695,43 @@
   border-color:#fecdca;
 }
 
+
+/* V15.3 History: date/time + score */
+.play-history-v153 td:first-child b{
+  display:block;
+  font-size:13px;
+  color:#18394c;
+}
+.play-history-v153 td:first-child small{
+  display:block;
+  margin-top:3px;
+  font-size:11px;
+  color:#7b919e;
+}
+.play-history-v153 .history-q{
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#edf7ff;
+  color:#236a9a;
+  font-weight:800;
+  font-size:12px;
+}
+.play-history-v153 .score-col{
+  text-align:right;
+}
+.play-history-v153 .history-score{
+  font-size:18px;
+  color:#087d5c;
+  font-weight:1000;
+}
+.play-history-v153 .score-col small{
+  display:block;
+  font-size:10px;
+  color:#7b919e;
+  margin-top:2px;
+}
+
 </style>
 </head>
 <body>
@@ -893,7 +930,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V15.2 INSTANT START");
+(()=>{"use strict";console.info("Food Safety Hunting Game V15.3 HISTORY DATE SCORE");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -1338,7 +1375,54 @@ function endGame(){
 }
 function modal(title,html){e.menuModalTitle.textContent=title;e.menuModalBody.innerHTML=html;e.menuOverlay.classList.remove("hidden-layer")}
 async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,30000),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${esc(r.totalBestScore||0)}</b></td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
-async function history(){busy(true,"กำลังโหลดประวัติ...");try{const d=await api({action:"progress",email:user.email}),rows=d.progress||[];if(user){user.totalBestScore=Number(d.totalBestScore||0);saveUser(user);setTotal(user.totalBestScore)}modal("🕘 ประวัติการเล่น",rows.length?`<table class="history-table"><thead><tr><th>ข้อ</th><th>Best</th><th>ครั้ง</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.questionId)}</td><td><b>${esc(r.bestScore||0)}</b></td><td>${esc(r.attempts||0)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีประวัติ</div>')}catch{toast("โหลดประวัติไม่สำเร็จ")}finally{busy(false)}}
+async function history(){
+  busy(true,"กำลังโหลดประวัติ...");
+  try{
+    const d=await api({action:"progress",email:user.email});
+    const rows=d.history||[];
+
+    if(user){
+      user.totalBestScore=Number(d.totalCumulativeScore??d.totalBestScore??0);
+      saveUser(user);
+      setTotal(user.totalBestScore);
+    }
+
+    modal(
+      "🕘 ประวัติการเล่น",
+      rows.length
+        ? `<table class="history-table play-history-v153">
+            <thead>
+              <tr>
+                <th>วันที่ / เวลา</th>
+                <th>ข้อ</th>
+                <th class="score-col">คะแนน</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${rows.map(r=>`
+                <tr>
+                  <td>
+                    <b>${esc(r.playedDate||"-")}</b>
+                    <small>${esc(r.playedTime||"")}</small>
+                  </td>
+                  <td><span class="history-q">${esc(r.questionId||"-")}</span></td>
+                  <td class="score-col">
+                    <strong class="history-score">${esc(r.totalScore??0)}</strong>
+                    <small>คะแนน</small>
+                  </td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>`
+        : '<div class="empty-reason">ยังไม่มีประวัติการเล่น</div>'
+    );
+  }catch(err){
+    console.error("History load failed",err);
+    toast("โหลดประวัติไม่สำเร็จ");
+  }finally{
+    busy(false);
+  }
+}
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
 function logout(){clearInterval(timer);clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");setBackend(false)}
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
