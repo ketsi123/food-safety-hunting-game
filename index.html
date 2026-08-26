@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
+  <meta name="theme-color" content="#061623">
+  <meta name="description" content="Food Safety Hunting Game">
+  <title>Food Safety Hunting Game</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+
+<section id="loginScreen" class="login-screen">
+  <div class="login-shell">
+    <section class="login-hero" aria-label="Food Safety Hunting Game">
+      <div class="hero-chips">
+        <span class="hero-chip">🏆 เก็บคะแนน</span>
+        <span class="hero-chip">⭐ สะสมแต้ม</span>
+        <span class="hero-chip">🎁 ลุ้นรางวัล</span>
+        <span class="hero-chip">🛡️ เรียนรู้ Food Safety</span>
+      </div>
+    </section>
+
+    <section class="login-panel">
+      <div class="login-card">
+        <div class="login-icon">🛡️</div>
+        <h1 class="login-title">เข้าสู่ระบบ</h1>
+        <div class="login-sub">
+          กรอกอีเมลบริษัท ระบบจะสร้าง User ใน Google Sheet และบันทึกคะแนนของคุณ
+        </div>
+
+        <label class="field-label" for="emailInput">อีเมลบริษัท</label>
+        <div class="email-field">
+          <span>✉️</span>
+          <input id="emailInput" type="email" autocomplete="email" inputmode="email" placeholder="name@cpf.co.th">
+        </div>
+        <div class="login-help">
+          ใช้สำหรับระบุตัวผู้เล่น เก็บประวัติการ Submit และคะแนนสะสม
+        </div>
+
+        <button id="loginBtn" class="login-btn">🚀 เริ่มเล่นเกม</button>
+
+        <div class="backend-login-status">
+          <i id="loginBackendDot" class="status-dot"></i>
+          <span id="loginBackendText">กำลังตรวจสอบ Backend...</span>
+        </div>
+      </div>
+    </section>
+  </div>
+</section>
+
+<section id="gameScreen" class="hidden">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <div class="brand-icon">🛡️</div>
+        <div>
+          <div class="brand-title">FOOD SAFETY HUNTING GAME</div>
+          <div class="brand-sub">หาให้เจอ • อธิบายให้ได้ • ปลอดภัยตลอดห่วงโซ่</div>
+        </div>
+      </div>
+
+      <div class="userbox">
+        <div id="avatar" class="avatar">U</div>
+        <div class="user-meta">
+          <b id="displayName">ผู้เล่น</b>
+          <span id="userEmail"></span>
+        </div>
+        <button id="changeUserBtn" class="soft-btn">เปลี่ยน User</button>
+        <div class="backend-pill">
+          <i id="gameBackendDot" class="status-dot"></i>
+          <span id="gameBackendText">Backend</span>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="hud-card"><small>เวลา</small><strong id="timerText">00:45</strong></div>
+        <div class="hud-card"><small>ข้อ</small><strong id="questionCounter">1/2</strong></div>
+        <div class="hud-card"><small>คะแนนสะสม</small><strong id="totalScore">0</strong></div>
+      </div>
+    </div>
+  </header>
+
+  <main class="app-wrap">
+    <section class="stage glass">
+      <div class="stage-head">
+        <strong id="seasonText">🌱 SEASON 1 : จากฟาร์ม</strong>
+        <span id="stepText">ข้อ 1 / 2</span>
+      </div>
+
+      <div class="stage-main">
+        <section>
+          <div class="card glass">
+            <div class="question-top">
+              <span id="questionIdTag" class="tag">S1Q01</span>
+              <span id="hotspotCountTag" class="tag warning">⚠️ มี 0 จุดไม่สอดคล้อง</span>
+            </div>
+            <div id="questionText" class="question-text">
+              จากภาพนี้ จุดใดที่ไม่สอดคล้องกับหลัก Food Safety?
+            </div>
+            <div class="question-tip">
+              แตะ/คลิกจุดที่คิดว่าไม่สอดคล้อง → พิมพ์เหตุผลรายจุด → กด Submit
+              ระบบจะตรวจคำตอบที่ Backend เท่านั้น
+            </div>
+          </div>
+
+          <div class="image-shell">
+            <img id="questionImage" class="question-image" alt="ภาพคำถาม Food Safety">
+            <div id="clickLayer" class="click-layer"></div>
+            <div id="markerLayer"></div>
+            <div id="revealLayer"></div>
+            <div class="image-hint">👆 แตะเพื่อเลือก • แตะวงเลขเพื่อลบ</div>
+          </div>
+
+          <div class="card glass reason-panel">
+            <div class="reason-header">
+              <strong>✍️ เหตุผลรายจุด</strong>
+              <span>คะแนนเหตุผลสูงสุด 50 คะแนน</span>
+            </div>
+            <div id="reasonList" class="reason-list"></div>
+          </div>
+        </section>
+
+        <aside class="side">
+          <div class="card glass">
+            <h3>🎯 การให้คะแนน</h3>
+            <div class="rule"><i class="rule-dot">1</i><span>ตำแหน่งจุดไม่สอดคล้อง รวมสูงสุด <b>50 คะแนน</b></span></div>
+            <div class="rule"><i class="rule-dot">2</i><span>เหตุผลของแต่ละจุด รวมสูงสุด <b>50 คะแนน</b></span></div>
+            <div class="rule"><i class="rule-dot">✓</i><span>คะแนนจะนับเมื่อกด <b>Submit</b> เท่านั้น</span></div>
+          </div>
+
+          <div class="card glass">
+            <h3>📈 ความคืบหน้า</h3>
+            <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+            <p id="progressText">0 / 0 ข้อ</p>
+          </div>
+
+          <div class="card glass">
+            <h3>🔐 Backend Scoring</h3>
+            <p>
+              พิกัดเฉลยและ Keyword ไม่อยู่ใน GitHub Frontend
+              ระบบจะส่งเฉพาะจุดที่ผู้เล่นเลือกและเหตุผลไปตรวจใน Google Apps Script
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  </main>
+
+  <footer class="actionbar">
+    <div class="actions">
+      <button id="undoBtn" class="action-btn">↶ ลบจุดล่าสุด</button>
+      <button id="clearBtn" class="action-btn">↻ ล้างทั้งหมด</button>
+      <button id="submitBtn" class="action-btn primary">ส่งคำตอบ</button>
+    </div>
+  </footer>
+</section>
+
+<div id="resultOverlay" class="overlay">
+  <div class="result-card glass">
+    <h2 id="resultTitle" class="result-title">สรุปผลข้อนี้</h2>
+    <div id="resultScore" class="result-score">0 / 100</div>
+    <div id="resultLine" class="result-line"></div>
+    <div id="resultAnswers" class="result-answer"></div>
+    <div class="result-actions">
+      <button id="resultHomeBtn" class="btn-muted">กลับหน้า Login</button>
+      <button id="nextBtn" class="btn-next">ไปข้อถัดไป</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="config.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
