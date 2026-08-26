@@ -1,8 +1,8 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V15.1-RUNTIMEFIX-20260826">
-<!-- Food Safety Hunting Game V15.1 RUNTIME FIX -->
+<meta name="fs-build" content="V15.2-INSTANTSTART-20260826">
+<!-- Food Safety Hunting Game V15.2 INSTANT START -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
   <meta name="theme-color" content="#f2fbff">
@@ -893,7 +893,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V14.9 LOCAL QUESTION MASTER");
+(()=>{"use strict";console.info("Food Safety Hunting Game V15.2 INSTANT START");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -1138,32 +1138,18 @@ function loadQ(startImmediately=false){
   if(startImmediately) startQuestion();
   window.scrollTo({top:0,behavior:"smooth"})
 }
-async function startQuestion(){
+function startQuestion(){
   if(started||ended)return;
 
-  const normalText=(idx+1)===1?"▶ START ข้อ 1":"▶ START ข้อนี้";
-  e.startQuestionBtn.disabled=true;
-  e.startQuestionBtn.textContent="กำลังตรวจระบบ...";
+  // V15.2: START ต้องเริ่มทันที ไม่รอ Backend ping
+  // Backend จะถูกเรียกจริงตอนกดบันทึกคำตอบเท่านั้น
+  started=true;
 
-  let ok=backendOnline;
-  if(!ok) ok=await ping();
-
-  if(!ok){
-    action("กำลังเชื่อม Backend...");
-    const configured=await configureBackend();
-    if(!configured){
-      e.startQuestionBtn.disabled=false;
-      e.startQuestionBtn.textContent=normalText;
-      e.gateText.textContent="Backend ยังไม่พร้อม • กรุณาตรวจ Apps Script Deployment";
-      toast("ยังเชื่อม Backend ไม่ได้",3500);
-      return;
-    }
+  // ถ้ายังไม่ online ให้ตรวจเบื้องหลัง แต่ห้าม block ผู้เล่น
+  if(!backendOnline){
+    ping().catch(()=>{});
   }
 
-  e.startQuestionBtn.disabled=false;
-  e.startQuestionBtn.textContent=normalText;
-
-  started=true;
   e.playCard.classList.remove("game-paused");
   e.questionGate.classList.add("off");
   e.submitBtn.disabled=false;
