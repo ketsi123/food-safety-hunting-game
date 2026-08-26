@@ -627,3 +627,46 @@
     font-size:9px;
   }
 }
+
+
+/* ===== V14.3: Current Game Score vs Leaderboard Score ===== */
+.score-summary-dual{
+  display:grid!important;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  margin-top:14px!important;
+}
+.score-summary-dual>div{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid #cce8df;
+  background:linear-gradient(180deg,#f3fffb,#ecfaf8);
+}
+.score-summary-dual>div:nth-child(2){
+  border-color:#d8e3fa;
+  background:linear-gradient(180deg,#f7faff,#eef5ff);
+}
+.score-summary-dual span{
+  font-size:12px;
+  font-weight:800;
+  color:#527083;
+}
+.score-summary-dual strong{
+  font-size:17px;
+  font-weight:1000;
+  color:#087d5c;
+  white-space:nowrap;
+}
+.score-summary-dual>div:nth-child(2) strong{
+  color:#2869b2;
+}
+@media(max-width:620px){
+  .score-summary-dual{grid-template-columns:1fr}
+}
