@@ -3,10 +3,10 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
-  <meta name="theme-color" content="#eaf7ff">
+  <meta name="theme-color" content="#f2fbff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
-  <link rel="stylesheet" href="app.css">
+  <link rel="stylesheet" href="game-v5.css?v=5.0.0">
 </head>
 <body>
 
@@ -14,224 +14,137 @@
   <div class="login-shell">
     <section class="login-hero" aria-label="Food Safety Hunting Game">
       <div class="hero-chips">
-        <span class="hero-chip">🏆 เก็บคะแนน</span>
-        <span class="hero-chip">⭐ สะสมแต้ม</span>
-        <span class="hero-chip">🎁 ลุ้นรางวัล</span>
-        <span class="hero-chip">🛡️ เรียนรู้ Food Safety</span>
+        <span>🏆 เก็บคะแนน</span><span>⭐ สะสมแต้ม</span><span>🎁 ลุ้นรางวัล</span><span>🛡️ Food Safety</span>
       </div>
     </section>
-
     <section class="login-panel">
       <div class="login-card">
         <div class="login-icon">🛡️</div>
-        <h1 class="login-title">เข้าสู่ระบบ</h1>
-        <div class="login-sub">
-          กรอกอีเมลบริษัท ระบบจะสร้าง User ใน Google Sheet และบันทึกคะแนนของคุณ
-        </div>
-
-        <label class="field-label" for="emailInput">อีเมลบริษัท</label>
-        <div class="email-field">
-          <span>✉️</span>
-          <input id="emailInput" type="email" autocomplete="email" inputmode="email" placeholder="name@cpf.co.th">
-        </div>
-
+        <h1>เข้าสู่ระบบ</h1>
+        <p>กรอกอีเมลบริษัทเพื่อเริ่มเล่นและบันทึกคะแนน</p>
+        <label for="emailInput">อีเมลบริษัท</label>
+        <div class="email-box"><span>✉️</span><input id="emailInput" type="email" autocomplete="email" placeholder="name@cpf.co.th"></div>
         <button id="loginBtn" class="login-btn">🚀 เริ่มเล่นเกม</button>
-
-        <div class="backend-login-status">
-          <i id="loginBackendDot" class="status-dot"></i>
-          <span id="loginBackendText">กำลังตรวจสอบ Backend...</span>
-        </div>
+        <div class="login-status"><i id="loginBackendDot" class="status-dot"></i><span id="loginBackendText">กำลังตรวจสอบระบบ...</span></div>
       </div>
     </section>
   </div>
 </section>
 
-<section id="gameScreen" class="hidden">
-  <header class="topbar">
-    <div class="topbar-inner">
-      <div class="brand">
-        <div class="brand-icon">🛡️</div>
-        <div>
-          <div class="brand-title">FOOD SAFETY HUNTING GAME</div>
-          <div class="brand-sub">เลือกจุดเสี่ยง • ใส่เหตุผล • เรียนรู้ Food Safety</div>
-        </div>
+<section id="gameScreen" class="game-screen hidden">
+  <header class="game-header">
+    <div class="header-inner">
+      <div class="game-brand">
+        <div class="brand-shield">✓</div>
+        <div><b>FOOD SAFETY</b><strong>HUNTING GAME</strong><small>ล่าความรู้ คู่ความปลอดภัย</small></div>
       </div>
-
-      <div class="hud">
-        <div class="hud-card"><small>เวลา</small><strong id="timerText">00:45</strong></div>
-        <div class="hud-card"><small>ข้อ</small><strong id="questionCounter">1/2</strong></div>
-        <div class="hud-card score-hud"><small>คะแนนสะสม</small><strong id="totalScore">0</strong></div>
+      <div class="header-stats">
+        <div class="stat"><small>เวลาที่เหลือ</small><b>◷ <span id="timerText">00:45</span></b></div>
+        <div class="stat"><small>ข้อ</small><b id="questionCounter">1/2</b></div>
+        <div class="stat score"><small>คะแนนสะสม</small><b>★ <span id="totalScore">0</span></b></div>
       </div>
-
-      <div class="userbox">
+      <div class="user-chip">
         <div id="avatar" class="avatar">U</div>
-        <div class="user-meta">
-          <b id="displayName">ผู้เล่น</b>
-          <span id="userEmail"></span>
-        </div>
-        <div class="backend-pill">
-          <i id="gameBackendDot" class="status-dot"></i>
-          <span id="gameBackendText">Backend</span>
-        </div>
+        <div class="user-copy"><b id="displayName">ผู้เล่น</b><small id="userEmail"></small></div>
+        <span class="ready-dot" id="gameReadyDot"></span>
       </div>
     </div>
   </header>
 
-  <main class="game-layout">
+  <main class="workspace">
     <aside class="sidebar">
-      <section class="side-panel progress-panel">
-        <div class="side-title">PROGRESS</div>
-        <div class="side-season">Season 1 - จากฟาร์ม</div>
+      <section class="panel progress-card">
+        <div class="panel-title">PROGRESS</div>
+        <b>Season 1 - จากฟาร์ม</b>
         <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
-        <div id="progressText" class="side-progress-text">0 / 0 ข้อ</div>
-        <div class="side-score">
-          <span class="score-icon">🏆</span>
-          <div><small>คะแนนสะสม</small><strong id="sideTotalScore">0 คะแนน</strong></div>
-        </div>
+        <div id="progressText" class="progress-text">0 / 0 ข้อ</div>
+        <div class="score-total"><span>🏆</span><div><small>คะแนนสะสม</small><b id="sideTotalScore">0 คะแนน</b></div></div>
       </section>
 
-      <section class="side-panel menu-panel">
-        <div class="side-title">SEASON ทั้งหมด</div>
-
-        <button class="menu-item active" data-season="1">
-          <span class="menu-icon">🌿</span>
-          <span class="menu-copy"><b>Season 1</b><small>จากฟาร์ม</small></span>
-        </button>
-
-        <button class="menu-item locked" data-season="2">
-          <span class="menu-icon">🏭</span>
-          <span class="menu-copy"><b>Season 2</b><small>จากโรงงาน</small></span>
-          <span class="lock">🔒</span>
-        </button>
-
-        <button class="menu-item locked" data-season="3">
-          <span class="menu-icon">🚚</span>
-          <span class="menu-copy"><b>Season 3</b><small>โลจิสติกส์ & ตลาด</small></span>
-          <span class="lock">🔒</span>
-        </button>
-
-        <button class="menu-item locked" data-season="4">
-          <span class="menu-icon">🏠</span>
-          <span class="menu-copy"><b>Season 4</b><small>บ้าน / ครัวผู้บริโภค</small></span>
-          <span class="lock">🔒</span>
-        </button>
-
-        <div class="menu-separator"></div>
-
-        <button id="leaderboardBtn" class="menu-item">
-          <span class="menu-icon">🏆</span>
-          <span class="menu-copy"><b>Leaderboard</b><small>อันดับคะแนนรวม</small></span>
-        </button>
-
-        <button id="historyBtn" class="menu-item">
-          <span class="menu-icon">🕘</span>
-          <span class="menu-copy"><b>ประวัติการเล่น</b><small>คะแนนที่ดีที่สุดของคุณ</small></span>
-        </button>
-
-        <button id="howToBtn" class="menu-item">
-          <span class="menu-icon">ⓘ</span>
-          <span class="menu-copy"><b>วิธีการเล่น</b><small>กติกาและการให้คะแนน</small></span>
-        </button>
-
-        <button id="changeUserBtn" class="menu-item logout-item">
-          <span class="menu-icon">↪</span>
-          <span class="menu-copy"><b>ออกจากระบบ</b><small>เปลี่ยนผู้เล่น</small></span>
-        </button>
+      <section class="panel menu-card">
+        <div class="panel-title">SEASON ทั้งหมด</div>
+        <button class="nav-item active" data-season="1"><i>🌿</i><span><b>Season 1</b><small>จากฟาร์ม</small></span></button>
+        <button class="nav-item locked" data-season="2"><i>🏭</i><span><b>Season 2</b><small>จากโรงงาน</small></span><em>🔒</em></button>
+        <button class="nav-item locked" data-season="3"><i>🚚</i><span><b>Season 3</b><small>โลจิสติกส์ & ตลาด</small></span><em>🔒</em></button>
+        <button class="nav-item locked" data-season="4"><i>🏠</i><span><b>Season 4</b><small>บ้าน / ครัวผู้บริโภค</small></span><em>🔒</em></button>
+        <hr>
+        <button id="leaderboardBtn" class="nav-item"><i>🏆</i><span><b>Leaderboard</b><small>อันดับคะแนนรวม</small></span></button>
+        <button id="historyBtn" class="nav-item"><i>🕘</i><span><b>ประวัติการเล่น</b><small>ผลการเล่นของฉัน</small></span></button>
+        <button id="howToBtn" class="nav-item"><i>ⓘ</i><span><b>วิธีการเล่น</b><small>กติกาและคะแนน</small></span></button>
+        <button id="changeUserBtn" class="nav-item logout"><i>↪</i><span><b>ออกจากระบบ</b><small>เปลี่ยนผู้เล่น</small></span></button>
       </section>
     </aside>
 
-    <section class="game-main">
-      <section class="stage glass">
-        <div class="stage-head">
-          <strong id="seasonText">🌱 SEASON 1 : จากฟาร์ม</strong>
-          <span id="stepText">ข้อ 1 / 2</span>
+    <section class="content">
+      <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : จากฟาร์ม</b><span id="stepText">ภาพที่ 1 / 2</span></div>
+
+      <section class="play-card">
+        <div class="play-grid">
+          <div class="image-wrap">
+            <img id="questionImage" alt="ภาพคำถาม Food Safety">
+            <div id="clickLayer" class="click-layer"></div>
+            <div id="markerLayer"></div>
+            <div id="revealLayer"></div>
+            <div class="image-tip">👆 คลิก/แตะเพื่อเลือกจุด</div>
+          </div>
+
+          <aside class="question-panel">
+            <div class="question-kicker">คำถาม</div>
+            <h2 id="questionText">จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?</h2>
+            <div class="divider"></div>
+            <p>คลิกเลือกจุดในภาพได้มากกว่า 1 จุด</p>
+            <div class="compact-rule"><span>✓</span><div>ตำแหน่งถูก <b>50 คะแนน</b></div></div>
+            <div class="compact-rule"><span>★</span><div>เหตุผลถูก <b>50 คะแนน</b></div></div>
+            <div class="question-meta"><span id="questionIdTag">S1Q01</span><span id="hotspotCountTag">0 จุด</span></div>
+          </aside>
         </div>
 
-        <div class="stage-main">
-          <section class="question-zone">
-            <div class="image-shell">
-              <img id="questionImage" class="question-image" alt="ภาพคำถาม Food Safety">
-              <div id="clickLayer" class="click-layer"></div>
-              <div id="markerLayer"></div>
-              <div id="revealLayer"></div>
-              <div class="image-hint">👆 แตะเพื่อเลือก • แตะวงเลขเพื่อลบ</div>
+        <section class="reason-box">
+          <div class="reason-head">
+            <div><b>ใส่เหตุผลสั้น ๆ</b><small>อธิบายว่าจุดที่เลือกเสี่ยงหรือไม่ถูกหลักอย่างไร</small></div>
+            <div class="question-score"><small>คะแนนในข้อนี้</small><b id="liveQuestionScore">--</b></div>
+          </div>
+          <div id="reasonList" class="reason-list"></div>
+          <div class="submit-row">
+            <div id="actionStatus" class="action-status"><i class="mini-dot"></i><span>พร้อมเลือกจุดในภาพ</span></div>
+            <div class="action-buttons">
+              <button id="undoBtn" class="btn ghost">↶ ลบจุดล่าสุด</button>
+              <button id="clearBtn" class="btn ghost">↻ ล้างทั้งหมด</button>
+              <button id="submitBtn" class="btn submit">✈ ส่งคำตอบ</button>
             </div>
-
-            <div class="question-card card glass">
-              <div class="question-top">
-                <span id="questionIdTag" class="tag">S1Q01</span>
-                <span id="hotspotCountTag" class="tag warning">⚠️ มี 0 จุดไม่สอดคล้อง</span>
-              </div>
-              <div class="question-label">คำถาม</div>
-              <div id="questionText" class="question-text">
-                จากภาพนี้ จุดใดที่ไม่สอดคล้องกับหลัก Food Safety?
-              </div>
-              <div class="question-tip">เลือกจุดในภาพได้มากกว่า 1 จุดตามจำนวนที่กำหนด</div>
-            </div>
-          </section>
-
-          <section class="reason-section card glass">
-            <div class="reason-header">
-              <div>
-                <strong>ใส่เหตุผลสั้น ๆ</strong>
-                <span>อย่างน้อย 1 ข้อ</span>
-              </div>
-              <div class="score-box-mini">
-                <small>คะแนนในข้อนี้</small>
-                <strong id="liveQuestionScore">--</strong>
-              </div>
-            </div>
-            <div id="reasonList" class="reason-list"></div>
-          </section>
-        </div>
+          </div>
+        </section>
       </section>
     </section>
   </main>
-
-  <footer class="actionbar">
-    <div class="action-status" id="actionStatus">พร้อมเลือกจุดในภาพ</div>
-    <div class="actions">
-      <button id="undoBtn" class="action-btn">↶ ลบจุดล่าสุด</button>
-      <button id="clearBtn" class="action-btn">↻ ล้างทั้งหมด</button>
-      <button id="submitBtn" class="action-btn primary">✈ ส่งคำตอบ</button>
-    </div>
-  </footer>
 </section>
 
-<div id="resultOverlay" class="overlay">
-  <div class="result-card glass">
-    <h2 id="resultTitle" class="result-title">สรุปผลข้อนี้</h2>
+<div id="resultOverlay" class="overlay hidden-layer">
+  <div class="modal-card result-modal">
+    <button class="modal-x" id="resultHomeBtn">✕</button>
+    <div class="result-icon">🏆</div>
+    <h2 id="resultTitle">สรุปผลข้อนี้</h2>
     <div id="resultScore" class="result-score">0 / 100</div>
     <div id="resultLine" class="result-line"></div>
-    <div id="resultAnswers" class="result-answer"></div>
-    <div class="result-actions">
-      <button id="resultHomeBtn" class="btn-muted">ปิด</button>
-      <button id="nextBtn" class="btn-next">ไปข้อถัดไป</button>
-    </div>
+    <div id="resultAnswers" class="result-answers"></div>
+    <button id="nextBtn" class="btn submit wide">ไปข้อถัดไป</button>
   </div>
 </div>
 
-<div id="menuOverlay" class="overlay">
-  <div class="result-card menu-modal glass">
-    <div class="modal-head">
-      <h2 id="menuModalTitle" class="result-title">ข้อมูล</h2>
-      <button id="menuModalClose" class="modal-close">✕</button>
-    </div>
+<div id="menuOverlay" class="overlay hidden-layer">
+  <div class="modal-card menu-modal">
+    <button class="modal-x" id="menuModalClose">✕</button>
+    <h2 id="menuModalTitle">ข้อมูล</h2>
     <div id="menuModalBody" class="menu-modal-body"></div>
   </div>
 </div>
 
+<div id="busyOverlay" class="busy hidden-layer">
+  <div class="busy-card"><div class="spinner"></div><b id="busyText">กำลังประมวลผล...</b><small id="busySub">กรุณารอสักครู่</small></div>
+</div>
 <div id="toast" class="toast"></div>
 
-<div id="busyOverlay" class="busy-overlay hidden" aria-live="polite">
-  <div class="busy-card">
-    <div class="busy-spinner"></div>
-    <div id="busyText" class="busy-text">กำลังประมวลผล...</div>
-    <div class="busy-sub">กรุณารอสักครู่</div>
-  </div>
-</div>
-
-<script src="config.js"></script>
-<script src="app.js"></script>
+<script src="config.js?v=5.0.0"></script>
+<script src="game-v5.js?v=5.0.0"></script>
 </body>
 </html>
