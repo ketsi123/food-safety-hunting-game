@@ -1,24 +1,78 @@
-(()=>{"use strict";console.info("Food Safety Hunting Game V12.1 BACKEND FORCE REFRESH");
+(()=>{"use strict";console.info("Food Safety Hunting Game V12.2 ROBUST BACKEND");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
-let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null;
+let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null;
 const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 function toast(msg,ms=2300){e.toast.textContent=msg;e.toast.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.toast.classList.remove("show"),ms)}
 function busy(on,title="กำลังประมวลผล...",sub="กรุณารอสักครู่"){e.busyOverlay.classList.toggle("hidden-layer",!on);e.busyText.textContent=title;e.busySub.textContent=sub;document.body.style.overflow=on?"hidden":""}
 function action(msg,state="ready"){e.actionStatus.innerHTML=`<i class="mini-dot ${state==='ok'?'online':''}"></i><span>${esc(msg)}</span>`}
-async function request(url,opt={}){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),18000);try{let r;try{r=await fetch(url,{cache:"no-store",redirect:"follow",signal:ctl.signal,...opt})}catch(err){if(err?.name==="AbortError")throw Error("Backend timeout");throw Error("Network/CORS: "+(err?.message||"Failed to fetch"))}const t=await r.text();if(!r.ok)throw Error(`HTTP ${r.status}`);let d;try{d=JSON.parse(t)}catch{throw Error("Backend ไม่ได้ส่ง JSON กลับมา")}if(!d.ok)throw Error(d.error||"BACKEND_ERROR");return d}finally{clearTimeout(to)}}
-const api=p=>request(C.BACKEND_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p)});
+async function request(url,opt={}){
+  const timeoutMs=Number(opt.timeoutMs||60000);
+  const fetchOpt={...opt};delete fetchOpt.timeoutMs;
+  const ctl=new AbortController();
+  const to=setTimeout(()=>ctl.abort(),timeoutMs);
+  try{
+    const r=await fetch(url,{cache:"no-store",redirect:"follow",...fetchOpt,signal:ctl.signal});
+    const t=await r.text();
+    if(!r.ok)throw Error(`HTTP ${r.status}`);
+    let d;
+    try{d=JSON.parse(t)}catch{
+      const preview=String(t||"").replace(/\s+/g," ").slice(0,120);
+      throw Error(`Backend ไม่ได้ส่ง JSON${preview?` • ${preview}`:""}`);
+    }
+    if(!d.ok)throw Error(d.error||"BACKEND_ERROR");
+    return d;
+  }catch(err){
+    if(err?.name==="AbortError"||/aborted/i.test(String(err?.message||""))){
+      throw Error(`Backend ใช้เวลานานเกิน ${Math.round(timeoutMs/1000)} วินาที`);
+    }
+    if(err instanceof TypeError){
+      throw Error(`Network/CORS: ${err.message||"Failed to fetch"}`);
+    }
+    throw err;
+  }finally{clearTimeout(to)}
+}
+const api=p=>request(C.BACKEND_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p),timeoutMs:60000});
 function setBackend(ok){e.loginBackendDot.classList.toggle("online",ok);e.loginBackendDot.classList.toggle("offline",!ok);e.loginBackendText.textContent=ok?"ระบบพร้อมใช้งาน":"เชื่อมระบบไม่ได้";e.gameReadyDot.classList.toggle("online",ok);e.gameReadyDot.classList.toggle("offline",!ok)}
-async function ping(){try{const d=await request(`${C.BACKEND_URL}?action=ping&t=${Date.now()}`);setBackend(true);e.loginBackendText.textContent=`ระบบพร้อมใช้งาน • ${d.version||"Backend"}`;warmQuestions();return true}catch(err){setBackend(false);e.loginBackendText.textContent=`เชื่อมไม่ได้ • ${err.message}`;console.error("Backend ping failed",C.BACKEND_URL,err);return false}}
+async function ping(){try{const d=await request(`${C.BACKEND_URL}?action=ping&t=${Date.now()}`,{timeoutMs:30000});setBackend(true);e.loginBackendText.textContent=`ระบบพร้อมใช้งาน • ${d.version||"Backend"}`;return true}catch(err){setBackend(false);e.loginBackendText.textContent=`เชื่อมไม่ได้ • ${err.message}`;console.error("Backend ping failed",C.BACKEND_URL,err);return false}}
 function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
 function saveUser(u){user=u;localStorage.setItem(S_USER,JSON.stringify(u));if(C.REMEMBER_EMAIL)localStorage.setItem(S_EMAIL,u.email)}
 function clearUser(){user=null;localStorage.removeItem(S_USER);localStorage.removeItem(S_EMAIL)}
 function cachedQuestions(){try{const t=+localStorage.getItem(S_QT)||0;if(Date.now()-t>600000)return null;const a=JSON.parse(localStorage.getItem(S_Q)||"null");return Array.isArray(a)?a:null}catch{return null}}
 function imagePath(x){return `${C.QUESTION_IMAGE_DIR||""}${x.imageFile}?v=${encodeURIComponent(C.ASSET_VERSION||"5")}`}
 function preload(items){(items||[]).forEach(x=>{const im=new Image();im.decoding="async";im.src=imagePath(x)})}
-async function loadQuestions(force=false){if(!force){const c=cachedQuestions();if(c?.length){questions=c;preload(c);return c}}const d=await request(`${C.BACKEND_URL}?action=questions&t=${Date.now()}`),enabled=new Set(C.ENABLED_QUESTION_IDS);questions=(d.questions||[]).filter(x=>enabled.has(x.questionId));if(!questions.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");localStorage.setItem(S_Q,JSON.stringify(questions));localStorage.setItem(S_QT,String(Date.now()));preload(questions);return questions}
+async function loadQuestions(force=false){
+  if(!force){
+    const c=cachedQuestions();
+    if(c?.length){questions=c;preload(c);return c}
+    if(questionsPromise)return questionsPromise;
+  }
+  questionsPromise=(async()=>{
+    const d=await request(`${C.BACKEND_URL}?action=questions&t=${Date.now()}`,{timeoutMs:60000});
+    const enabled=new Set(C.ENABLED_QUESTION_IDS);
+    questions=(d.questions||[]).filter(x=>enabled.has(x.questionId));
+    if(!questions.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
+    localStorage.setItem(S_Q,JSON.stringify(questions));
+    localStorage.setItem(S_QT,String(Date.now()));
+    preload(questions);
+    return questions;
+  })();
+  try{return await questionsPromise}finally{questionsPromise=null}
+}
 function warmQuestions(){if(!cachedQuestions())loadQuestions().catch(()=>{})}
-async function login(){const email=e.emailInput.value.trim().toLowerCase();if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}e.loginBtn.disabled=true;busy(true,"กำลังเข้าสู่เกม...","เชื่อมบัญชีและเตรียมคำถาม");try{const [d]=await Promise.all([api({action:"login",email}),loadQuestions()]);saveUser(d.user);openGame()}catch(err){toast(`เข้าสู่ระบบไม่สำเร็จ: ${err.message}`,3500)}finally{e.loginBtn.disabled=false;busy(false)}}
+async function login(){const email=e.emailInput.value.trim().toLowerCase();if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}e.loginBtn.disabled=true;busy(true,"กำลังเข้าสู่เกม...","เชื่อมบัญชีและเตรียมคำถาม");try{
+  e.loginBackendText.textContent="กำลังตรวจบัญชี...";
+  const d=await api({action:"login",email});
+  saveUser(d.user);
+  e.loginBackendText.textContent="กำลังโหลดคำถาม...";
+  await loadQuestions();
+  setBackend(true);
+  openGame();
+}catch(err){
+  setBackend(false);
+  e.loginBackendText.textContent=`เข้าสู่ระบบไม่ได้ • ${err.message}`;
+  toast(`เข้าสู่ระบบไม่สำเร็จ: ${err.message}`,5000);
+}finally{e.loginBtn.disabled=false;busy(false)}}
 function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
 function setTotal(v){e.totalScore.textContent=v||0;e.sideTotalScore.textContent=`${v||0} คะแนน`}
 async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");if(!questions.length){busy(true,"กำลังโหลดเกม...");try{await loadQuestions()}finally{busy(false)}}startSession()}
