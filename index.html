@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2fbff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
-  <link rel="stylesheet" href="app.css?v=13.0.0">
+  <link rel="stylesheet" href="app.css?v=14.0.0">
 </head>
 <body>
 
@@ -39,7 +39,6 @@
         <div><b>FOOD SAFETY</b><strong>HUNTING GAME</strong><small>ล่าความรู้ คู่ความปลอดภัย</small></div>
       </div>
       <div class="header-stats">
-        <div class="stat"><small>เวลาที่เหลือ</small><b>◷ <span id="timerText">00:45</span></b></div>
         <div class="stat"><small>ข้อ</small><b id="questionCounter">1/2</b></div>
         <div class="stat score"><small>คะแนนสะสม</small><b>★ <span id="totalScore">0</span></b></div>
       </div>
@@ -97,6 +96,10 @@
                 <div class="question-meta"><span id="questionIdTag">S1Q01</span><span id="hotspotCountTag">0 จุด</span></div>
               </div>
               <h2 id="questionText">จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?</h2>
+            </div>
+            <div class="question-strip-timer" aria-label="เวลาที่เหลือ">
+              <span class="timer-label">เวลาที่เหลือ</span>
+              <div class="timer-value">⏱ <b id="timerText">00:45</b></div>
             </div>
             <div class="question-strip-rules">
               <div class="score-rules-inline">
@@ -183,7 +186,7 @@
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="config.js?v=13.0.0"></script>
-<script src="app.js?v=13.0.0"></script>
+<script src="config.js?v=14.0.0"></script>
+<script src="app.js?v=14.0.0"></script>
 </body>
 </html>

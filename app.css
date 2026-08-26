@@ -541,3 +541,89 @@
 .v12-reason-panel .side-actions .btn.submit{
   font-size:13px!important;
 }
+
+
+/* ===== V14: Timer moved into Question Strip ===== */
+.question-strip-main{
+  grid-template-columns:minmax(0,1fr) auto auto!important;
+  gap:18px!important;
+}
+
+.question-strip-timer{
+  min-width:150px;
+  padding:8px 16px;
+  border-radius:14px;
+  border:1px solid rgba(37,145,224,.20);
+  background:linear-gradient(180deg,#f5fbff,#eaf7ff);
+  box-shadow:
+    0 7px 18px rgba(46,118,172,.08),
+    inset 0 1px 0 rgba(255,255,255,.8);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+}
+
+.question-strip-timer .timer-label{
+  font-size:10px;
+  line-height:1;
+  font-weight:800;
+  color:#6f8798;
+  margin-bottom:5px;
+}
+
+.question-strip-timer .timer-value{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#1768a6;
+  font-size:17px;
+  font-weight:900;
+}
+
+.question-strip-timer #timerText{
+  font-size:24px;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.5px;
+  color:#135f96;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Header has only question number and cumulative score now */
+.game-header .header-stats{
+  grid-template-columns:repeat(2,auto)!important;
+}
+
+@media(max-width:1100px){
+  .question-strip-main{
+    grid-template-columns:minmax(0,1fr) auto!important;
+  }
+  .question-strip-timer{
+    min-width:135px;
+  }
+  .question-strip-rules{
+    grid-column:1 / -1;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:space-between;
+  }
+}
+
+@media(max-width:720px){
+  .question-strip-main{
+    grid-template-columns:1fr auto!important;
+    gap:10px!important;
+  }
+  .question-strip-timer{
+    min-width:112px;
+    padding:7px 10px;
+  }
+  .question-strip-timer #timerText{
+    font-size:20px;
+  }
+  .question-strip-timer .timer-label{
+    font-size:9px;
+  }
+}
