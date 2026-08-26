@@ -1,5 +1,5 @@
 window.FS_CONFIG = {
-  BACKEND_URL: "https://script.google.com/macros/s/AKfycbzgeudLE5_yzFRQ4ejGE2_2aYwBIDSkxQRy2Ptj72b755Zy8ypvmcWlNR1cuLQRPKblpw/exec",
+  BACKEND_URL: "https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec",
   ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02"],
   LOCAL_QUESTIONS: [
     { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
