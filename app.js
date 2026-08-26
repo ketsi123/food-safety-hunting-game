@@ -54,7 +54,16 @@
     toast: $("toast"),
     actionStatus: $("actionStatus"),
     busyOverlay: $("busyOverlay"),
-    busyText: $("busyText")
+    busyText: $("busyText"),
+    sideTotalScore: $("sideTotalScore"),
+    liveQuestionScore: $("liveQuestionScore"),
+    leaderboardBtn: $("leaderboardBtn"),
+    historyBtn: $("historyBtn"),
+    howToBtn: $("howToBtn"),
+    menuOverlay: $("menuOverlay"),
+    menuModalTitle: $("menuModalTitle"),
+    menuModalBody: $("menuModalBody"),
+    menuModalClose: $("menuModalClose")
   };
 
   let user = null;
@@ -218,8 +227,11 @@
     try {
       const data = await api({ action: "progress", email: user.email });
       el.totalScore.textContent = data.totalBestScore || 0;
+      if (el.sideTotalScore) el.sideTotalScore.textContent = `${data.totalBestScore || 0} คะแนน`;
     } catch {
       el.totalScore.textContent = user.totalBestScore || 0;
+      if (el.sideTotalScore) el.sideTotalScore.textContent = `${user.totalBestScore || 0} คะแนน`;
+    if (el.sideTotalScore) el.sideTotalScore.textContent = `${user.totalBestScore || 0} คะแนน`;
     }
   }
 
@@ -280,7 +292,8 @@
     el.revealLayer.innerHTML = "";
     el.resultOverlay.classList.remove("show");
     el.submitBtn.disabled = false;
-    el.submitBtn.textContent = "ส่งคำตอบ";
+    el.submitBtn.textContent = "✈ ส่งคำตอบ";
+    if (el.liveQuestionScore) el.liveQuestionScore.textContent = "--";
     el.clickLayer.style.pointerEvents = "auto";
 
     currentQuestion = questions[playOrder[orderIndex]];
@@ -460,6 +473,7 @@
       });
 
       el.totalScore.textContent = data.totalBestScore || 0;
+      if (el.sideTotalScore) el.sideTotalScore.textContent = `${data.totalBestScore || 0} คะแนน`;
       revealBackendAnswers(data.reveal);
 
       const score = data.score || {};
@@ -511,7 +525,7 @@
       setActionStatus("ส่งคำตอบไม่สำเร็จ • ลองอีกครั้ง");
       showToast(`Submit ไม่สำเร็จ: ${err.message}`, 3500);
     } finally {
-      el.submitBtn.textContent = "ส่งคำตอบ";
+      el.submitBtn.textContent = "✈ ส่งคำตอบ";
       el.submitBtn.classList.remove("submitting");
       setBusy(false);
     }
@@ -554,6 +568,88 @@
     setBusy(false);
   }
 
+
+  function openMenuModal(title, html) {
+    el.menuModalTitle.textContent = title;
+    el.menuModalBody.innerHTML = html;
+    el.menuOverlay.classList.add("show");
+  }
+
+  function closeMenuModal() {
+    el.menuOverlay.classList.remove("show");
+  }
+
+  async function showLeaderboard() {
+    setBusy(true, "กำลังโหลด Leaderboard...");
+    try {
+      const data = await requestJson(`${C.BACKEND_URL}?action=leaderboard&limit=20&t=${Date.now()}`);
+      const rows = data.leaderboard || [];
+      const html = rows.length ? `
+        <table class="lb-table">
+          <thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${escapeHtml(r.rank)}</td>
+                <td>${escapeHtml(r.displayName || r.email || "-")}</td>
+                <td><b>${escapeHtml(r.totalBestScore || 0)}</b></td>
+              </tr>`).join("")}
+          </tbody>
+        </table>` : `<div class="empty-reason">ยังไม่มีข้อมูล Leaderboard</div>`;
+      openMenuModal("🏆 Leaderboard", html);
+    } catch (err) {
+      showToast("โหลด Leaderboard ไม่สำเร็จ");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function showHistory() {
+    setBusy(true, "กำลังโหลดประวัติ...");
+    try {
+      const data = await api({ action: "progress", email: user.email });
+      const rows = data.progress || [];
+      const html = rows.length ? `
+        <table class="history-table">
+          <thead><tr><th>ข้อ</th><th>Best Score</th><th>Attempts</th></tr></thead>
+          <tbody>
+            ${rows.map(r => `
+              <tr>
+                <td>${escapeHtml(r.questionId)}</td>
+                <td><b>${escapeHtml(r.bestScore || 0)}</b></td>
+                <td>${escapeHtml(r.attempts || 0)}</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>` : `<div class="empty-reason">ยังไม่มีประวัติการเล่น</div>`;
+      openMenuModal("🕘 ประวัติการเล่น", html);
+    } catch (err) {
+      showToast("โหลดประวัติไม่สำเร็จ");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function showHowToPlay() {
+    openMenuModal("ⓘ วิธีการเล่น", `
+      <div class="help-list">
+        <div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับหลัก Food Safety</div></div>
+        <div class="help-step"><i>2</i><div><b>แตะ/คลิกจุด</b><br>เลือกได้หลายจุดตามจำนวนที่ระบบกำหนด</div></div>
+        <div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นมีความเสี่ยงหรือไม่ถูกหลักอย่างไร</div></div>
+        <div class="help-step"><i>4</i><div><b>กดส่งคำตอบ</b><br>คะแนนตำแหน่ง 50 คะแนน + เหตุผล 50 คะแนน</div></div>
+        <div class="help-step"><i>5</i><div><b>สะสมคะแนน</b><br>ระบบเก็บ Best Score ของแต่ละข้อไว้สำหรับ Leaderboard</div></div>
+      </div>
+    `);
+  }
+
+  function handleSeasonMenu(button) {
+    const season = Number(button.dataset.season || 1);
+    if (season !== 1) {
+      showToast(`Season ${season} ยังไม่เปิดให้เล่น`);
+      return;
+    }
+    showToast("กำลังเล่น Season 1 : จากฟาร์ม");
+  }
+
   // Events
   el.loginBtn.addEventListener("click", login);
   el.emailInput.addEventListener("keydown", e => {
@@ -575,7 +671,19 @@
   });
   el.submitBtn.addEventListener("click", () => finishQuestion(false));
   el.nextBtn.addEventListener("click", nextQuestion);
-  el.resultHomeBtn.addEventListener("click", () => goLogin(false));
+  el.resultHomeBtn.addEventListener("click", () => el.resultOverlay.classList.remove("show"));
+  if (el.leaderboardBtn) el.leaderboardBtn.addEventListener("click", showLeaderboard);
+  if (el.historyBtn) el.historyBtn.addEventListener("click", showHistory);
+  if (el.howToBtn) el.howToBtn.addEventListener("click", showHowToPlay);
+  if (el.menuModalClose) el.menuModalClose.addEventListener("click", closeMenuModal);
+  if (el.menuOverlay) {
+    el.menuOverlay.addEventListener("click", (e) => {
+      if (e.target === el.menuOverlay) closeMenuModal();
+    });
+  }
+  document.querySelectorAll(".menu-item[data-season]").forEach(btn => {
+    btn.addEventListener("click", () => handleSeasonMenu(btn));
+  });
 
   el.clickLayer.addEventListener("click", e => addSelection(e.clientX, e.clientY));
   el.clickLayer.addEventListener("touchend", e => {

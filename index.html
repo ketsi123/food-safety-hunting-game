@@ -34,9 +34,6 @@
           <span>✉️</span>
           <input id="emailInput" type="email" autocomplete="email" inputmode="email" placeholder="name@cpf.co.th">
         </div>
-        <div class="login-help">
-          ใช้สำหรับระบุตัวผู้เล่น เก็บประวัติการ Submit และคะแนนสะสม
-        </div>
 
         <button id="loginBtn" class="login-btn">🚀 เริ่มเล่นเกม</button>
 
@@ -60,79 +57,134 @@
         </div>
       </div>
 
+      <div class="hud">
+        <div class="hud-card"><small>เวลา</small><strong id="timerText">00:45</strong></div>
+        <div class="hud-card"><small>ข้อ</small><strong id="questionCounter">1/2</strong></div>
+        <div class="hud-card score-hud"><small>คะแนนสะสม</small><strong id="totalScore">0</strong></div>
+      </div>
+
       <div class="userbox">
         <div id="avatar" class="avatar">U</div>
         <div class="user-meta">
           <b id="displayName">ผู้เล่น</b>
           <span id="userEmail"></span>
         </div>
-        <button id="changeUserBtn" class="soft-btn">เปลี่ยน User</button>
         <div class="backend-pill">
           <i id="gameBackendDot" class="status-dot"></i>
           <span id="gameBackendText">Backend</span>
         </div>
       </div>
-
-      <div class="hud">
-        <div class="hud-card"><small>เวลา</small><strong id="timerText">00:45</strong></div>
-        <div class="hud-card"><small>ข้อ</small><strong id="questionCounter">1/2</strong></div>
-        <div class="hud-card"><small>คะแนนสะสม</small><strong id="totalScore">0</strong></div>
-      </div>
     </div>
   </header>
 
-  <main class="app-wrap">
-    <section class="stage glass">
-      <div class="stage-head">
-        <strong id="seasonText">🌱 SEASON 1 : จากฟาร์ม</strong>
-        <span id="stepText">ข้อ 1 / 2</span>
-      </div>
+  <main class="game-layout">
+    <aside class="sidebar">
+      <section class="side-panel progress-panel">
+        <div class="side-title">PROGRESS</div>
+        <div class="side-season">Season 1 - จากฟาร์ม</div>
+        <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+        <div id="progressText" class="side-progress-text">0 / 0 ข้อ</div>
+        <div class="side-score">
+          <span class="score-icon">🏆</span>
+          <div><small>คะแนนสะสม</small><strong id="sideTotalScore">0 คะแนน</strong></div>
+        </div>
+      </section>
 
-      <div class="stage-main">
-        <section>
-          <div class="card glass">
-            <div class="question-top">
-              <span id="questionIdTag" class="tag">S1Q01</span>
-              <span id="hotspotCountTag" class="tag warning">⚠️ มี 0 จุดไม่สอดคล้อง</span>
+      <section class="side-panel menu-panel">
+        <div class="side-title">SEASON ทั้งหมด</div>
+
+        <button class="menu-item active" data-season="1">
+          <span class="menu-icon">🌿</span>
+          <span class="menu-copy"><b>Season 1</b><small>จากฟาร์ม</small></span>
+        </button>
+
+        <button class="menu-item locked" data-season="2">
+          <span class="menu-icon">🏭</span>
+          <span class="menu-copy"><b>Season 2</b><small>จากโรงงาน</small></span>
+          <span class="lock">🔒</span>
+        </button>
+
+        <button class="menu-item locked" data-season="3">
+          <span class="menu-icon">🚚</span>
+          <span class="menu-copy"><b>Season 3</b><small>โลจิสติกส์ & ตลาด</small></span>
+          <span class="lock">🔒</span>
+        </button>
+
+        <button class="menu-item locked" data-season="4">
+          <span class="menu-icon">🏠</span>
+          <span class="menu-copy"><b>Season 4</b><small>บ้าน / ครัวผู้บริโภค</small></span>
+          <span class="lock">🔒</span>
+        </button>
+
+        <div class="menu-separator"></div>
+
+        <button id="leaderboardBtn" class="menu-item">
+          <span class="menu-icon">🏆</span>
+          <span class="menu-copy"><b>Leaderboard</b><small>อันดับคะแนนรวม</small></span>
+        </button>
+
+        <button id="historyBtn" class="menu-item">
+          <span class="menu-icon">🕘</span>
+          <span class="menu-copy"><b>ประวัติการเล่น</b><small>คะแนนที่ดีที่สุดของคุณ</small></span>
+        </button>
+
+        <button id="howToBtn" class="menu-item">
+          <span class="menu-icon">ⓘ</span>
+          <span class="menu-copy"><b>วิธีการเล่น</b><small>กติกาและการให้คะแนน</small></span>
+        </button>
+
+        <button id="changeUserBtn" class="menu-item logout-item">
+          <span class="menu-icon">↪</span>
+          <span class="menu-copy"><b>ออกจากระบบ</b><small>เปลี่ยนผู้เล่น</small></span>
+        </button>
+      </section>
+    </aside>
+
+    <section class="game-main">
+      <section class="stage glass">
+        <div class="stage-head">
+          <strong id="seasonText">🌱 SEASON 1 : จากฟาร์ม</strong>
+          <span id="stepText">ข้อ 1 / 2</span>
+        </div>
+
+        <div class="stage-main">
+          <section class="question-zone">
+            <div class="image-shell">
+              <img id="questionImage" class="question-image" alt="ภาพคำถาม Food Safety">
+              <div id="clickLayer" class="click-layer"></div>
+              <div id="markerLayer"></div>
+              <div id="revealLayer"></div>
+              <div class="image-hint">👆 แตะเพื่อเลือก • แตะวงเลขเพื่อลบ</div>
             </div>
-            <div id="questionText" class="question-text">
-              จากภาพนี้ จุดใดที่ไม่สอดคล้องกับหลัก Food Safety?
+
+            <div class="question-card card glass">
+              <div class="question-top">
+                <span id="questionIdTag" class="tag">S1Q01</span>
+                <span id="hotspotCountTag" class="tag warning">⚠️ มี 0 จุดไม่สอดคล้อง</span>
+              </div>
+              <div class="question-label">คำถาม</div>
+              <div id="questionText" class="question-text">
+                จากภาพนี้ จุดใดที่ไม่สอดคล้องกับหลัก Food Safety?
+              </div>
+              <div class="question-tip">เลือกจุดในภาพได้มากกว่า 1 จุดตามจำนวนที่กำหนด</div>
             </div>
-            <div class="question-tip">แตะ/คลิกเลือกจุดที่ไม่สอดคล้อง แล้วใส่เหตุผลสั้น ๆ ก่อนส่งคำตอบ</div>
-          </div>
+          </section>
 
-          <div class="image-shell">
-            <img id="questionImage" class="question-image" alt="ภาพคำถาม Food Safety">
-            <div id="clickLayer" class="click-layer"></div>
-            <div id="markerLayer"></div>
-            <div id="revealLayer"></div>
-            <div class="image-hint">👆 แตะเพื่อเลือก • แตะวงเลขเพื่อลบ</div>
-          </div>
-
-          <div class="card glass reason-panel">
+          <section class="reason-section card glass">
             <div class="reason-header">
-              <strong>✍️ เหตุผลรายจุด</strong>
-              <span>คะแนนเหตุผลสูงสุด 50 คะแนน</span>
+              <div>
+                <strong>ใส่เหตุผลสั้น ๆ</strong>
+                <span>อย่างน้อย 1 ข้อ</span>
+              </div>
+              <div class="score-box-mini">
+                <small>คะแนนในข้อนี้</small>
+                <strong id="liveQuestionScore">--</strong>
+              </div>
             </div>
             <div id="reasonList" class="reason-list"></div>
-          </div>
-        </section>
-
-        <aside class="side">
-          <div class="card glass">
-            <h3>🎯 การให้คะแนน</h3>
-            <div class="rule"><i class="rule-dot">1</i><span>ตำแหน่งจุดไม่สอดคล้อง รวมสูงสุด <b>50 คะแนน</b></span></div>
-            <div class="rule"><i class="rule-dot">2</i><span>เหตุผลของแต่ละจุด รวมสูงสุด <b>50 คะแนน</b></span></div>
-            <div class="rule"><i class="rule-dot">✓</i><span>คะแนนจะนับเมื่อกด <b>Submit</b> เท่านั้น</span></div>
-          </div>
-
-          <div class="card glass">
-            <h3>📈 ความคืบหน้า</h3>
-            <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
-            <p id="progressText">0 / 0 ข้อ</p>
-          </div>
-        </aside>
-      </div>
+          </section>
+        </div>
+      </section>
     </section>
   </main>
 
@@ -141,7 +193,7 @@
     <div class="actions">
       <button id="undoBtn" class="action-btn">↶ ลบจุดล่าสุด</button>
       <button id="clearBtn" class="action-btn">↻ ล้างทั้งหมด</button>
-      <button id="submitBtn" class="action-btn primary">ส่งคำตอบ</button>
+      <button id="submitBtn" class="action-btn primary">✈ ส่งคำตอบ</button>
     </div>
   </footer>
 </section>
@@ -153,13 +205,24 @@
     <div id="resultLine" class="result-line"></div>
     <div id="resultAnswers" class="result-answer"></div>
     <div class="result-actions">
-      <button id="resultHomeBtn" class="btn-muted">กลับหน้า Login</button>
+      <button id="resultHomeBtn" class="btn-muted">ปิด</button>
       <button id="nextBtn" class="btn-next">ไปข้อถัดไป</button>
     </div>
   </div>
 </div>
 
+<div id="menuOverlay" class="overlay">
+  <div class="result-card menu-modal glass">
+    <div class="modal-head">
+      <h2 id="menuModalTitle" class="result-title">ข้อมูล</h2>
+      <button id="menuModalClose" class="modal-close">✕</button>
+    </div>
+    <div id="menuModalBody" class="menu-modal-body"></div>
+  </div>
+</div>
+
 <div id="toast" class="toast"></div>
+
 <div id="busyOverlay" class="busy-overlay hidden" aria-live="polite">
   <div class="busy-card">
     <div class="busy-spinner"></div>
