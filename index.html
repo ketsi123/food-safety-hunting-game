@@ -1,12 +1,701 @@
 <!doctype html>
 <html lang="th">
 <head>
+<meta name="fs-build" content="V15-SINGLEFILE-20260826">
+<!-- Food Safety Hunting Game V15 SINGLE FILE -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
   <meta name="theme-color" content="#f2fbff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
-  <link rel="stylesheet" href="app.css?v=14.9.0">
+  <style id="v15-inline-css">
+:root{
+ --ink:#15374a;--muted:#718a9a;--line:#dceaf2;--green:#109b72;--green2:#31c9a0;
+ --blue:#2f7df4;--violet:#6e55f4;--gold:#f7b51c;--red:#ef5c62;--bg:#f5fbfe;
+ --shadow:0 14px 38px rgba(56,103,139,.10);--shadow2:0 24px 70px rgba(50,100,140,.15)
+}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,"Noto Sans Thai","Leelawadee UI",system-ui,sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea{font:inherit}.hidden,.hidden-layer{display:none!important}button{cursor:pointer}
+/* login */
+.login-screen{min-height:100vh;display:grid;place-items:center;padding:26px;background:radial-gradient(circle at 15% 10%,#d7f5ff,transparent 30%),linear-gradient(135deg,#f7fcff,#eff9ff 58%,#f2fbf5)}
+.login-shell{width:min(1220px,100%);min-height:680px;display:grid;grid-template-columns:1.35fr .82fr;overflow:hidden;border-radius:32px;background:#fff;box-shadow:0 28px 85px rgba(42,86,128,.18);border:1px solid #fff}
+.login-hero{min-height:680px;background:url("login-hero.jpg") center/cover no-repeat;position:relative}.login-hero:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 68%,rgba(3,42,74,.38))}
+.hero-chips{position:absolute;z-index:2;left:22px;right:22px;bottom:20px;display:flex;gap:8px;flex-wrap:wrap}.hero-chips span{padding:7px 10px;border-radius:999px;color:#fff;font-size:11px;font-weight:900;background:rgba(3,49,86,.68);border:1px solid rgba(255,255,255,.25);backdrop-filter:blur(9px)}
+.login-panel{display:grid;place-items:center;padding:38px;background:linear-gradient(180deg,#fbfdff,#eef8ff)}.login-card{width:min(410px,100%);padding:32px 28px;border-radius:26px;background:rgba(255,255,255,.96);border:1px solid #dcebf5;box-shadow:var(--shadow);text-align:center}.login-icon{width:70px;height:70px;border-radius:22px;display:grid;place-items:center;margin:0 auto 13px;color:#fff;font-size:32px;background:linear-gradient(145deg,#1ed19b,#2f7df4);box-shadow:0 13px 30px rgba(47,125,244,.22)}.login-card h1{margin:0;color:#195eae}.login-card p{margin:7px 0 23px;color:#748aa0;font-size:13px}.login-card label{display:block;text-align:left;font-weight:900;font-size:12px;margin-bottom:7px}.email-box{height:56px;display:flex;align-items:center;gap:9px;padding:0 13px;border-radius:14px;border:2px solid #dfebf5;background:#fff}.email-box:focus-within{border-color:#54bff2;box-shadow:0 0 0 4px rgba(84,191,242,.12)}.email-box input{width:100%;height:100%;border:0;outline:0;background:transparent;color:#173b58}.login-btn{width:100%;height:56px;margin-top:16px;border:0;border-radius:16px;color:#fff;font-weight:1000;font-size:16px;background:linear-gradient(100deg,#168ff3,#6d48f2);box-shadow:0 9px 0 #d1dbff,0 17px 30px rgba(73,86,230,.20);transition:.15s}.login-btn:hover{transform:translateY(-2px)}.login-btn:active{transform:translateY(5px);box-shadow:0 4px 0 #d1dbff}.login-status{display:flex;justify-content:center;align-items:center;gap:6px;margin-top:16px;color:#71899a;font-size:11px}.status-dot,.ready-dot,.mini-dot{width:8px;height:8px;border-radius:50%;display:inline-block;background:#f2b84b;box-shadow:0 0 0 4px rgba(242,184,75,.12)}.status-dot.online,.ready-dot.online,.mini-dot.online{background:#15bd84;box-shadow:0 0 0 4px rgba(21,189,132,.12)}.status-dot.offline,.ready-dot.offline{background:#ec5e65}
+/* header */
+.game-screen{min-height:100vh;background:radial-gradient(circle at 0 0,rgba(60,213,255,.12),transparent 25%),linear-gradient(180deg,#f8fcff,#f1f9fc)}
+.game-header{position:sticky;top:0;z-index:40;background:linear-gradient(100deg,#064e42,#073f37 55%,#073832);color:#fff;box-shadow:0 10px 26px rgba(14,56,61,.14)}.header-inner{max-width:1510px;margin:auto;min-height:92px;padding:10px 20px;display:grid;grid-template-columns:1fr auto minmax(260px,.75fr);align-items:center;gap:18px}.game-brand{display:flex;align-items:center;gap:11px}.brand-shield{width:60px;height:60px;border-radius:50% 50% 45% 45%;display:grid;place-items:center;font-size:30px;font-weight:1000;color:#fff;background:linear-gradient(145deg,#25d49c,#0a8b65);border:3px solid rgba(255,255,255,.8);box-shadow:0 0 0 4px rgba(255,255,255,.10)}.game-brand div:last-child{display:flex;flex-direction:column}.game-brand b{font-size:18px;letter-spacing:.5px}.game-brand strong{font-size:25px;color:#ffd057;line-height:1}.game-brand small{font-size:12px;margin-top:4px;color:#dcf4ea}.header-stats{display:flex;align-items:stretch}.stat{min-width:116px;padding:7px 18px;border-left:1px solid rgba(255,255,255,.17)}.stat small{display:block;font-size:10px;color:#cfe9e0}.stat b{display:block;margin-top:3px;font-size:20px}.stat.score b{color:#ffd057}.user-chip{display:flex;align-items:center;justify-self:end;gap:10px;min-width:0}.avatar{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#f2f6f7,#fff);color:#08725a;font-weight:1000}.user-copy{min-width:0}.user-copy b,.user-copy small{display:block}.user-copy b{font-size:12px}.user-copy small{font-size:10px;color:#d4e9e1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}.ready-dot{background:#16c58a}
+/* layout */
+.workspace{max-width:1510px;margin:0 auto;display:grid;grid-template-columns:275px minmax(0,1fr);gap:20px;padding:20px}.sidebar{display:flex;flex-direction:column;gap:16px}.panel,.play-card{background:#fff;border:1px solid #e0ebf2;border-radius:20px;box-shadow:var(--shadow)}.panel{padding:16px}.panel-title{font-size:15px;font-weight:1000;color:#17445a;margin-bottom:10px}.progress-card>b{display:block;color:#0c7d5f;font-size:13px}.progress-track{height:9px;border-radius:999px;background:#e8eef2;overflow:hidden;margin:12px 0 7px}.progress-fill{height:100%;width:0;background:linear-gradient(90deg,#18be87,#1ac6bb,#4577f6);transition:width .35s ease}.progress-text{color:#708797;font-size:12px}.score-total{display:flex;align-items:center;gap:9px;margin-top:14px;padding-top:14px;border-top:1px solid #e7eef3}.score-total>span{font-size:28px}.score-total small,.score-total b{display:block}.score-total small{color:#7a91a0;font-size:10px}.score-total b{color:#117b5f;font-size:16px;margin-top:2px}.menu-card{padding:13px}.nav-item{width:100%;min-height:58px;margin-top:8px;padding:8px 10px;border-radius:14px;border:1px solid #dbe8f0;background:linear-gradient(180deg,#fff,#f8fbfd);color:#294b5d;display:grid;grid-template-columns:35px 1fr auto;align-items:center;gap:8px;text-align:left;box-shadow:0 6px 16px rgba(55,104,140,.05);transition:.14s}.nav-item:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(55,104,140,.10);border-color:#a9d8e9}.nav-item:active{transform:translateY(2px)}.nav-item.active{border-color:#1eae80;background:linear-gradient(135deg,#f0fff8,#ecfbff)}.nav-item.locked{opacity:.65}.nav-item i{font-style:normal;font-size:21px;text-align:center}.nav-item span b,.nav-item span small{display:block}.nav-item span b{font-size:13px}.nav-item span small{font-size:10px;color:#758d9b;margin-top:2px}.nav-item em{font-style:normal;font-size:12px}.menu-card hr{border:0;border-top:1px solid #e8eef2;margin:12px 4px 4px}.nav-item.logout{border-color:#f1cfd0;background:linear-gradient(180deg,#fff9f9,#fff3f3)}.nav-item.logout b{color:#df5357}.content{min-width:0}.season-bar{height:52px;border-radius:20px 20px 0 0;padding:0 18px;display:flex;align-items:center;justify-content:space-between;color:#fff;background:linear-gradient(100deg,#0b815f,#08725a);box-shadow:0 10px 22px rgba(16,113,86,.12)}.season-bar b{font-size:15px}.season-bar span{font-size:12px;font-weight:900}.play-card{border-radius:0 0 22px 22px;padding:18px}.play-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(305px,.72fr);gap:16px}.image-wrap{position:relative;border-radius:17px;overflow:hidden;border:1px solid #dceaf2;background:#f2f8fb;box-shadow:0 14px 32px rgba(65,114,153,.10)}.image-wrap img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover;transition:opacity .2s}.image-wrap img.loading{opacity:.45}.click-layer{position:absolute;inset:0;z-index:3;cursor:crosshair;touch-action:manipulation}.image-tip{position:absolute;left:11px;bottom:10px;z-index:8;padding:7px 10px;border-radius:999px;background:rgba(14,55,73,.76);color:#fff;font-size:10px;font-weight:900;backdrop-filter:blur(8px)}.marker{position:absolute;z-index:7;width:39px;height:39px;transform:translate(-50%,-50%);border-radius:50%;border:3px solid #fff;color:#fff;font-weight:1000;background:linear-gradient(145deg,#ff936c,#ff4e7e);box-shadow:0 10px 24px rgba(255,88,118,.30),0 0 0 4px rgba(255,255,255,.68);animation:pop .18s ease-out}.marker:hover{transform:translate(-50%,-50%) scale(1.08)}.marker:active{transform:translate(-50%,-50%) scale(.94)}@keyframes pop{from{transform:translate(-50%,-50%) scale(.4);opacity:0}to{transform:translate(-50%,-50%) scale(1);opacity:1}}.reveal-ring{position:absolute;z-index:6;transform:translate(-50%,-50%);border:4px solid #14be7e;border-radius:50%;box-shadow:0 0 0 5px rgba(255,255,255,.78),0 0 24px rgba(20,190,126,.36);pointer-events:none}.question-panel{padding:10px 7px 8px 10px}.question-kicker{font-size:17px;font-weight:1000;color:#173b4f}.question-panel h2{font-size:18px;line-height:1.55;margin:10px 0 0;color:#2d4353}.divider{height:1px;background:#e3ebf1;margin:20px 0}.question-panel p{color:#687f8e;font-size:12px;line-height:1.65}.compact-rule{display:flex;align-items:center;gap:9px;margin-top:13px;font-size:12px}.compact-rule span{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:1000;color:#0e9a70;border:2px solid #24bd89}.compact-rule:nth-of-type(2) span{color:#e49b00;border-color:#ffb728}.question-meta{display:flex;gap:7px;flex-wrap:wrap;margin-top:20px}.question-meta span{padding:6px 9px;border-radius:999px;background:#eef7fb;color:#457187;font-size:10px;font-weight:900}.reason-box{margin-top:17px;border:1px solid #e2ebf1;border-radius:17px;padding:15px;background:linear-gradient(180deg,#fff,#fbfdfe)}.reason-head{display:flex;justify-content:space-between;gap:12px;align-items:center}.reason-head>div:first-child b,.reason-head>div:first-child small{display:block}.reason-head>div:first-child b{font-size:16px}.reason-head>div:first-child small{margin-top:4px;color:#758b98;font-size:11px}.question-score{min-width:145px;text-align:center;padding:9px 13px;border-radius:13px;background:#f5f8fb}.question-score small,.question-score b{display:block}.question-score small{font-size:10px;color:#748995}.question-score b{font-size:19px;color:#315f9d;margin-top:2px}.reason-list{display:grid;gap:9px;margin-top:11px}.empty-reason{padding:13px 14px;border:1px dashed #cde0eb;border-radius:13px;background:#f7fbfd;color:#748b99;font-size:11px}.reason-row{display:grid;grid-template-columns:40px 1fr;gap:9px;padding:9px;border:1px solid #dfebf2;border-radius:14px;background:#fff;box-shadow:0 7px 18px rgba(68,111,143,.05)}.reason-number{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:1000;background:linear-gradient(145deg,#2fc89a,#3e75f1)}.reason-input{width:100%;min-height:58px;padding:10px 12px;resize:vertical;border:1px solid #d6e6ef;border-radius:12px;outline:0;color:#23485b;background:#fff}.reason-input:focus{border-color:#4bb4ef;box-shadow:0 0 0 4px rgba(75,180,239,.12)}.reason-note{font-size:10px;color:#78909e;margin-top:4px}.submit-row{margin-top:13px;display:flex;align-items:center;justify-content:space-between;gap:12px}.action-status{display:flex;align-items:center;gap:7px;color:#68808f;font-size:11px;font-weight:900}.mini-dot{background:#18bd86;box-shadow:0 0 0 4px rgba(24,189,134,.10)}.action-buttons{display:flex;gap:9px}.btn{min-height:45px;padding:0 18px;border-radius:12px;font-weight:1000;transition:.14s}.btn.ghost{border:1px solid #d7e6ee;background:linear-gradient(180deg,#fff,#f7fafc);color:#365769;box-shadow:0 6px 14px rgba(60,104,136,.07)}.btn.ghost:hover{transform:translateY(-2px)}.btn.submit{border:0;color:#fff;background:linear-gradient(100deg,#237ff4,#6d4cf2);box-shadow:0 7px 0 #d3dcff,0 14px 24px rgba(71,88,226,.16);position:relative;overflow:hidden}.btn.submit:hover{transform:translateY(-2px)}.btn.submit:active{transform:translateY(4px);box-shadow:0 3px 0 #d3dcff}.btn.submit.loading:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.32),transparent);animation:shine 1s linear infinite}@keyframes shine{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+/* overlays */
+.overlay,.busy{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:18px;background:rgba(231,244,251,.66);backdrop-filter:blur(8px)}.modal-card,.busy-card{width:min(700px,100%);max-height:84vh;overflow:auto;border-radius:24px;background:#fff;border:1px solid #dbe8f0;box-shadow:var(--shadow2);padding:24px;position:relative}.result-modal{text-align:center}.modal-x{position:absolute;right:14px;top:14px;width:38px;height:38px;border-radius:50%;border:0;background:#eef5f9;color:#587181;font-weight:1000}.result-icon{font-size:42px}.result-modal h2{margin:6px 0}.result-score{font-size:42px;font-weight:1000;color:#175f9e}.result-line{font-size:13px;line-height:1.7;color:#5a7585}.result-answers{text-align:left;margin-top:14px;padding-top:14px;border-top:1px solid #e3edf2;font-size:12px;line-height:1.65;color:#56707f}.wide{width:100%;margin-top:16px}.menu-modal-body{margin-top:15px;color:#4f6c7c;font-size:13px;line-height:1.7}.busy-card{width:min(330px,calc(100vw - 30px));text-align:center;padding:25px}.spinner{width:52px;height:52px;margin:0 auto 12px;border-radius:50%;border:4px solid #e3edf4;border-top-color:#2f89f4;border-right-color:#7053f4;animation:spin .8s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}.busy-card b,.busy-card small{display:block}.busy-card b{font-size:18px}.busy-card small{margin-top:6px;color:#7a8e9a}.toast{position:fixed;left:50%;bottom:24px;z-index:160;transform:translate(-50%,15px);opacity:0;padding:10px 14px;border-radius:999px;background:#183b50;color:#fff;font-size:11px;font-weight:900;box-shadow:0 12px 28px rgba(0,0,0,.18);transition:.2s;pointer-events:none}.toast.show{opacity:1;transform:translate(-50%,0)}
+.lb-table,.history-table{width:100%;border-collapse:separate;border-spacing:0 7px}.lb-table th,.history-table th{text-align:left;color:#728896;font-size:10px;padding:0 8px 3px}.lb-table td,.history-table td{padding:9px;background:#f6fafc;border-top:1px solid #e3edf2;border-bottom:1px solid #e3edf2}.help-list{display:grid;gap:9px}.help-step{display:flex;gap:10px;padding:11px;border:1px solid #e1ebf1;border-radius:13px;background:#f7fbfd}.help-step i{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(145deg,#20c997,#3d75f2);color:#fff;font-style:normal;font-weight:1000;flex:0 0 auto}
+@media(max-width:1100px){.workspace{grid-template-columns:1fr}.sidebar{display:grid;grid-template-columns:1fr}.menu-card{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.menu-card .panel-title,.menu-card hr{grid-column:1/-1}.nav-item{margin-top:0}.nav-item small{display:none}.play-grid{grid-template-columns:1fr}.question-panel{padding:5px 3px}.header-inner{grid-template-columns:1fr auto}.user-chip{display:none}}
+@media(max-width:720px){.login-screen{padding:0}.login-shell{grid-template-columns:1fr;min-height:100vh;border-radius:0}.login-hero{min-height:250px}.login-panel{padding:20px 14px}.game-header{position:relative}.header-inner{display:flex;flex-wrap:wrap;min-height:auto;padding:10px}.game-brand{width:100%}.brand-shield{width:44px;height:44px}.game-brand strong{font-size:18px}.header-stats{width:100%;display:grid;grid-template-columns:repeat(3,1fr)}.stat{min-width:0;padding:6px 9px}.stat b{font-size:15px}.workspace{padding:8px}.progress-card{display:none}.menu-card{grid-template-columns:repeat(3,1fr);padding:8px}.nav-item{min-height:60px;display:flex;flex-direction:column;justify-content:center;text-align:center;padding:6px}.nav-item i{font-size:18px}.nav-item em{display:none}.play-card{padding:8px}.season-bar{height:46px;border-radius:14px 14px 0 0}.image-wrap{border-radius:13px}.reason-head{align-items:flex-start}.question-score{min-width:105px}.submit-row{flex-direction:column;align-items:stretch}.action-buttons{display:grid;grid-template-columns:1fr 1fr}.btn.submit{grid-column:1/-1}.action-status{justify-content:center}.play-grid{gap:8px}}
+
+
+/* ===== V6 START / NEXT FLOW ===== */
+.play-card{position:relative}
+.question-gate{
+  position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:20px;
+  border-radius:0 0 22px 22px;
+  background:linear-gradient(135deg,rgba(244,252,255,.84),rgba(234,248,246,.82));
+  backdrop-filter:blur(9px);
+  transition:opacity .2s ease,visibility .2s ease;
+}
+.question-gate.off{opacity:0;visibility:hidden;pointer-events:none}
+.gate-card{
+  width:min(470px,calc(100% - 20px));text-align:center;padding:28px 26px;border-radius:26px;
+  background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(248,253,255,.98));
+  border:1px solid #d9eaf2;box-shadow:0 24px 70px rgba(55,115,156,.18),inset 0 1px #fff;
+}
+.gate-icon{font-size:46px;filter:drop-shadow(0 8px 14px rgba(30,126,209,.16));animation:gateFloat 2s ease-in-out infinite}
+@keyframes gateFloat{50%{transform:translateY(-5px)}}
+.gate-kicker{margin-top:8px;color:#178161;font-size:12px;font-weight:1000;letter-spacing:.7px;text-transform:uppercase}
+.gate-card h2{margin:5px 0 7px;color:#173d51;font-size:27px}
+.gate-card p{margin:0 auto 18px;color:#698391;font-size:13px;line-height:1.65}
+.gate-start{
+  width:100%;min-height:58px;border:0;border-radius:16px;color:#fff;font-size:18px;font-weight:1000;
+  background:linear-gradient(105deg,#11b985,#238ff2 60%,#6750f2);
+  box-shadow:0 9px 0 #c7dded,0 19px 34px rgba(59,105,225,.20);transition:.15s;
+}
+.gate-start:hover{transform:translateY(-3px);filter:saturate(1.08)}
+.gate-start:active{transform:translateY(5px);box-shadow:0 3px 0 #c7dded}
+.gate-secondary{width:100%;min-height:45px;margin-top:10px;border-radius:13px;border:1px solid #d9e7ee;background:#fff;color:#5a7382;font-weight:900}
+.game-paused .click-layer{pointer-events:none!important}
+.game-paused .reason-box{opacity:.58;filter:saturate(.75)}
+.result-actions-v6{display:grid;grid-template-columns:1fr 1.35fr;gap:10px;margin-top:17px}
+.result-actions-v6 .btn{min-height:49px}
+.btn.end-game{border:1px solid #d8e6ee;background:linear-gradient(180deg,#fff,#f6fafc);color:#476778;box-shadow:0 7px 16px rgba(60,104,136,.07)}
+.btn.end-game:hover{transform:translateY(-2px)}
+.result-actions-v6 .submit{width:auto;margin:0}
+.result-actions-v6.final{grid-template-columns:1fr}
+.result-actions-v6.final .end-game{min-height:54px;color:#fff;border:0;background:linear-gradient(105deg,#12b887,#2587f0);box-shadow:0 8px 0 #d1e7ea,0 15px 24px rgba(51,125,187,.16)}
+.session-done .gate-icon{animation:none}
+@media(max-width:620px){.result-actions-v6{grid-template-columns:1fr}.gate-card{padding:24px 18px}.gate-card h2{font-size:23px}}
+
+
+/* ===== V8: neutral selection + timeout rule ===== */
+.marker{
+  background:linear-gradient(145deg,#28b8f2,#3977ee)!important;
+  box-shadow:0 10px 24px rgba(45,132,234,.28),0 0 0 4px rgba(255,255,255,.72)!important;
+}
+.marker.correct{
+  background:linear-gradient(145deg,#24ca8f,#10a96f)!important;
+  box-shadow:0 10px 24px rgba(16,169,111,.28),0 0 0 4px rgba(255,255,255,.78)!important;
+}
+.marker.wrong{
+  background:linear-gradient(145deg,#ff866f,#ef4f61)!important;
+  box-shadow:0 10px 24px rgba(239,79,97,.28),0 0 0 4px rgba(255,255,255,.78)!important;
+}
+.save-rule{
+  margin-top:15px!important;padding:10px 12px;border-radius:12px;
+  background:#fff8e8;color:#91660b!important;border:1px solid #f4dda5;
+  font-size:11px!important;line-height:1.55!important;
+}
+.timeout-note{
+  padding:14px 15px;border-radius:13px;background:#fff8e8;border:1px solid #f2d99c;
+  color:#7e5a12;font-weight:800;line-height:1.65;
+}
+.result-modal.timeout .result-score{font-size:30px;color:#d38419}
+.result-modal.timeout .result-icon{filter:none}
+
+
+/* ===== V9: visual answer feedback ===== */
+.result-modal{max-width:900px!important}
+.result-visual{margin:16px 0 6px;padding:13px;border-radius:16px;background:#f6fbfe;border:1px solid #dceaf2}
+.result-visual.hidden{display:none}
+.result-visual-title{font-size:12px;font-weight:1000;color:#315a70;margin:0 0 8px}
+.result-visual-wrap{position:relative;overflow:hidden;border-radius:14px;border:1px solid #d5e6ef;background:#eef6fa;box-shadow:0 8px 24px rgba(58,103,135,.08)}
+.result-visual-wrap img{display:block;width:100%;height:auto;aspect-ratio:16/9;object-fit:cover}
+.result-visual-layer{position:absolute;inset:0;pointer-events:none}
+.result-visual .answer-ring{position:absolute;transform:translate(-50%,-50%);border:3px solid #13b97b;border-radius:50%;box-shadow:0 0 0 3px rgba(255,255,255,.82),0 0 16px rgba(19,185,123,.35);background:rgba(19,185,123,.04)}
+.result-visual .answer-marker{position:absolute;transform:translate(-50%,-50%);width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-size:12px;font-weight:1000;border:2px solid #fff;box-shadow:0 5px 14px rgba(20,54,78,.25);z-index:4}
+.result-visual .answer-marker.correct{background:linear-gradient(145deg,#22c98b,#079b65)}
+.result-visual .answer-marker.wrong{background:linear-gradient(145deg,#ff846e,#e7485c)}
+.result-legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:9px;color:#668191;font-size:10px;font-weight:900}
+.result-legend span{display:flex;align-items:center;gap:5px}
+.legend-dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+.legend-dot.correct{background:#13ad73}.legend-dot.wrong{background:#ec5361}
+.legend-ring{width:15px;height:11px;border:2px solid #13ad73;border-radius:50%;display:inline-block}
+.result-answers{max-height:250px;overflow:auto;padding-right:4px}
+@media(max-width:620px){.result-modal{max-width:calc(100vw - 20px)!important}.result-legend{gap:7px}.result-visual{padding:9px}}
+
+
+/* ===== V10: Reason panel beside image ===== */
+.side-reason-layout{
+  display:grid!important;
+  grid-template-columns:minmax(0,1.72fr) minmax(340px,.78fr)!important;
+  gap:14px!important;
+  align-items:stretch!important;
+}
+.side-reason-layout .image-wrap{
+  min-width:0;
+  align-self:start;
+}
+.right-game-panel{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-self:stretch;
+  max-height:min(70vh,690px);
+}
+.compact-question-panel{
+  flex:0 0 auto;
+  min-height:auto!important;
+  padding:15px 16px!important;
+}
+.question-topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.compact-question-panel h2{
+  margin:8px 0 10px!important;
+  font-size:18px!important;
+  line-height:1.5!important;
+}
+.compact-question-panel .question-meta{
+  margin:0!important;
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+.score-rules-inline{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:4px;
+}
+.score-rules-inline span{
+  padding:6px 9px;
+  border-radius:999px;
+  background:#f1fbf7;
+  border:1px solid #cceee1;
+  color:#2b725b;
+  font-size:10px;
+  font-weight:900;
+}
+.compact-question-panel .save-rule{
+  margin:9px 0 0!important;
+  padding:8px 10px!important;
+}
+.reason-side-panel{
+  flex:1 1 auto;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  background:linear-gradient(180deg,#ffffff,#f9fcfe);
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 8px 24px rgba(58,103,135,.07);
+  overflow:hidden;
+}
+.side-reason-head{
+  flex:0 0 auto;
+  padding:12px 13px;
+  border-bottom:1px solid #e3edf3;
+  background:linear-gradient(180deg,#fff,#f8fcff);
+}
+.side-reason-head>div:first-child b{
+  font-size:14px;
+}
+.side-reason-head>div:first-child small{
+  display:block;
+  margin-top:2px;
+  font-size:9px;
+  color:#7c93a1;
+}
+.side-reason-head .question-score{
+  min-width:84px!important;
+  padding:7px 9px!important;
+}
+.reason-scroll{
+  flex:1 1 auto;
+  min-height:120px;
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  padding:10px;
+  display:flex!important;
+  flex-direction:column;
+  gap:8px!important;
+  scrollbar-width:thin;
+  scrollbar-color:#b9d9e8 transparent;
+}
+.reason-scroll::-webkit-scrollbar{width:7px}
+.reason-scroll::-webkit-scrollbar-thumb{background:#bad9e7;border-radius:999px}
+.reason-scroll .reason-row{
+  flex:0 0 auto;
+  display:grid!important;
+  grid-template-columns:34px minmax(0,1fr)!important;
+  gap:8px!important;
+  padding:8px!important;
+  border:1px solid #e0edf4!important;
+  border-radius:13px!important;
+  background:#fff!important;
+  box-shadow:none!important;
+}
+.reason-scroll .reason-number{
+  width:32px!important;
+  height:32px!important;
+  font-size:12px!important;
+}
+.reason-scroll .reason-input{
+  min-height:48px!important;
+  max-height:80px!important;
+  padding:8px 10px!important;
+  font-size:12px!important;
+  resize:vertical!important;
+}
+.reason-scroll .reason-note{
+  margin-top:3px!important;
+  font-size:8px!important;
+  line-height:1.35!important;
+}
+.reason-scroll .empty-reason{
+  margin:auto 0;
+  padding:16px 12px!important;
+  text-align:center;
+}
+.side-submit-area{
+  flex:0 0 auto;
+  padding:9px 10px 10px;
+  border-top:1px solid #e3edf3;
+  background:rgba(255,255,255,.96);
+}
+.side-submit-area .action-status{
+  min-height:auto!important;
+  padding:7px 9px!important;
+  margin:0 0 7px!important;
+  font-size:9px!important;
+}
+.side-actions{
+  display:grid!important;
+  grid-template-columns:.85fr .95fr 1.4fr!important;
+  gap:6px!important;
+}
+.side-actions .btn{
+  min-width:0!important;
+  min-height:40px!important;
+  padding:7px 8px!important;
+  font-size:10px!important;
+}
+.side-actions .submit{
+  margin:0!important;
+  width:100%!important;
+}
+/* old bottom reason box no longer used */
+.reason-box{display:none!important}
+
+@media(max-width:1180px){
+  .side-reason-layout{
+    grid-template-columns:minmax(0,1.45fr) minmax(320px,.8fr)!important;
+  }
+  .right-game-panel{max-height:min(68vh,640px)}
+  .compact-question-panel h2{font-size:16px!important}
+}
+@media(max-width:900px){
+  .side-reason-layout{grid-template-columns:1fr!important}
+  .right-game-panel{max-height:none!important}
+  .reason-side-panel{max-height:none!important;overflow:visible!important}
+  .reason-scroll{max-height:300px;min-height:90px}
+}
+@media(max-width:620px){
+  .compact-question-panel{padding:12px!important}
+  .side-actions{grid-template-columns:1fr 1fr!important}
+  .side-actions .submit{grid-column:1/-1}
+  .reason-scroll{max-height:260px;padding:8px}
+}
+
+
+/* V11 latest cumulative score in result */
+.latest-total-score{
+  margin-top:14px;
+  padding:11px 14px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:linear-gradient(135deg,#eefcf7,#eef7ff);
+  border:1px solid rgba(38,181,137,.22);
+}
+.latest-total-score span{font-size:12px;color:#537386;font-weight:800}
+.latest-total-score strong{font-size:17px;color:#087a59}
+
+
+/* ===== V12: Question strip above image + 5 reasons without panel scroll ===== */
+.question-strip-v12{
+  margin-bottom:12px;
+  padding:12px 14px;
+  border:1px solid #dceaf2;
+  border-radius:16px;
+  background:linear-gradient(180deg,#ffffff,#f9fcfe);
+  box-shadow:0 8px 22px rgba(58,103,135,.06);
+}
+.question-strip-main{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  align-items:center;
+  gap:18px;
+}
+.question-strip-copy{min-width:0}
+.question-strip-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:4px;
+}
+.question-strip-v12 .question-kicker{
+  font-size:13px;
+  font-weight:1000;
+  color:#173b4f;
+}
+.question-strip-v12 .question-meta{
+  margin:0!important;
+  display:flex;
+  gap:5px;
+}
+.question-strip-v12 .question-meta span{
+  padding:5px 8px;
+  font-size:9px;
+}
+.question-strip-v12 h2{
+  margin:0!important;
+  font-size:18px!important;
+  line-height:1.45!important;
+  color:#263f50;
+}
+.question-strip-rules{
+  min-width:240px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:6px;
+}
+.question-strip-v12 .score-rules-inline{
+  margin:0!important;
+  justify-content:flex-end;
+}
+.question-strip-v12 .score-rules-inline span{
+  padding:6px 9px;
+  font-size:10px;
+}
+.question-strip-v12 .save-rule{
+  margin:0!important;
+  padding:7px 10px!important;
+  border-radius:10px;
+  background:#fff8e8;
+  border:1px solid #f1d28e;
+  color:#9a6b08;
+  font-size:9px!important;
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.v12-layout{
+  grid-template-columns:minmax(0,1.72fr) minmax(350px,.78fr)!important;
+  align-items:stretch!important;
+}
+.v12-reason-column{
+  max-height:none!important;
+  height:100%;
+  gap:0!important;
+}
+.v12-reason-panel{
+  height:100%;
+  min-height:0;
+  overflow:visible!important;
+}
+.v12-reason-list{
+  flex:1 1 auto;
+  overflow:visible!important;
+  max-height:none!important;
+  min-height:0!important;
+  padding:7px 8px!important;
+  gap:5px!important;
+  scrollbar-width:none!important;
+}
+.v12-reason-list::-webkit-scrollbar{display:none!important}
+.v12-reason-list .reason-row{
+  grid-template-columns:31px minmax(0,1fr)!important;
+  gap:6px!important;
+  padding:5px!important;
+  border-radius:11px!important;
+}
+.v12-reason-list .reason-number{
+  width:29px!important;
+  height:29px!important;
+  font-size:11px!important;
+}
+.v12-reason-list .reason-input{
+  min-height:41px!important;
+  height:41px!important;
+  max-height:41px!important;
+  padding:7px 9px!important;
+  font-size:11px!important;
+  line-height:1.25!important;
+  resize:none!important;
+}
+/* ลดข้อความซ้ำใต้ทุกช่อง เพื่อให้ 5 คำตอบเห็นครบพร้อมกัน */
+.v12-reason-list .reason-note{display:none!important}
+.v12-reason-panel .side-reason-head{
+  padding:9px 10px!important;
+}
+.v12-reason-panel .side-reason-head>div:first-child b{font-size:13px!important}
+.v12-reason-panel .side-reason-head>div:first-child small{font-size:8px!important}
+.v12-reason-panel .question-score{
+  min-width:76px!important;
+  padding:6px 8px!important;
+}
+.v12-reason-panel .question-score small{font-size:8px!important}
+.v12-reason-panel .question-score b{font-size:16px!important}
+.v12-reason-panel .side-submit-area{
+  padding:7px 8px 8px!important;
+}
+.v12-reason-panel .side-submit-area .action-status{
+  padding:5px 7px!important;
+  margin-bottom:5px!important;
+  font-size:8px!important;
+}
+.v12-reason-panel .side-actions{
+  grid-template-columns:.82fr .92fr 1.45fr!important;
+  gap:5px!important;
+}
+.v12-reason-panel .side-actions .btn{
+  min-height:37px!important;
+  padding:5px 6px!important;
+  font-size:9px!important;
+}
+
+@media(max-width:1180px){
+  .question-strip-main{grid-template-columns:1fr}
+  .question-strip-rules{min-width:0;align-items:flex-start;flex-direction:row;flex-wrap:wrap}
+  .question-strip-v12 .score-rules-inline{justify-content:flex-start}
+  .v12-layout{grid-template-columns:minmax(0,1.45fr) minmax(330px,.8fr)!important}
+}
+@media(max-width:900px){
+  .question-strip-v12{margin-bottom:8px;padding:10px}
+  .question-strip-v12 h2{font-size:16px!important}
+  .v12-layout{grid-template-columns:1fr!important}
+  .v12-reason-panel{height:auto!important}
+  .v12-reason-list{overflow:visible!important}
+}
+
+
+/* ===== V13 Reason Panel Readability ===== */
+.v12-reason-panel .side-reason-head{
+  padding:11px 12px!important;
+}
+.v12-reason-panel .side-reason-head>div:first-child b{
+  font-size:16px!important;
+  line-height:1.25!important;
+}
+.v12-reason-panel .side-reason-head>div:first-child small{
+  font-size:10px!important;
+  line-height:1.35!important;
+  margin-top:3px!important;
+}
+.v12-reason-panel .question-score{
+  min-width:88px!important;
+  padding:7px 9px!important;
+}
+.v12-reason-panel .question-score small{
+  font-size:9px!important;
+}
+.v12-reason-panel .question-score b{
+  font-size:18px!important;
+}
+.v12-reason-list{
+  gap:6px!important;
+  padding:8px 9px!important;
+}
+.v12-reason-list .reason-row{
+  grid-template-columns:35px minmax(0,1fr)!important;
+  gap:8px!important;
+  padding:6px!important;
+}
+.v12-reason-list .reason-number{
+  width:33px!important;
+  height:33px!important;
+  font-size:13px!important;
+}
+.v12-reason-list .reason-input{
+  min-height:43px!important;
+  height:43px!important;
+  max-height:43px!important;
+  padding:8px 10px!important;
+  font-size:13px!important;
+  line-height:1.3!important;
+  font-weight:600!important;
+}
+.v12-reason-list .reason-input::placeholder{
+  font-size:12px!important;
+  color:#8aa0ad!important;
+  font-weight:500!important;
+}
+.v12-reason-panel .side-submit-area .action-status{
+  font-size:10px!important;
+  line-height:1.3!important;
+  padding:6px 8px!important;
+}
+.v12-reason-panel .side-actions{
+  gap:7px!important;
+}
+.v12-reason-panel .side-actions .btn{
+  min-height:41px!important;
+  padding:6px 8px!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+}
+.v12-reason-panel .side-actions .btn.submit{
+  font-size:13px!important;
+}
+
+
+/* ===== V14: Timer moved into Question Strip ===== */
+.question-strip-main{
+  grid-template-columns:minmax(0,1fr) auto auto!important;
+  gap:18px!important;
+}
+
+.question-strip-timer{
+  min-width:150px;
+  padding:8px 16px;
+  border-radius:14px;
+  border:1px solid rgba(37,145,224,.20);
+  background:linear-gradient(180deg,#f5fbff,#eaf7ff);
+  box-shadow:
+    0 7px 18px rgba(46,118,172,.08),
+    inset 0 1px 0 rgba(255,255,255,.8);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  white-space:nowrap;
+}
+
+.question-strip-timer .timer-label{
+  font-size:10px;
+  line-height:1;
+  font-weight:800;
+  color:#6f8798;
+  margin-bottom:5px;
+}
+
+.question-strip-timer .timer-value{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  color:#1768a6;
+  font-size:17px;
+  font-weight:900;
+}
+
+.question-strip-timer #timerText{
+  font-size:24px;
+  line-height:1;
+  font-weight:1000;
+  letter-spacing:.5px;
+  color:#135f96;
+  font-variant-numeric:tabular-nums;
+}
+
+/* Header has only question number and cumulative score now */
+.game-header .header-stats{
+  grid-template-columns:repeat(2,auto)!important;
+}
+
+@media(max-width:1100px){
+  .question-strip-main{
+    grid-template-columns:minmax(0,1fr) auto!important;
+  }
+  .question-strip-timer{
+    min-width:135px;
+  }
+  .question-strip-rules{
+    grid-column:1 / -1;
+    flex-direction:row!important;
+    align-items:center!important;
+    justify-content:space-between;
+  }
+}
+
+@media(max-width:720px){
+  .question-strip-main{
+    grid-template-columns:1fr auto!important;
+    gap:10px!important;
+  }
+  .question-strip-timer{
+    min-width:112px;
+    padding:7px 10px;
+  }
+  .question-strip-timer #timerText{
+    font-size:20px;
+  }
+  .question-strip-timer .timer-label{
+    font-size:9px;
+  }
+}
+
+
+/* ===== V14.3: Current Game Score vs Leaderboard Score ===== */
+.score-summary-dual{
+  display:grid!important;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  background:transparent!important;
+  border:0!important;
+  padding:0!important;
+  margin-top:14px!important;
+}
+.score-summary-dual>div{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 14px;
+  border-radius:14px;
+  border:1px solid #cce8df;
+  background:linear-gradient(180deg,#f3fffb,#ecfaf8);
+}
+.score-summary-dual>div:nth-child(2){
+  border-color:#d8e3fa;
+  background:linear-gradient(180deg,#f7faff,#eef5ff);
+}
+.score-summary-dual span{
+  font-size:12px;
+  font-weight:800;
+  color:#527083;
+}
+.score-summary-dual strong{
+  font-size:17px;
+  font-weight:1000;
+  color:#087d5c;
+  white-space:nowrap;
+}
+.score-summary-dual>div:nth-child(2) strong{
+  color:#2869b2;
+}
+@media(max-width:620px){
+  .score-summary-dual{grid-template-columns:1fr}
+}
+
+
+/* ===== V14.5 Backend Guard ===== */
+.gate-start:disabled{
+  opacity:.72;
+  cursor:wait;
+  transform:none!important;
+}
+.action-status.backend-error{
+  color:#b42318;
+  background:#fff4f2;
+  border-color:#fecdca;
+}
+
+</style>
 </head>
 <body>
 
@@ -113,7 +802,7 @@
 
         <div class="play-grid side-reason-layout v12-layout">
           <div class="image-wrap">
-            <img id="questionImage" alt="ภาพคำถาม Food Safety">
+            <img id="questionImage" alt="ภาพคำถาม Food Safety" src="./S1_Q01.jpg?v=15">
             <div id="clickLayer" class="click-layer"></div>
             <div id="markerLayer"></div>
             <div id="revealLayer"></div>
@@ -186,7 +875,503 @@
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="config.js?v=14.9.0"></script>
-<script src="app.js?v=14.9.0"></script>
+<script id="v15-inline-config">
+window.FS_CONFIG = {
+  BACKEND_URL: "https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec",
+  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02"],
+  LOCAL_QUESTIONS: [
+    { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
+  ],
+  QUESTION_IMAGE_DIR: "",
+  ASSET_VERSION: "20260826-V149",
+  GAME_MODE: "NONCONFORMITY",
+  RANDOMIZE_QUESTIONS: false,
+  AUTO_NEXT_SECONDS: 0,
+  REMEMBER_EMAIL: true
+};
+
+</script>
+<script id="v15-inline-app">
+(()=>{"use strict";console.info("Food Safety Hunting Game V14.9 LOCAL QUESTION MASTER");
+const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
+let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false;
+const MASTER_QUESTIONS=[
+  {
+    questionId:"S1Q01",
+    season:1,
+    imageFile:"S1_Q01.jpg",
+    hotspotCount:5,
+    fullScore:100,
+    timeLimitSec:45
+  },
+  {
+    questionId:"S1Q02",
+    season:1,
+    imageFile:"S1_Q02.jpg",
+    hotspotCount:5,
+    fullScore:100,
+    timeLimitSec:45
+  }
+];
+function masterQuestionById(id){
+  const key=String(id||"").trim().toUpperCase();
+  return MASTER_QUESTIONS.find(x=>x.questionId===key)||null;
+}
+function masterQuestions(){
+  return MASTER_QUESTIONS.map(x=>({...x}));
+}
+
+const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
+function toast(msg,ms=2300){e.toast.textContent=msg;e.toast.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.toast.classList.remove("show"),ms)}
+function busy(on,title="กำลังประมวลผล...",sub="กรุณารอสักครู่"){e.busyOverlay.classList.toggle("hidden-layer",!on);e.busyText.textContent=title;e.busySub.textContent=sub;document.body.style.overflow=on?"hidden":""}
+function action(msg,state="ready"){e.actionStatus.innerHTML=`<i class="mini-dot ${state==='ok'?'online':''}"></i><span>${esc(msg)}</span>`}
+async function request(url,opt={}){
+  const timeoutMs=Number(opt.timeoutMs||60000);
+  const fetchOpt={...opt};delete fetchOpt.timeoutMs;
+  const ctl=new AbortController();
+  const to=setTimeout(()=>ctl.abort(),timeoutMs);
+  try{
+    const r=await fetch(url,{cache:"no-store",redirect:"follow",...fetchOpt,signal:ctl.signal});
+    const t=await r.text();
+    if(!r.ok)throw Error(`HTTP ${r.status}`);
+    let d;
+    try{d=JSON.parse(t)}catch{
+      const preview=String(t||"").replace(/\s+/g," ").slice(0,120);
+      throw Error(`Backend ไม่ได้ส่ง JSON${preview?` • ${preview}`:""}`);
+    }
+    if(!d.ok)throw Error(d.error||"BACKEND_ERROR");
+    return d;
+  }catch(err){
+    if(err?.name==="AbortError"||/aborted/i.test(String(err?.message||""))){
+      throw Error(`Backend ใช้เวลานานเกิน ${Math.round(timeoutMs/1000)} วินาที`);
+    }
+    if(err instanceof TypeError){
+      throw Error(`Network/CORS: ${err.message||"Failed to fetch"}`);
+    }
+    throw err;
+  }finally{clearTimeout(to)}
+}
+function backendUrl(){
+  return String(C.BACKEND_URL||"").trim();
+}
+async function backendPost(payload,timeoutMs=30000){
+  const url=backendUrl();
+  if(!url)throw Error("BACKEND_URL_MISSING");
+  return request(url,{
+    method:"POST",
+    headers:{"Content-Type":"text/plain;charset=utf-8"},
+    body:JSON.stringify(payload),
+    timeoutMs
+  });
+}
+async function backendGet(query,timeoutMs=30000){
+  const base=backendUrl();
+  if(!base)throw Error("BACKEND_URL_MISSING");
+  const sep=query.startsWith("?")?"":"?";
+  return request(`${base}${sep}${query}`,{timeoutMs});
+}
+const api=p=>backendPost(p,30000);
+function setBackend(ok){
+  backendOnline=!!ok;
+  e.loginBackendDot.classList.toggle("online",ok);
+  e.loginBackendDot.classList.toggle("offline",!ok);
+  e.loginBackendText.textContent=ok?"ระบบพร้อมใช้งาน":"เชื่อมระบบไม่ได้";
+  e.gameReadyDot.classList.toggle("online",ok);
+  e.gameReadyDot.classList.toggle("offline",!ok)
+}
+async function ping(){
+  try{
+    const d=await backendGet(`?action=ping&t=${Date.now()}`,20000);
+    setBackend(true);
+    e.loginBackendText.textContent=`ระบบพร้อมใช้งาน • ${d.version||"Backend"}`;
+    return true
+  }catch(err){
+    setBackend(false);
+    e.loginBackendText.textContent=`เชื่อมไม่ได้ • ${err.message}`;
+    console.error("Backend ping failed",err);
+    return false
+  }
+}
+async function configureBackend(){
+  // Locked to the single Web App URL in config.js.
+  return ping();
+}
+
+function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
+function allCachedUsers(){
+  try{
+    const v=JSON.parse(localStorage.getItem(S_USERS)||"{}");
+    return v&&typeof v==="object"?v:{};
+  }catch{return {}}
+}
+function cachedUserByEmail(email){
+  const key=String(email||"").trim().toLowerCase();
+  return allCachedUsers()[key]||null;
+}
+function saveUser(u){
+  user=u;
+  localStorage.setItem(S_USER,JSON.stringify(u));
+  if(u?.email){
+    const key=String(u.email).trim().toLowerCase();
+    const users=allCachedUsers();
+    users[key]={...(users[key]||{}),...u,email:key};
+    localStorage.setItem(S_USERS,JSON.stringify(users));
+    if(C.REMEMBER_EMAIL)localStorage.setItem(S_EMAIL,key);
+  }
+}
+function clearUser(){
+  // Logout clears only the active session.
+  // Per-email score cache is intentionally kept.
+  user=null;
+  localStorage.removeItem(S_USER);
+}
+function cachedQuestions(){
+  // V14.9: Q1/Q2 metadata is local master data only.
+  return masterQuestions();
+}
+function imagePath(x){
+  const mq=masterQuestionById(x?.questionId)||x||{};
+  const file=String(mq.imageFile||"").trim();
+  return `./${file}?v=20260826V149`;
+}
+function preload(items){
+  (items||masterQuestions()).forEach(x=>{
+    const im=new Image();
+    im.decoding="async";
+    im.src=imagePath(x);
+  });
+}
+async function loadQuestions(){
+  questions=masterQuestions();
+  preload(questions);
+  return questions;
+}
+function warmQuestions(){
+  preload(masterQuestions());
+}
+
+async function login(){
+  const email=e.emailInput.value.trim().toLowerCase();
+  if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}
+
+  // V14.2: Enter game immediately. Backend sync happens in background.
+  e.loginBtn.disabled=true;
+  e.loginBtn.textContent="กำลังเปิดเกม...";
+
+  const localName=email.split("@")[0]
+    .replace(/[._-]+/g," ")
+    .replace(/[a-z]/g,c=>c.toUpperCase());
+
+  const previous=cachedUserByEmail(email)||(()=>{try{return JSON.parse(localStorage.getItem(S_USER)||"null")}catch{return null}})();
+  user={
+    userId:previous?.userId||"",
+    email,
+    displayName:previous?.email===email?(previous.displayName||localName):localName,
+    totalBestScore:previous?.email===email?Number(previous.totalBestScore||0):0,
+    currentSeason:1
+  };
+  saveUser(user);
+
+  questions=masterQuestions();
+
+  if(!questions.length){
+    e.loginBtn.disabled=false;
+    e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
+    toast("ไม่พบข้อมูลคำถามใน Frontend");
+    return;
+  }
+
+  preload(questions);
+  e.loginBackendText.textContent="กำลังซิงก์คะแนนเบื้องหลัง...";
+  openGame();
+
+  // Do not block the player. Sync account + latest question metadata quietly.
+  (async()=>{
+    try{
+      const loginData=await api({action:"login",email});
+      if(loginData?.user){
+        saveUser(loginData.user);
+        renderUser();
+        setTotal(Number(loginData.user.totalBestScore||0));
+      }
+      setBackend(true);
+    }catch(err){
+      setBackend(false);
+      console.warn("Background login sync failed",err);
+      // Submit still talks to backend and can create/update the user later.
+    }finally{
+      e.loginBtn.disabled=false;
+      e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
+    }
+  })();
+}
+function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
+function setTotal(v){e.totalScore.textContent=v||0;e.sideTotalScore.textContent=`${v||0} คะแนน`}
+async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");questions=masterQuestions();preload(questions);startSession()}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function startSession(){
+  clearInterval(timer); started=false; ended=false;
+  order=(C.RANDOMIZE_QUESTIONS?shuffle(questions.map((_,i)=>i)):questions.map((_,i)=>i).sort((a,b)=>String(questions[a].questionId).localeCompare(String(questions[b].questionId))));
+  idx=0;loadQ(false)
+}
+function loadQ(startImmediately=false){
+  clearInterval(timer);selections=[];ended=false;started=false;currentAttemptId=null;
+  e.markerLayer.innerHTML="";e.revealLayer.innerHTML="";e.clickLayer.style.pointerEvents="auto";if(e.resultIcon)e.resultIcon.textContent="🏆";const resultCard=e.resultOverlay.querySelector(".result-modal");if(resultCard)resultCard.classList.remove("timeout");
+  e.reasonList.innerHTML='<div class="empty-reason">กด START ก่อนเริ่มข้อ แล้วจึงเลือกจุดในภาพ</div>';
+  e.resultOverlay.classList.add("hidden-layer");
+  if(e.resultVisual)e.resultVisual.classList.add("hidden");
+  e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.textContent="💾 บันทึกคำตอบ";e.liveQuestionScore.textContent="--";
+  q=masterQuestionById(questions[order[idx]]?.questionId)||questions[order[idx]];seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
+  e.seasonText.textContent=`🌱 SEASON ${q.season||1} : จากฟาร์ม`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;
+  e.questionIdTag.textContent=q.questionId;e.hotspotCountTag.textContent=`${Number(q.hotspotCount||5)} จุด`;e.questionText.textContent='จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
+  e.progressFill.style.width=`${cur/total*100}%`;e.progressText.textContent=`ภาพที่ ${cur} / ${total}`;
+  e.questionImage.classList.add("loading");e.questionImage.src=imagePath(q);tick();
+  e.playCard.classList.add("game-paused");
+  e.gateLogoutBtn.classList.add("hidden");
+  e.gateIcon.textContent="🎯";e.gateKicker.textContent=cur===1?"ก่อนเริ่มเกมส์":"พร้อมสำหรับข้อต่อไป";e.gateTitle.textContent=cur===1?"กด START เพื่อเริ่มข้อ 1":`Season 1 • ข้อ ${cur}`;
+  e.gateText.textContent=`เวลา ${q.timeLimitSec||45} วินาทีจะเริ่มนับหลังจากกด START เท่านั้น`;
+  e.startQuestionBtn.textContent=cur===1?"▶ START ข้อ 1":"▶ START ข้อนี้";
+  e.questionGate.classList.remove("off");
+  action("รอกด START เพื่อเริ่มจับเวลา");
+  if(startImmediately) startQuestion();
+  window.scrollTo({top:0,behavior:"smooth"})
+}
+async function startQuestion(){
+  if(started||ended)return;
+
+  const normalText=(idx+1)===1?"▶ START ข้อ 1":"▶ START ข้อนี้";
+  e.startQuestionBtn.disabled=true;
+  e.startQuestionBtn.textContent="กำลังตรวจระบบ...";
+
+  let ok=backendOnline;
+  if(!ok) ok=await ping();
+
+  if(!ok){
+    action("กำลังเชื่อม Backend...");
+    const configured=await configureBackend();
+    if(!configured){
+      e.startQuestionBtn.disabled=false;
+      e.startQuestionBtn.textContent=normalText;
+      e.gateText.textContent="Backend ยังไม่พร้อม • กรุณาตรวจ Apps Script Deployment";
+      toast("ยังเชื่อม Backend ไม่ได้",3500);
+      return;
+    }
+  }
+
+  e.startQuestionBtn.disabled=false;
+  e.startQuestionBtn.textContent=normalText;
+
+  started=true;
+  e.playCard.classList.remove("game-paused");
+  e.questionGate.classList.add("off");
+  e.submitBtn.disabled=false;
+  e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';
+  action(`เริ่มแล้ว • เลือกได้สูงสุด ${q.hotspotCount} จุด`,"ok");
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    seconds--;
+    tick();
+    if(seconds<=0){
+      clearInterval(timer);
+      timeoutQuestion();
+    }
+  },1000);
+}
+function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/60))).padStart(2,"0")}:${String(Math.max(0,seconds%60)).padStart(2,"0")}`;e.timerText.style.color=seconds<=10?"#ffd057":""}
+function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=Number(q.hotspotCount||1);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reason:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
+function renderMarkers(){e.markerLayer.innerHTML="";selections.forEach((s,i)=>{const b=document.createElement("button");b.className="marker";b.dataset.index=String(i);b.style.left=s.x+"%";b.style.top=s.y+"%";b.textContent=i+1;b.onclick=ev=>{ev.stopPropagation();if(ended)return;selections.splice(i,1);renderMarkers();renderReasons()};e.markerLayer.appendChild(b)})}
+function markSelectionResults(results){const markers=[...e.markerLayer.querySelectorAll(".marker")];markers.forEach((m,i)=>{m.classList.remove("correct","wrong");const r=(results||[])[i];if(!r)return;m.classList.add(r.pointMatched?"correct":"wrong")})}
+function renderReasons(){if(!selections.length){e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';return}e.reasonList.innerHTML="";selections.forEach((s,i)=>{const row=document.createElement("div");row.className="reason-row";row.innerHTML=`<div class="reason-number">${i+1}</div><div><textarea class="reason-input" placeholder="เหตุผลของจุดที่ ${i+1}"></textarea><div class="reason-note">อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร</div></div>`;const ta=row.querySelector("textarea");ta.value=s.reason||"";ta.oninput=()=>selections[i].reason=ta.value;e.reasonList.appendChild(row)})}
+function reveal(list){e.revealLayer.innerHTML="";(list||[]).forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})}
+function renderResultVisual(revealList,results){
+  if(!e.resultVisual||!e.resultVisualImage)return;
+  e.resultVisual.classList.remove("hidden");
+  e.resultVisualImage.src=imagePath(q);
+  e.resultVisualReveal.innerHTML="";
+  e.resultVisualMarkers.innerHTML="";
+  (revealList||[]).forEach(h=>{
+    const ring=document.createElement("div");
+    ring.className="answer-ring";
+    ring.style.left=h.x+"%";ring.style.top=h.y+"%";
+    ring.style.width=h.rx*2+"%";ring.style.height=h.ry*2+"%";
+    e.resultVisualReveal.appendChild(ring);
+  });
+  selections.forEach((sel,i)=>{
+    const r=(results||[])[i];
+    const m=document.createElement("div");
+    m.className=`answer-marker ${r?.pointMatched?"correct":"wrong"}`;
+    m.style.left=sel.x+"%";m.style.top=sel.y+"%";m.textContent=i+1;
+    e.resultVisualMarkers.appendChild(m);
+  });
+}
+function startStatusCycle(){const msgs=["กำลังตรวจตำแหน่ง...","กำลังตรวจเหตุผล...","กำลังบันทึกคะแนน..."];let i=0;e.busyText.textContent=msgs[0];clearInterval(statusTimer);statusTimer=setInterval(()=>{i=(i+1)%msgs.length;e.busyText.textContent=msgs[i]},900)}
+function timeoutQuestion(){
+  if(ended)return;
+  ended=true;started=false;seconds=0;tick();clearInterval(timer);
+  e.submitBtn.disabled=true;e.clickLayer.style.pointerEvents="none";
+  action("หมดเวลา • ข้อนี้ไม่ได้บันทึกคะแนน");
+  e.liveQuestionScore.textContent="--";
+  if(e.resultIcon)e.resultIcon.textContent="⏰";
+  const card=e.resultOverlay.querySelector(".result-modal");if(card)card.classList.add("timeout");
+  e.resultTitle.textContent="หมดเวลา";
+  e.resultScore.textContent="ไม่ได้บันทึกคะแนน";
+  e.resultLine.innerHTML='คุณยังไม่ได้กด <b>บันทึกคำตอบ</b> ก่อนหมดเวลา<br>จึงไม่มีการส่งคำตอบไป Google Sheet และข้อนี้ไม่ได้คะแนน';
+  if(e.resultVisual)e.resultVisual.classList.add("hidden");e.resultAnswers.innerHTML='<div class="timeout-note">คะแนนจะถูกบันทึกเฉพาะเมื่อกด “บันทึกคำตอบ” ก่อนเวลาหมดเท่านั้น</div>';
+  const more=idx<order.length-1;
+  e.nextBtn.textContent="▶ เริ่มข้อถัดไป";e.nextBtn.classList.toggle("hidden",!more);
+  e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
+  e.endGameBtn.parentElement.classList.toggle("final",!more);
+  e.resultOverlay.classList.remove("hidden-layer");
+}
+async function submit(auto=false){
+  if(ended)return;
+  if(seconds<=0){timeoutQuestion();return}
+  if(!started){toast("กด START ก่อน");return}
+  if(!selections.length){toast("กรุณาเลือกจุดในภาพก่อน");return}
+
+  // Create once and reuse on retry. Backend V11 makes it impossible to add
+  // the same Submit score twice.
+  if(!currentAttemptId){
+    const token=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():
+      `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    currentAttemptId=`ATT-CLIENT-${token}`;
+  }
+
+  ended=true;
+  clearInterval(timer);
+  e.submitBtn.disabled=true;
+  e.submitBtn.classList.add("loading");
+  e.submitBtn.textContent="กำลังตรวจ...";
+  action("กำลังบันทึกและตรวจคำตอบ...");
+  busy(true,"กำลังตรวจคำตอบ...","รอสักครู่ • คำตอบของคุณจะไม่หาย");
+  startStatusCycle();
+
+  try{
+    const payload={
+      action:"submit",
+      attemptId:currentAttemptId,
+      email:user.email,
+      questionId:q.questionId,
+      selections:selections.map(s=>({x:s.x,y:s.y,reason:s.reason||""})),
+      elapsedSec:Math.max(0,Number(q.timeLimitSec||45)-seconds)
+    };
+
+    let d;
+    try{
+      d=await api(payload);
+    }catch(firstErr){
+      // One quick retry only for transient failures. Same attemptId means safe.
+      const msg=String(firstErr?.message||firstErr||"");
+      if(/Backend ใช้เวลานาน|Network\/CORS|HTTP 5\d\d/i.test(msg)){
+        action("การเชื่อมต่อสะดุด • กำลังลองบันทึกซ้ำ...");
+        await new Promise(r=>setTimeout(r,700));
+        d=await api(payload);
+      }else{
+        throw firstErr;
+      }
+    }
+
+    clearInterval(statusTimer);
+    setBackend(true);
+
+    const earnedNow=Number(d.score?.total||0);
+    const cumulative=Number(d.totalCumulativeScore ?? d.totalBestScore ?? user?.totalBestScore ?? 0);
+    setTotal(cumulative);
+
+    if(user){
+      user.totalBestScore=cumulative;
+      saveUser(user);
+    }
+
+    e.liveQuestionScore.textContent=earnedNow;
+    reveal(d.reveal);
+    markSelectionResults(d.results);
+    renderResultVisual(d.reveal,d.results);
+
+    if(e.resultIcon)e.resultIcon.textContent="🏆";
+    const card=e.resultOverlay.querySelector(".result-modal");
+    if(card)card.classList.remove("timeout");
+
+    const sc=d.score||{};
+    e.resultScore.textContent=`${sc.total||0} / 100`;
+    e.resultLine.innerHTML=`พบจุดไม่สอดคล้อง <b>${sc.clickMatchedCount||0}</b> จาก <b>${sc.totalHotspots||q.hotspotCount}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/50 • เหตุผล <b>${sc.reason||0}</b>/50<div class="latest-total-score"><span>⭐ คะแนนสะสมล่าสุด</span><strong>${cumulative} คะแนน</strong></div>`;
+
+    const ans=(d.reveal||[]).map((h,i)=>`<div style="margin-top:8px"><b>${i+1}) ${esc(h.label||"")}</b><br>${esc(h.whyNotFoodSafety||"")}</div>`).join("");
+    e.resultAnswers.innerHTML=`<b>เฉลย</b>${ans||"<div>-</div>"}`;
+
+    const more=idx<order.length-1;
+    e.resultTitle.textContent=more?"สรุปผลข้อนี้":"สรุปผลข้อสุดท้าย";
+    e.nextBtn.textContent="▶ เริ่มข้อถัดไป";
+    e.nextBtn.classList.toggle("hidden",!more);
+    e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
+    e.endGameBtn.parentElement.classList.toggle("final",!more);
+
+    busy(false);
+    e.resultOverlay.classList.remove("hidden-layer");
+    action(more?"บันทึกสำเร็จ • กดเริ่มข้อถัดไปเมื่อพร้อม":"บันทึกสำเร็จ • กดจบเกมส์","ok");
+
+  }catch(err){
+    clearInterval(statusTimer);
+    ended=false;
+    e.submitBtn.disabled=false;
+    busy(false);
+
+    const msg=String(err?.message||err||"");
+    if(/HTTP 404/i.test(msg)){
+      setBackend(false);
+      action("Backend URL ใช้ไม่ได้ • คำตอบยังอยู่ ไม่ต้องตอบใหม่");
+      toast("Backend HTTP 404 • กรุณาใส่ Web app URL /exec ล่าสุด",5000);
+      await configureBackend();
+    }else{
+      action("ยังบันทึกไม่สำเร็จ • คำตอบยังอยู่ กดลองบันทึกอีกครั้ง");
+      toast(`ยังบันทึกไม่สำเร็จ: ${msg}`,4500);
+    }
+  }finally{
+    e.submitBtn.classList.remove("loading");
+    if(!ended){
+      e.submitBtn.textContent="🔄 ลองบันทึกอีกครั้ง";
+    }else{
+      e.submitBtn.textContent="💾 บันทึกคำตอบ";
+    }
+  }
+}
+function next(){
+  e.resultOverlay.classList.add("hidden-layer");
+  if(idx<order.length-1){idx++;loadQ(true)}else endGame()
+}
+function endGame(){
+  clearInterval(timer);ended=true;started=false;e.resultOverlay.classList.add("hidden-layer");
+  e.playCard.classList.add("game-paused","session-done");
+  e.gateIcon.textContent="🏆";e.gateKicker.textContent="SESSION COMPLETE";e.gateTitle.textContent="จบเกมส์แล้ว";
+  e.gateText.textContent=`คะแนนสะสมทั้งหมด ${Number(user?.totalBestScore||0)} คะแนน`;
+  e.startQuestionBtn.textContent="↻ เล่นใหม่ Season 1";e.gateLogoutBtn.classList.remove("hidden");e.questionGate.classList.remove("off");
+  e.startQuestionBtn.onclick=()=>{e.playCard.classList.remove("session-done");e.startQuestionBtn.onclick=startQuestion;startSession()};
+  action("จบเกมส์แล้ว • เลือกเล่นใหม่หรือออกจากระบบ","ok")
+}
+function modal(title,html){e.menuModalTitle.textContent=title;e.menuModalBody.innerHTML=html;e.menuOverlay.classList.remove("hidden-layer")}
+async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,30000),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${esc(r.totalBestScore||0)}</b></td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
+async function history(){busy(true,"กำลังโหลดประวัติ...");try{const d=await api({action:"progress",email:user.email}),rows=d.progress||[];if(user){user.totalBestScore=Number(d.totalBestScore||0);saveUser(user);setTotal(user.totalBestScore)}modal("🕘 ประวัติการเล่น",rows.length?`<table class="history-table"><thead><tr><th>ข้อ</th><th>Best</th><th>ครั้ง</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.questionId)}</td><td><b>${esc(r.bestScore||0)}</b></td><td>${esc(r.attempts||0)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีประวัติ</div>')}catch{toast("โหลดประวัติไม่สำเร็จ")}finally{busy(false)}}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
+function logout(){clearInterval(timer);clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");setBackend(false)}
+e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
+  e.questionImage.classList.remove("loading");
+  e.questionImage.dataset.retry="";
+};
+e.questionImage.onerror=()=>{
+  e.questionImage.classList.remove("loading");
+  const mq=masterQuestionById(q?.questionId);
+  if(mq && !e.questionImage.dataset.retry){
+    e.questionImage.dataset.retry="1";
+    e.questionImage.src=`./${mq.imageFile}?retry=${Date.now()}`;
+    return;
+  }
+  toast(`ไม่พบภาพ ${mq?.imageFile||q?.imageFile||""}`,4500);
+};
+localStorage.removeItem("fs_backend_url");
+["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
+const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
+</script>
 </body>
 </html>
