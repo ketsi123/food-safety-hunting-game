@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2fbff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
-  <link rel="stylesheet" href="game-v7.css?v=7.0.1">
+  <link rel="stylesheet" href="app.css?v=8.0.1">
 </head>
 <body>
 
@@ -105,6 +105,7 @@
             <p>คลิกเลือกจุดในภาพได้มากกว่า 1 จุด</p>
             <div class="compact-rule"><span>✓</span><div>ตำแหน่งถูก <b>50 คะแนน</b></div></div>
             <div class="compact-rule"><span>★</span><div>เหตุผลถูก <b>50 คะแนน</b></div></div>
+            <p class="save-rule">💾 ต้องกด <b>บันทึกคำตอบ</b> ก่อนหมดเวลา จึงจะบันทึกคะแนน</p>
             <div class="question-meta"><span id="questionIdTag">S1Q01</span><span id="hotspotCountTag">0 จุด</span></div>
           </aside>
         </div>
@@ -120,7 +121,7 @@
             <div class="action-buttons">
               <button id="undoBtn" class="btn ghost">↶ ลบจุดล่าสุด</button>
               <button id="clearBtn" class="btn ghost">↻ ล้างทั้งหมด</button>
-              <button id="submitBtn" class="btn submit">✈ ส่งคำตอบ</button>
+              <button id="submitBtn" class="btn submit">💾 บันทึกคำตอบ</button>
             </div>
           </div>
         </section>
@@ -132,7 +133,7 @@
 <div id="resultOverlay" class="overlay hidden-layer">
   <div class="modal-card result-modal">
     <button class="modal-x" id="resultHomeBtn">✕</button>
-    <div class="result-icon">🏆</div>
+    <div class="result-icon" id="resultIcon">🏆</div>
     <h2 id="resultTitle">สรุปผลข้อนี้</h2>
     <div id="resultScore" class="result-score">0 / 100</div>
     <div id="resultLine" class="result-line"></div>
@@ -157,7 +158,7 @@
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="config.js?v=7.0.1"></script>
-<script src="game-v7.js?v=7.0.1"></script>
+<script src="config.js?v=8.0.1"></script>
+<script src="app.js?v=8.0.1"></script>
 </body>
 </html>
