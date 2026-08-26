@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2fbff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
-  <link rel="stylesheet" href="game-v5.css?v=5.0.0">
+  <link rel="stylesheet" href="game-v7.css?v=7.0.1">
 </head>
 <body>
 
@@ -78,7 +78,17 @@
     <section class="content">
       <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : จากฟาร์ม</b><span id="stepText">ภาพที่ 1 / 2</span></div>
 
-      <section class="play-card">
+      <section class="play-card" id="playCard">
+        <div id="questionGate" class="question-gate">
+          <div class="gate-card">
+            <div id="gateIcon" class="gate-icon">🎯</div>
+            <div id="gateKicker" class="gate-kicker">ก่อนเริ่มข้อ 1</div>
+            <h2 id="gateTitle">Season 1 • ข้อ 1</h2>
+            <p id="gateText">กด START เพื่อเริ่มข้อ 1 • เวลาจะยังไม่เดินจนกว่าจะกด</p>
+            <button id="startQuestionBtn" class="gate-start">▶ START ข้อ 1</button>
+            <button id="gateLogoutBtn" class="gate-secondary hidden">ออกจากระบบ</button>
+          </div>
+        </div>
         <div class="play-grid">
           <div class="image-wrap">
             <img id="questionImage" alt="ภาพคำถาม Food Safety">
@@ -127,7 +137,10 @@
     <div id="resultScore" class="result-score">0 / 100</div>
     <div id="resultLine" class="result-line"></div>
     <div id="resultAnswers" class="result-answers"></div>
-    <button id="nextBtn" class="btn submit wide">ไปข้อถัดไป</button>
+    <div class="result-actions-v6">
+      <button id="endGameBtn" class="btn end-game">■ จบเกมส์</button>
+      <button id="nextBtn" class="btn submit">▶ เริ่มข้อถัดไป</button>
+    </div>
   </div>
 </div>
 
@@ -144,7 +157,7 @@
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="config.js?v=5.0.0"></script>
-<script src="game-v5.js?v=5.0.0"></script>
+<script src="config.js?v=7.0.1"></script>
+<script src="game-v7.js?v=7.0.1"></script>
 </body>
 </html>
