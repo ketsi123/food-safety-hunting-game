@@ -1,7 +1,7 @@
-(()=>{"use strict";console.info("Food Safety Hunting Game V14.4 CUMULATIVE EVERY SUBMIT");
-const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
+(()=>{"use strict";console.info("Food Safety Hunting Game V14.6 SCORE PERSIST + BACKEND FALLBACK");
+const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
-let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null;
+let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false;
 const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 function toast(msg,ms=2300){e.toast.textContent=msg;e.toast.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.toast.classList.remove("show"),ms)}
 function busy(on,title="กำลังประมวลผล...",sub="กรุณารอสักครู่"){e.busyOverlay.classList.toggle("hidden-layer",!on);e.busyText.textContent=title;e.busySub.textContent=sub;document.body.style.overflow=on?"hidden":""}
@@ -32,8 +32,13 @@ async function request(url,opt={}){
     throw err;
   }finally{clearTimeout(to)}
 }
+function backendCandidates(){
+  const stored=String(localStorage.getItem("fs_backend_url")||"").trim();
+  const configured=String(C.BACKEND_URL||"").trim();
+  return [...new Set([stored,configured].filter(Boolean))];
+}
 function backendUrl(){
-  return localStorage.getItem("fs_backend_url") || C.BACKEND_URL;
+  return backendCandidates()[0] || C.BACKEND_URL;
 }
 function setBackendUrl(url){
   const u=String(url||"").trim();
@@ -44,25 +49,120 @@ function setBackendUrl(url){
   localStorage.setItem("fs_backend_url",clean);
   return clean;
 }
-const api=p=>request(backendUrl(),{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p),timeoutMs:30000});
-function setBackend(ok){e.loginBackendDot.classList.toggle("online",ok);e.loginBackendDot.classList.toggle("offline",!ok);e.loginBackendText.textContent=ok?"ระบบพร้อมใช้งาน":"เชื่อมระบบไม่ได้";e.gameReadyDot.classList.toggle("online",ok);e.gameReadyDot.classList.toggle("offline",!ok)}
-async function ping(){try{const d=await request(`${backendUrl()}?action=ping&t=${Date.now()}`,{timeoutMs:30000});setBackend(true);e.loginBackendText.textContent=`ระบบพร้อมใช้งาน • ${d.version||"Backend"}`;return true}catch(err){setBackend(false);e.loginBackendText.textContent=`เชื่อมไม่ได้ • ${err.message}`;console.error("Backend ping failed",C.BACKEND_URL,err);return false}}
+async function backendPost(payload,timeoutMs=30000){
+  const urls=backendCandidates();
+  let lastErr=null;
+  for(const url of urls){
+    try{
+      const d=await request(url,{
+        method:"POST",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(payload),
+        timeoutMs
+      });
+      if(url!==C.BACKEND_URL)localStorage.setItem("fs_backend_url",url);
+      return d;
+    }catch(err){
+      lastErr=err;
+      if(/HTTP 404/i.test(String(err?.message||"")) && url===localStorage.getItem("fs_backend_url")){
+        localStorage.removeItem("fs_backend_url");
+      }
+    }
+  }
+  throw lastErr||Error("BACKEND_UNAVAILABLE");
+}
+async function backendGet(query,timeoutMs=30000){
+  const urls=backendCandidates();
+  let lastErr=null;
+  for(const base of urls){
+    try{
+      const sep=query.startsWith("?")?"":"?";
+      const d=await request(`${base}${sep}${query}`,{timeoutMs});
+      if(base!==C.BACKEND_URL)localStorage.setItem("fs_backend_url",base);
+      return d;
+    }catch(err){
+      lastErr=err;
+      if(/HTTP 404/i.test(String(err?.message||"")) && base===localStorage.getItem("fs_backend_url")){
+        localStorage.removeItem("fs_backend_url");
+      }
+    }
+  }
+  throw lastErr||Error("BACKEND_UNAVAILABLE");
+}
+const api=p=>backendPost(p,30000);
+function setBackend(ok){
+  backendOnline=!!ok;
+  e.loginBackendDot.classList.toggle("online",ok);
+  e.loginBackendDot.classList.toggle("offline",!ok);
+  e.loginBackendText.textContent=ok?"ระบบพร้อมใช้งาน":"เชื่อมระบบไม่ได้";
+  e.gameReadyDot.classList.toggle("online",ok);
+  e.gameReadyDot.classList.toggle("offline",!ok)
+}
+async function ping(){
+  try{
+    const d=await backendGet(`?action=ping&t=${Date.now()}`,20000);
+    setBackend(true);
+    e.loginBackendText.textContent=`ระบบพร้อมใช้งาน • ${d.version||"Backend"}`;
+    return true
+  }catch(err){
+    setBackend(false);
+    e.loginBackendText.textContent=`เชื่อมไม่ได้ • ${err.message}`;
+    console.error("Backend ping failed",err);
+    return false
+  }
+}
 async function configureBackend(){
   const current=backendUrl();
   const value=prompt("วาง Web app URL /exec ล่าสุดจาก Apps Script",current);
   if(!value)return false;
   try{
-    setBackendUrl(value);
-    const ok=await ping();
-    if(ok){toast("เชื่อม Backend สำเร็จ");return true}
-    toast("URL นี้ยังเชื่อมไม่ได้",4000);
+    const clean=setBackendUrl(value);
+    try{
+      const d=await request(`${clean}?action=ping&t=${Date.now()}`,{timeoutMs:20000});
+      if(d?.ok){
+        setBackend(true);
+        toast("เชื่อม Backend สำเร็จ");
+        return true;
+      }
+    }catch(err){
+      localStorage.removeItem("fs_backend_url");
+      throw err;
+    }
     return false;
-  }catch(err){toast(err.message,4500);return false}
+  }catch(err){
+    toast(`URL นี้ยังเชื่อมไม่ได้: ${err.message}`,4500);
+    return false
+  }
 }
 
 function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
-function saveUser(u){user=u;localStorage.setItem(S_USER,JSON.stringify(u));if(C.REMEMBER_EMAIL)localStorage.setItem(S_EMAIL,u.email)}
-function clearUser(){user=null;localStorage.removeItem(S_USER);localStorage.removeItem(S_EMAIL)}
+function allCachedUsers(){
+  try{
+    const v=JSON.parse(localStorage.getItem(S_USERS)||"{}");
+    return v&&typeof v==="object"?v:{};
+  }catch{return {}}
+}
+function cachedUserByEmail(email){
+  const key=String(email||"").trim().toLowerCase();
+  return allCachedUsers()[key]||null;
+}
+function saveUser(u){
+  user=u;
+  localStorage.setItem(S_USER,JSON.stringify(u));
+  if(u?.email){
+    const key=String(u.email).trim().toLowerCase();
+    const users=allCachedUsers();
+    users[key]={...(users[key]||{}),...u,email:key};
+    localStorage.setItem(S_USERS,JSON.stringify(users));
+    if(C.REMEMBER_EMAIL)localStorage.setItem(S_EMAIL,key);
+  }
+}
+function clearUser(){
+  // Logout clears only the active session.
+  // Per-email score cache is intentionally kept.
+  user=null;
+  localStorage.removeItem(S_USER);
+}
 function cachedQuestions(){try{const t=+localStorage.getItem(S_QT)||0;if(Date.now()-t>600000)return null;const a=JSON.parse(localStorage.getItem(S_Q)||"null");return Array.isArray(a)?a:null}catch{return null}}
 function imagePath(x){return `${C.QUESTION_IMAGE_DIR||""}${x.imageFile}?v=${encodeURIComponent(C.ASSET_VERSION||"5")}`}
 function preload(items){(items||[]).forEach(x=>{const im=new Image();im.decoding="async";im.src=imagePath(x)})}
@@ -73,7 +173,7 @@ async function loadQuestions(force=false){
     if(questionsPromise)return questionsPromise;
   }
   questionsPromise=(async()=>{
-    const d=await request(`${backendUrl()}?action=questions&t=${Date.now()}`,{timeoutMs:60000});
+    const d=await backendGet(`?action=questions&t=${Date.now()}`,60000);
     const enabled=new Set(C.ENABLED_QUESTION_IDS);
     questions=(d.questions||[]).filter(x=>enabled.has(x.questionId));
     if(!questions.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
@@ -97,7 +197,7 @@ async function login(){
     .replace(/[._-]+/g," ")
     .replace(/[a-z]/g,c=>c.toUpperCase());
 
-  const previous=(()=>{try{return JSON.parse(localStorage.getItem(S_USER)||"null")}catch{return null}})();
+  const previous=cachedUserByEmail(email)||(()=>{try{return JSON.parse(localStorage.getItem(S_USER)||"null")}catch{return null}})();
   user={
     userId:previous?.userId||"",
     email,
@@ -133,7 +233,7 @@ async function login(){
       setBackend(true);
 
       try{
-        const qData=await request(`${backendUrl()}?action=questions&t=${Date.now()}`,{timeoutMs:30000});
+        const qData=await backendGet(`?action=questions&t=${Date.now()}`,30000);
         const enabled=new Set(C.ENABLED_QUESTION_IDS);
         const latest=(qData.questions||[]).filter(x=>enabled.has(x.questionId));
         if(latest.length){
@@ -394,9 +494,13 @@ function endGame(){
   action("จบเกมส์แล้ว • เลือกเล่นใหม่หรือออกจากระบบ","ok")
 }
 function modal(title,html){e.menuModalTitle.textContent=title;e.menuModalBody.innerHTML=html;e.menuOverlay.classList.remove("hidden-layer")}
-async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await request(`${C.BACKEND_URL}?action=leaderboard&limit=20&t=${Date.now()}`),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${esc(r.totalBestScore||0)}</b></td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
+async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,30000),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${esc(r.totalBestScore||0)}</b></td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
 async function history(){busy(true,"กำลังโหลดประวัติ...");try{const d=await api({action:"progress",email:user.email}),rows=d.progress||[];if(user){user.totalBestScore=Number(d.totalBestScore||0);saveUser(user);setTotal(user.totalBestScore)}modal("🕘 ประวัติการเล่น",rows.length?`<table class="history-table"><thead><tr><th>ข้อ</th><th>Best</th><th>ครั้ง</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.questionId)}</td><td><b>${esc(r.bestScore||0)}</b></td><td>${esc(r.attempts||0)}</td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีประวัติ</div>')}catch{toast("โหลดประวัติไม่สำเร็จ")}finally{busy(false)}}
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
-function logout(){clearInterval(timer);clearUser();e.emailInput.value="";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden")}
+function logout(){clearInterval(timer);clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");setBackend(false)}
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>e.questionImage.classList.remove("loading");e.questionImage.onerror=()=>{e.questionImage.classList.remove("loading");toast(`ไม่พบภาพ ${q?.imageFile||""}`)};
+const legacyBackend=localStorage.getItem("fs_backend_url");
+if(legacyBackend && !/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec$/i.test(legacyBackend)){
+  localStorage.removeItem("fs_backend_url");
+}
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
