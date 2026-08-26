@@ -1,11 +1,11 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.1-GAME-THEME-20260826-1630">
+<meta name="fs-build" content="V16.3-MOCKUP-CLOSER-20260826-1735">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<!-- V16.1-GAME-THEME-20260826-1630 -->
+<!-- V16.3-MOCKUP-CLOSER-20260826-1735 -->
 <meta name="fs-build" content="V15.3-HISTORY-DATE-SCORE-20260826">
 <!-- Food Safety Hunting Game V15.3 HISTORY DATE SCORE -->
   <meta charset="utf-8">
@@ -1191,9 +1191,95 @@ body:before{
   .game-logo-v16{width:320px}
 }
 @media(max-width:720px){
-  .game-logo-v16{width:280px;max-height:72px}
+  .game-logo-v16{width:250px;max-height:64px}
   .side-actions{grid-template-columns:1fr 1fr!important}
   .side-actions .game-submit{grid-column:1/-1!important}
+}
+
+/* ===== V16.3 mockup closer refinement ===== */
+.header-inner{
+  min-height:96px!important;
+  grid-template-columns:minmax(270px,330px) auto minmax(210px,250px)!important;
+  gap:14px!important;
+  padding:10px 18px!important;
+}
+.game-brand-v16{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-start!important;
+}
+.game-logo-v16{
+  width:min(300px,100%)!important;
+  max-height:76px!important;
+  object-fit:contain!important;
+  object-position:left center!important;
+  border-radius:16px!important;
+}
+.header-stats{padding:6px 8px!important;border-radius:17px!important}
+.stat{min-width:110px!important;padding:7px 14px!important}
+.stat b{font-size:19px!important}
+.user-chip{padding:8px 10px!important;min-width:185px!important}
+.avatar{width:40px!important;height:40px!important}
+.user-copy b{font-size:12px!important}
+
+.workspace{
+  max-width:1480px!important;
+  grid-template-columns:214px minmax(0,1fr)!important;
+  gap:18px!important;
+  align-items:start!important;
+}
+.sidebar{width:214px!important;gap:10px!important;align-self:start!important}
+.panel{border-radius:20px!important}
+.progress-card,.menu-card{padding:12px!important}
+.progress-card{min-height:auto!important}
+.panel-title{font-size:14px!important;margin-bottom:8px!important}
+.progress-card>b{font-size:12px!important}
+.progress-track{height:8px!important;margin:10px 0 7px!important}
+.progress-text{font-size:11px!important}
+.score-total{margin-top:12px!important;padding-top:12px!important}
+.score-total>span{font-size:26px!important}
+.score-total b{font-size:14px!important}
+.menu-card{padding:10px!important}
+.menu-card .panel-title{padding:6px 11px!important;margin:0 0 6px!important;font-size:13px!important}
+.menu-card hr{margin:12px 3px 8px!important}
+.nav-item{
+  min-height:48px!important;
+  padding:6px 10px!important;
+  border-radius:15px!important;
+  grid-template-columns:30px 1fr auto!important;
+  gap:8px!important;
+  margin-top:6px!important;
+}
+.nav-item i{font-size:20px!important}
+.nav-item span b{font-size:12px!important;line-height:1.15!important}
+.nav-item span small{font-size:9px!important;line-height:1.15!important;margin-top:1px!important}
+.nav-item em{font-size:13px!important}
+
+.content{min-width:0!important}
+.season-bar{min-height:54px!important;padding:0 16px!important}
+.season-bar b{font-size:16px!important}
+.play-card{padding:16px!important}
+.play-grid,.side-reason-layout{grid-template-columns:minmax(0,1.78fr) minmax(290px,.68fr)!important;gap:14px!important}
+.question-strip-v12{padding:14px!important}
+.image-wrap{border-radius:20px!important}
+.reason-side-panel{max-width:340px!important;justify-self:end!important}
+.side-reason-head{padding:11px 12px!important}
+.side-submit-area{padding:10px!important}
+.side-actions{grid-template-columns:.9fr 1fr 1.32fr!important;gap:8px!important}
+.side-actions .btn{min-height:56px!important;font-size:14px!important;border-radius:16px!important}
+.btn-game-icon{font-size:22px!important}
+.side-submit-area:before{right:10px!important;top:-20px!important;width:38px!important;height:38px!important;font-size:20px!important}
+
+@media(max-width:1280px){
+  .header-inner{grid-template-columns:minmax(240px,290px) auto minmax(185px,230px)!important}
+  .workspace{grid-template-columns:200px minmax(0,1fr)!important}
+  .sidebar{width:200px!important}
+  .game-logo-v16{width:min(270px,100%)!important;max-height:70px!important}
+}
+@media(max-width:1100px){
+  .workspace{grid-template-columns:1fr!important}
+  .sidebar{width:auto!important;display:grid!important;grid-template-columns:1fr!important}
+  .header-inner{grid-template-columns:1fr auto!important}
 }
 
 </style>
@@ -1401,7 +1487,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16 GAME THEME");
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.3 MOCKUP CLOSER");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -1914,5 +2000,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.1-GAME-THEME-20260826-1630</div></body>
+<div id="fsBuildMarker">V16.3-MOCKUP-CLOSER-20260826-1735</div></body>
 </html>
