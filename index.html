@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2fbff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
-  <link rel="stylesheet" href="app.css?v=8.0.1">
+  <link rel="stylesheet" href="app.css?v=10.0.0">
 </head>
 <body>
 
@@ -89,7 +89,7 @@
             <button id="gateLogoutBtn" class="gate-secondary hidden">ออกจากระบบ</button>
           </div>
         </div>
-        <div class="play-grid">
+        <div class="play-grid side-reason-layout">
           <div class="image-wrap">
             <img id="questionImage" alt="ภาพคำถาม Food Safety">
             <div id="clickLayer" class="click-layer"></div>
@@ -98,33 +98,39 @@
             <div class="image-tip">👆 คลิก/แตะเพื่อเลือกจุด</div>
           </div>
 
-          <aside class="question-panel">
-            <div class="question-kicker">คำถาม</div>
-            <h2 id="questionText">จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?</h2>
-            <div class="divider"></div>
-            <p>คลิกเลือกจุดในภาพได้มากกว่า 1 จุด</p>
-            <div class="compact-rule"><span>✓</span><div>ตำแหน่งถูก <b>50 คะแนน</b></div></div>
-            <div class="compact-rule"><span>★</span><div>เหตุผลถูก <b>50 คะแนน</b></div></div>
-            <p class="save-rule">💾 ต้องกด <b>บันทึกคำตอบ</b> ก่อนหมดเวลา จึงจะบันทึกคะแนน</p>
-            <div class="question-meta"><span id="questionIdTag">S1Q01</span><span id="hotspotCountTag">0 จุด</span></div>
+          <aside class="right-game-panel">
+            <section class="question-panel compact-question-panel">
+              <div class="question-topline">
+                <div class="question-kicker">คำถาม</div>
+                <div class="question-meta"><span id="questionIdTag">S1Q01</span><span id="hotspotCountTag">0 จุด</span></div>
+              </div>
+              <h2 id="questionText">จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?</h2>
+              <div class="score-rules-inline">
+                <span>✓ ตำแหน่ง <b>50</b></span>
+                <span>★ เหตุผล <b>50</b></span>
+              </div>
+              <p class="save-rule">💾 กด <b>บันทึกคำตอบ</b> ก่อนหมดเวลา</p>
+            </section>
+
+            <section class="reason-side-panel">
+              <div class="reason-head side-reason-head">
+                <div><b>เหตุผลรายจุด</b><small>พิมพ์สั้น ๆ ตามหมายเลขที่เลือก</small></div>
+                <div class="question-score"><small>คะแนนข้อนี้</small><b id="liveQuestionScore">--</b></div>
+              </div>
+
+              <div id="reasonList" class="reason-list reason-scroll"></div>
+
+              <div class="side-submit-area">
+                <div id="actionStatus" class="action-status"><i class="mini-dot"></i><span>พร้อมเลือกจุดในภาพ</span></div>
+                <div class="action-buttons side-actions">
+                  <button id="undoBtn" class="btn ghost">↶ ลบล่าสุด</button>
+                  <button id="clearBtn" class="btn ghost">↻ ล้างทั้งหมด</button>
+                  <button id="submitBtn" class="btn submit">💾 บันทึกคำตอบ</button>
+                </div>
+              </div>
+            </section>
           </aside>
         </div>
-
-        <section class="reason-box">
-          <div class="reason-head">
-            <div><b>ใส่เหตุผลสั้น ๆ</b><small>อธิบายว่าจุดที่เลือกเสี่ยงหรือไม่ถูกหลักอย่างไร</small></div>
-            <div class="question-score"><small>คะแนนในข้อนี้</small><b id="liveQuestionScore">--</b></div>
-          </div>
-          <div id="reasonList" class="reason-list"></div>
-          <div class="submit-row">
-            <div id="actionStatus" class="action-status"><i class="mini-dot"></i><span>พร้อมเลือกจุดในภาพ</span></div>
-            <div class="action-buttons">
-              <button id="undoBtn" class="btn ghost">↶ ลบจุดล่าสุด</button>
-              <button id="clearBtn" class="btn ghost">↻ ล้างทั้งหมด</button>
-              <button id="submitBtn" class="btn submit">💾 บันทึกคำตอบ</button>
-            </div>
-          </div>
-        </section>
       </section>
     </section>
   </main>
@@ -137,6 +143,19 @@
     <h2 id="resultTitle">สรุปผลข้อนี้</h2>
     <div id="resultScore" class="result-score">0 / 100</div>
     <div id="resultLine" class="result-line"></div>
+    <div id="resultVisual" class="result-visual hidden">
+      <div class="result-visual-title">ภาพเฉลย</div>
+      <div class="result-visual-wrap">
+        <img id="resultVisualImage" alt="ภาพเฉลย Food Safety">
+        <div id="resultVisualReveal" class="result-visual-layer"></div>
+        <div id="resultVisualMarkers" class="result-visual-layer"></div>
+      </div>
+      <div class="result-legend">
+        <span><i class="legend-dot correct"></i> จุดที่เลือกถูก</span>
+        <span><i class="legend-dot wrong"></i> จุดที่เลือกผิด</span>
+        <span><i class="legend-ring"></i> จุดเฉลย</span>
+      </div>
+    </div>
     <div id="resultAnswers" class="result-answers"></div>
     <div class="result-actions-v6">
       <button id="endGameBtn" class="btn end-game">■ จบเกมส์</button>
@@ -158,7 +177,7 @@
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="config.js?v=8.0.1"></script>
-<script src="app.js?v=8.0.1"></script>
+<script src="config.js?v=10.0.0"></script>
+<script src="app.js?v=10.0.0"></script>
 </body>
 </html>

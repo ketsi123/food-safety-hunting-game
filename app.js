@@ -1,6 +1,6 @@
-(()=>{"use strict";console.info("Food Safety Hunting Game V8 SAVE BEFORE TIMEOUT");
+(()=>{"use strict";console.info("Food Safety Hunting Game V9 ANSWER VISUAL");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
-const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null;
 const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 function toast(msg,ms=2300){e.toast.textContent=msg;e.toast.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.toast.classList.remove("show"),ms)}
@@ -33,6 +33,7 @@ function loadQ(startImmediately=false){
   e.markerLayer.innerHTML="";e.revealLayer.innerHTML="";e.clickLayer.style.pointerEvents="auto";if(e.resultIcon)e.resultIcon.textContent="🏆";const resultCard=e.resultOverlay.querySelector(".result-modal");if(resultCard)resultCard.classList.remove("timeout");
   e.reasonList.innerHTML='<div class="empty-reason">กด START ก่อนเริ่มข้อ แล้วจึงเลือกจุดในภาพ</div>';
   e.resultOverlay.classList.add("hidden-layer");
+  if(e.resultVisual)e.resultVisual.classList.add("hidden");
   e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.textContent="💾 บันทึกคำตอบ";e.liveQuestionScore.textContent="--";
   q=questions[order[idx]];seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
   e.seasonText.textContent=`🌱 SEASON ${q.season||1} : จากฟาร์ม`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;
@@ -61,6 +62,27 @@ function renderMarkers(){e.markerLayer.innerHTML="";selections.forEach((s,i)=>{c
 function markSelectionResults(results){const markers=[...e.markerLayer.querySelectorAll(".marker")];markers.forEach((m,i)=>{m.classList.remove("correct","wrong");const r=(results||[])[i];if(!r)return;m.classList.add(r.pointMatched?"correct":"wrong")})}
 function renderReasons(){if(!selections.length){e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';return}e.reasonList.innerHTML="";selections.forEach((s,i)=>{const row=document.createElement("div");row.className="reason-row";row.innerHTML=`<div class="reason-number">${i+1}</div><div><textarea class="reason-input" placeholder="เหตุผลของจุดที่ ${i+1}"></textarea><div class="reason-note">อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร</div></div>`;const ta=row.querySelector("textarea");ta.value=s.reason||"";ta.oninput=()=>selections[i].reason=ta.value;e.reasonList.appendChild(row)})}
 function reveal(list){e.revealLayer.innerHTML="";(list||[]).forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})}
+function renderResultVisual(revealList,results){
+  if(!e.resultVisual||!e.resultVisualImage)return;
+  e.resultVisual.classList.remove("hidden");
+  e.resultVisualImage.src=imagePath(q);
+  e.resultVisualReveal.innerHTML="";
+  e.resultVisualMarkers.innerHTML="";
+  (revealList||[]).forEach(h=>{
+    const ring=document.createElement("div");
+    ring.className="answer-ring";
+    ring.style.left=h.x+"%";ring.style.top=h.y+"%";
+    ring.style.width=h.rx*2+"%";ring.style.height=h.ry*2+"%";
+    e.resultVisualReveal.appendChild(ring);
+  });
+  selections.forEach((sel,i)=>{
+    const r=(results||[])[i];
+    const m=document.createElement("div");
+    m.className=`answer-marker ${r?.pointMatched?"correct":"wrong"}`;
+    m.style.left=sel.x+"%";m.style.top=sel.y+"%";m.textContent=i+1;
+    e.resultVisualMarkers.appendChild(m);
+  });
+}
 function startStatusCycle(){const msgs=["กำลังตรวจตำแหน่ง...","กำลังตรวจเหตุผล...","กำลังบันทึกคะแนน..."];let i=0;e.busyText.textContent=msgs[0];clearInterval(statusTimer);statusTimer=setInterval(()=>{i=(i+1)%msgs.length;e.busyText.textContent=msgs[i]},900)}
 function timeoutQuestion(){
   if(ended)return;
@@ -73,14 +95,14 @@ function timeoutQuestion(){
   e.resultTitle.textContent="หมดเวลา";
   e.resultScore.textContent="ไม่ได้บันทึกคะแนน";
   e.resultLine.innerHTML='คุณยังไม่ได้กด <b>บันทึกคำตอบ</b> ก่อนหมดเวลา<br>จึงไม่มีการส่งคำตอบไป Google Sheet และข้อนี้ไม่ได้คะแนน';
-  e.resultAnswers.innerHTML='<div class="timeout-note">คะแนนจะถูกบันทึกเฉพาะเมื่อกด “บันทึกคำตอบ” ก่อนเวลาหมดเท่านั้น</div>';
+  if(e.resultVisual)e.resultVisual.classList.add("hidden");e.resultAnswers.innerHTML='<div class="timeout-note">คะแนนจะถูกบันทึกเฉพาะเมื่อกด “บันทึกคำตอบ” ก่อนเวลาหมดเท่านั้น</div>';
   const more=idx<order.length-1;
   e.nextBtn.textContent="▶ เริ่มข้อถัดไป";e.nextBtn.classList.toggle("hidden",!more);
   e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
   e.endGameBtn.parentElement.classList.toggle("final",!more);
   e.resultOverlay.classList.remove("hidden-layer");
 }
-async function submit(auto=false){if(ended)return;if(seconds<=0){timeoutQuestion();return}if(!started){toast("กด START ก่อน");return;}if(!selections.length){toast("กรุณาเลือกจุดในภาพก่อน");return}ended=true;clearInterval(timer);e.submitBtn.disabled=true;e.submitBtn.classList.add("loading");e.submitBtn.textContent="กำลังตรวจ...";action("กำลังส่งคำตอบไปตรวจ...");busy(true,"กำลังตรวจตำแหน่ง...","ระบบกำลังประมวลผลคำตอบ");startStatusCycle();try{const d=await api({action:"submit",email:user.email,questionId:q.questionId,selections:selections.map(s=>({x:s.x,y:s.y,reason:s.reason||""})),elapsedSec:Math.max(0,Number(q.timeLimitSec||45)-seconds)});clearInterval(statusTimer);setTotal(d.totalBestScore||0);e.liveQuestionScore.textContent=d.score?.total||0;reveal(d.reveal);markSelectionResults(d.results);if(e.resultIcon)e.resultIcon.textContent="🏆";const card=e.resultOverlay.querySelector(".result-modal");if(card)card.classList.remove("timeout");const sc=d.score||{};e.resultScore.textContent=`${sc.total||0} / 100`;e.resultLine.innerHTML=`พบจุดไม่สอดคล้อง <b>${sc.clickMatchedCount||0}</b> จาก <b>${sc.totalHotspots||q.hotspotCount}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/50 • เหตุผล <b>${sc.reason||0}</b>/50`;const ans=(d.reveal||[]).map((h,i)=>`<div style="margin-top:8px"><b>${i+1}) ${esc(h.label||"")}</b><br>${esc(h.whyNotFoodSafety||"")}</div>`).join("");e.resultAnswers.innerHTML=`<b>เฉลย</b>${ans||"<div>-</div>"}`;const more=idx<order.length-1;
+async function submit(auto=false){if(ended)return;if(seconds<=0){timeoutQuestion();return}if(!started){toast("กด START ก่อน");return;}if(!selections.length){toast("กรุณาเลือกจุดในภาพก่อน");return}ended=true;clearInterval(timer);e.submitBtn.disabled=true;e.submitBtn.classList.add("loading");e.submitBtn.textContent="กำลังตรวจ...";action("กำลังส่งคำตอบไปตรวจ...");busy(true,"กำลังตรวจตำแหน่ง...","ระบบกำลังประมวลผลคำตอบ");startStatusCycle();try{const d=await api({action:"submit",email:user.email,questionId:q.questionId,selections:selections.map(s=>({x:s.x,y:s.y,reason:s.reason||""})),elapsedSec:Math.max(0,Number(q.timeLimitSec||45)-seconds)});clearInterval(statusTimer);setTotal(d.totalBestScore||0);e.liveQuestionScore.textContent=d.score?.total||0;reveal(d.reveal);markSelectionResults(d.results);renderResultVisual(d.reveal,d.results);if(e.resultIcon)e.resultIcon.textContent="🏆";const card=e.resultOverlay.querySelector(".result-modal");if(card)card.classList.remove("timeout");const sc=d.score||{};e.resultScore.textContent=`${sc.total||0} / 100`;e.resultLine.innerHTML=`พบจุดไม่สอดคล้อง <b>${sc.clickMatchedCount||0}</b> จาก <b>${sc.totalHotspots||q.hotspotCount}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/50 • เหตุผล <b>${sc.reason||0}</b>/50`;const ans=(d.reveal||[]).map((h,i)=>`<div style="margin-top:8px"><b>${i+1}) ${esc(h.label||"")}</b><br>${esc(h.whyNotFoodSafety||"")}</div>`).join("");e.resultAnswers.innerHTML=`<b>เฉลย</b>${ans||"<div>-</div>"}`;const more=idx<order.length-1;
       e.resultTitle.textContent=more?"สรุปผลข้อนี้":"สรุปผลข้อสุดท้าย";
       e.nextBtn.textContent="▶ เริ่มข้อถัดไป";
       e.nextBtn.classList.toggle("hidden",!more);
