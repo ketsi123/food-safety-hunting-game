@@ -32,9 +32,34 @@ async function request(url,opt={}){
     throw err;
   }finally{clearTimeout(to)}
 }
-const api=p=>request(C.BACKEND_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p),timeoutMs:60000});
+function backendUrl(){
+  return localStorage.getItem("fs_backend_url") || C.BACKEND_URL;
+}
+function setBackendUrl(url){
+  const u=String(url||"").trim();
+  if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/i.test(u)){
+    throw Error("URL ต้องเป็น Google Apps Script Web app ที่ลงท้าย /exec");
+  }
+  const clean=u.split("?")[0];
+  localStorage.setItem("fs_backend_url",clean);
+  return clean;
+}
+const api=p=>request(backendUrl(),{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(p),timeoutMs:30000});
 function setBackend(ok){e.loginBackendDot.classList.toggle("online",ok);e.loginBackendDot.classList.toggle("offline",!ok);e.loginBackendText.textContent=ok?"ระบบพร้อมใช้งาน":"เชื่อมระบบไม่ได้";e.gameReadyDot.classList.toggle("online",ok);e.gameReadyDot.classList.toggle("offline",!ok)}
-async function ping(){try{const d=await request(`${C.BACKEND_URL}?action=ping&t=${Date.now()}`,{timeoutMs:30000});setBackend(true);e.loginBackendText.textContent=`ระบบพร้อมใช้งาน • ${d.version||"Backend"}`;return true}catch(err){setBackend(false);e.loginBackendText.textContent=`เชื่อมไม่ได้ • ${err.message}`;console.error("Backend ping failed",C.BACKEND_URL,err);return false}}
+async function ping(){try{const d=await request(`${backendUrl()}?action=ping&t=${Date.now()}`,{timeoutMs:30000});setBackend(true);e.loginBackendText.textContent=`ระบบพร้อมใช้งาน • ${d.version||"Backend"}`;return true}catch(err){setBackend(false);e.loginBackendText.textContent=`เชื่อมไม่ได้ • ${err.message}`;console.error("Backend ping failed",C.BACKEND_URL,err);return false}}
+async function configureBackend(){
+  const current=backendUrl();
+  const value=prompt("วาง Web app URL /exec ล่าสุดจาก Apps Script",current);
+  if(!value)return false;
+  try{
+    setBackendUrl(value);
+    const ok=await ping();
+    if(ok){toast("เชื่อม Backend สำเร็จ");return true}
+    toast("URL นี้ยังเชื่อมไม่ได้",4000);
+    return false;
+  }catch(err){toast(err.message,4500);return false}
+}
+
 function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
 function saveUser(u){user=u;localStorage.setItem(S_USER,JSON.stringify(u));if(C.REMEMBER_EMAIL)localStorage.setItem(S_EMAIL,u.email)}
 function clearUser(){user=null;localStorage.removeItem(S_USER);localStorage.removeItem(S_EMAIL)}
@@ -48,7 +73,7 @@ async function loadQuestions(force=false){
     if(questionsPromise)return questionsPromise;
   }
   questionsPromise=(async()=>{
-    const d=await request(`${C.BACKEND_URL}?action=questions&t=${Date.now()}`,{timeoutMs:60000});
+    const d=await request(`${backendUrl()}?action=questions&t=${Date.now()}`,{timeoutMs:60000});
     const enabled=new Set(C.ENABLED_QUESTION_IDS);
     questions=(d.questions||[]).filter(x=>enabled.has(x.questionId));
     if(!questions.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
@@ -108,7 +133,7 @@ async function login(){
       setBackend(true);
 
       try{
-        const qData=await request(`${C.BACKEND_URL}?action=questions&t=${Date.now()}`,{timeoutMs:30000});
+        const qData=await request(`${backendUrl()}?action=questions&t=${Date.now()}`,{timeoutMs:30000});
         const enabled=new Set(C.ENABLED_QUESTION_IDS);
         const latest=(qData.questions||[]).filter(x=>enabled.has(x.questionId));
         if(latest.length){
@@ -136,7 +161,7 @@ function startSession(){
   idx=0;loadQ(false)
 }
 function loadQ(startImmediately=false){
-  clearInterval(timer);selections=[];ended=false;started=false;
+  clearInterval(timer);selections=[];ended=false;started=false;currentAttemptId=null;
   e.markerLayer.innerHTML="";e.revealLayer.innerHTML="";e.clickLayer.style.pointerEvents="auto";if(e.resultIcon)e.resultIcon.textContent="🏆";const resultCard=e.resultOverlay.querySelector(".result-modal");if(resultCard)resultCard.classList.remove("timeout");
   e.reasonList.innerHTML='<div class="empty-reason">กด START ก่อนเริ่มข้อ แล้วจึงเลือกจุดในภาพ</div>';
   e.resultOverlay.classList.add("hidden-layer");
@@ -157,11 +182,45 @@ function loadQ(startImmediately=false){
   if(startImmediately) startQuestion();
   window.scrollTo({top:0,behavior:"smooth"})
 }
-function startQuestion(){
-  if(started||ended)return;started=true;e.playCard.classList.remove("game-paused");e.questionGate.classList.add("off");e.submitBtn.disabled=false;
+async function startQuestion(){
+  if(started||ended)return;
+
+  const normalText=(idx+1)===1?"▶ START ข้อ 1":"▶ START ข้อนี้";
+  e.startQuestionBtn.disabled=true;
+  e.startQuestionBtn.textContent="กำลังตรวจระบบ...";
+
+  let ok=backendOnline;
+  if(!ok) ok=await ping();
+
+  if(!ok){
+    action("Backend ไม่พร้อม • ต้องเชื่อมก่อนเริ่มข้อ");
+    const configured=await configureBackend();
+    if(!configured){
+      e.startQuestionBtn.disabled=false;
+      e.startQuestionBtn.textContent=normalText;
+      e.gateText.textContent="Backend ยังไม่พร้อม • กรุณาใช้ Web app URL /exec ล่าสุดก่อนเริ่ม";
+      return;
+    }
+  }
+
+  e.startQuestionBtn.disabled=false;
+  e.startQuestionBtn.textContent=normalText;
+
+  started=true;
+  e.playCard.classList.remove("game-paused");
+  e.questionGate.classList.add("off");
+  e.submitBtn.disabled=false;
   e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';
   action(`เริ่มแล้ว • เลือกได้สูงสุด ${q.hotspotCount} จุด`,"ok");
-  clearInterval(timer);timer=setInterval(()=>{seconds--;tick();if(seconds<=0){clearInterval(timer);timeoutQuestion()}},1000)
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    seconds--;
+    tick();
+    if(seconds<=0){
+      clearInterval(timer);
+      timeoutQuestion();
+    }
+  },1000);
 }
 function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/60))).padStart(2,"0")}:${String(Math.max(0,seconds%60)).padStart(2,"0")}`;e.timerText.style.color=seconds<=10?"#ffd057":""}
 function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=Number(q.hotspotCount||1);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reason:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
@@ -209,22 +268,118 @@ function timeoutQuestion(){
   e.endGameBtn.parentElement.classList.toggle("final",!more);
   e.resultOverlay.classList.remove("hidden-layer");
 }
-async function submit(auto=false){if(ended)return;if(seconds<=0){timeoutQuestion();return}if(!started){toast("กด START ก่อน");return;}if(!selections.length){toast("กรุณาเลือกจุดในภาพก่อน");return}ended=true;clearInterval(timer);e.submitBtn.disabled=true;e.submitBtn.classList.add("loading");e.submitBtn.textContent="กำลังตรวจ...";action("กำลังส่งคำตอบไปตรวจ...");busy(true,"กำลังตรวจตำแหน่ง...","ระบบกำลังประมวลผลคำตอบ");startStatusCycle();try{const d=await api({action:"submit",email:user.email,questionId:q.questionId,selections:selections.map(s=>({x:s.x,y:s.y,reason:s.reason||""})),elapsedSec:Math.max(0,Number(q.timeLimitSec||45)-seconds)});clearInterval(statusTimer);
-      const earnedNow=Number(d.score?.total||0);
-      const cumulative=Number(d.totalCumulativeScore ?? d.totalBestScore ?? user?.totalBestScore ?? 0);
-      setTotal(cumulative);
-      if(user){
-        user.totalBestScore=cumulative;
-        saveUser(user);
+async function submit(auto=false){
+  if(ended)return;
+  if(seconds<=0){timeoutQuestion();return}
+  if(!started){toast("กด START ก่อน");return}
+  if(!selections.length){toast("กรุณาเลือกจุดในภาพก่อน");return}
+
+  // Create once and reuse on retry. Backend V11 makes it impossible to add
+  // the same Submit score twice.
+  if(!currentAttemptId){
+    const token=(window.crypto&&crypto.randomUUID)?crypto.randomUUID():
+      `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    currentAttemptId=`ATT-CLIENT-${token}`;
+  }
+
+  ended=true;
+  clearInterval(timer);
+  e.submitBtn.disabled=true;
+  e.submitBtn.classList.add("loading");
+  e.submitBtn.textContent="กำลังตรวจ...";
+  action("กำลังบันทึกและตรวจคำตอบ...");
+  busy(true,"กำลังตรวจคำตอบ...","รอสักครู่ • คำตอบของคุณจะไม่หาย");
+  startStatusCycle();
+
+  try{
+    const payload={
+      action:"submit",
+      attemptId:currentAttemptId,
+      email:user.email,
+      questionId:q.questionId,
+      selections:selections.map(s=>({x:s.x,y:s.y,reason:s.reason||""})),
+      elapsedSec:Math.max(0,Number(q.timeLimitSec||45)-seconds)
+    };
+
+    let d;
+    try{
+      d=await api(payload);
+    }catch(firstErr){
+      // One quick retry only for transient failures. Same attemptId means safe.
+      const msg=String(firstErr?.message||firstErr||"");
+      if(/Backend ใช้เวลานาน|Network\/CORS|HTTP 5\d\d/i.test(msg)){
+        action("การเชื่อมต่อสะดุด • กำลังลองบันทึกซ้ำ...");
+        await new Promise(r=>setTimeout(r,700));
+        d=await api(payload);
+      }else{
+        throw firstErr;
       }
-      e.liveQuestionScore.textContent=earnedNow;reveal(d.reveal);markSelectionResults(d.results);renderResultVisual(d.reveal,d.results);if(e.resultIcon)e.resultIcon.textContent="🏆";const card=e.resultOverlay.querySelector(".result-modal");if(card)card.classList.remove("timeout");const sc=d.score||{};e.resultScore.textContent=`${sc.total||0} / 100`;e.resultLine.innerHTML=`พบจุดไม่สอดคล้อง <b>${sc.clickMatchedCount||0}</b> จาก <b>${sc.totalHotspots||q.hotspotCount}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/50 • เหตุผล <b>${sc.reason||0}</b>/50<div class="latest-total-score"><span>⭐ คะแนนสะสมล่าสุด</span><strong>${Number(d.totalCumulativeScore ?? d.totalBestScore ?? 0)} คะแนน</strong></div>`;const ans=(d.reveal||[]).map((h,i)=>`<div style="margin-top:8px"><b>${i+1}) ${esc(h.label||"")}</b><br>${esc(h.whyNotFoodSafety||"")}</div>`).join("");e.resultAnswers.innerHTML=`<b>เฉลย</b>${ans||"<div>-</div>"}`;const more=idx<order.length-1;
-      e.resultTitle.textContent=more?"สรุปผลข้อนี้":"สรุปผลข้อสุดท้าย";
-      e.nextBtn.textContent="▶ เริ่มข้อถัดไป";
-      e.nextBtn.classList.toggle("hidden",!more);
-      e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
-      e.endGameBtn.parentElement.classList.toggle("final",!more);
-      busy(false);e.resultOverlay.classList.remove("hidden-layer");
-      action(more?"ตรวจเสร็จแล้ว • กดเริ่มข้อถัดไปเมื่อพร้อม":"ตรวจเสร็จแล้ว • กดจบเกมส์","ok");}catch(err){clearInterval(statusTimer);ended=false;e.submitBtn.disabled=false;busy(false);action("ส่งคำตอบไม่สำเร็จ • ลองอีกครั้ง");toast(`ส่งคำตอบไม่สำเร็จ: ${err.message}`,3500)}finally{e.submitBtn.classList.remove("loading");e.submitBtn.textContent="💾 บันทึกคำตอบ"}}
+    }
+
+    clearInterval(statusTimer);
+    setBackend(true);
+
+    const earnedNow=Number(d.score?.total||0);
+    const cumulative=Number(d.totalCumulativeScore ?? d.totalBestScore ?? user?.totalBestScore ?? 0);
+    setTotal(cumulative);
+
+    if(user){
+      user.totalBestScore=cumulative;
+      saveUser(user);
+    }
+
+    e.liveQuestionScore.textContent=earnedNow;
+    reveal(d.reveal);
+    markSelectionResults(d.results);
+    renderResultVisual(d.reveal,d.results);
+
+    if(e.resultIcon)e.resultIcon.textContent="🏆";
+    const card=e.resultOverlay.querySelector(".result-modal");
+    if(card)card.classList.remove("timeout");
+
+    const sc=d.score||{};
+    e.resultScore.textContent=`${sc.total||0} / 100`;
+    e.resultLine.innerHTML=`พบจุดไม่สอดคล้อง <b>${sc.clickMatchedCount||0}</b> จาก <b>${sc.totalHotspots||q.hotspotCount}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/50 • เหตุผล <b>${sc.reason||0}</b>/50<div class="latest-total-score"><span>⭐ คะแนนสะสมล่าสุด</span><strong>${cumulative} คะแนน</strong></div>`;
+
+    const ans=(d.reveal||[]).map((h,i)=>`<div style="margin-top:8px"><b>${i+1}) ${esc(h.label||"")}</b><br>${esc(h.whyNotFoodSafety||"")}</div>`).join("");
+    e.resultAnswers.innerHTML=`<b>เฉลย</b>${ans||"<div>-</div>"}`;
+
+    const more=idx<order.length-1;
+    e.resultTitle.textContent=more?"สรุปผลข้อนี้":"สรุปผลข้อสุดท้าย";
+    e.nextBtn.textContent="▶ เริ่มข้อถัดไป";
+    e.nextBtn.classList.toggle("hidden",!more);
+    e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
+    e.endGameBtn.parentElement.classList.toggle("final",!more);
+
+    busy(false);
+    e.resultOverlay.classList.remove("hidden-layer");
+    action(more?"บันทึกสำเร็จ • กดเริ่มข้อถัดไปเมื่อพร้อม":"บันทึกสำเร็จ • กดจบเกมส์","ok");
+
+  }catch(err){
+    clearInterval(statusTimer);
+    ended=false;
+    e.submitBtn.disabled=false;
+    busy(false);
+
+    const msg=String(err?.message||err||"");
+    if(/HTTP 404/i.test(msg)){
+      setBackend(false);
+      action("Backend URL ใช้ไม่ได้ • คำตอบยังอยู่ ไม่ต้องตอบใหม่");
+      toast("Backend HTTP 404 • กรุณาใส่ Web app URL /exec ล่าสุด",5000);
+      await configureBackend();
+    }else{
+      action("ยังบันทึกไม่สำเร็จ • คำตอบยังอยู่ กดลองบันทึกอีกครั้ง");
+      toast(`ยังบันทึกไม่สำเร็จ: ${msg}`,4500);
+    }
+  }finally{
+    e.submitBtn.classList.remove("loading");
+    if(!ended){
+      e.submitBtn.textContent="🔄 ลองบันทึกอีกครั้ง";
+    }else{
+      e.submitBtn.textContent="💾 บันทึกคำตอบ";
+    }
+  }
+}
 function next(){
   e.resultOverlay.classList.add("hidden-layer");
   if(idx<order.length-1){idx++;loadQ(true)}else endGame()

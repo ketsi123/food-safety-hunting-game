@@ -670,3 +670,16 @@
 @media(max-width:620px){
   .score-summary-dual{grid-template-columns:1fr}
 }
+
+
+/* ===== V14.5 Backend Guard ===== */
+.gate-start:disabled{
+  opacity:.72;
+  cursor:wait;
+  transform:none!important;
+}
+.action-status.backend-error{
+  color:#b42318;
+  background:#fff4f2;
+  border-color:#fecdca;
+}
