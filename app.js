@@ -64,85 +64,67 @@ async function login(){
   const email=e.emailInput.value.trim().toLowerCase();
   if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}
 
+  // V14.2: Enter game immediately. Backend sync happens in background.
   e.loginBtn.disabled=true;
-  busy(true,"กำลังเข้าสู่เกม...","เชื่อมบัญชีผู้เล่น");
+  e.loginBtn.textContent="กำลังเปิดเกม...";
 
-  try{
-    // Stable path: login route exists in every backend version.
-    e.loginBackendText.textContent="กำลังตรวจบัญชี...";
-    const loginData=await api({action:"login",email});
-    saveUser(loginData.user);
-    setBackend(true);
+  const localName=email.split("@")[0]
+    .replace(/[._-]+/g," ")
+    .replace(/[a-z]/g,c=>c.toUpperCase());
 
-    // Use browser cache first so repeat visits need only ONE backend request.
-    let qs=cachedQuestions();
+  const previous=(()=>{try{return JSON.parse(localStorage.getItem(S_USER)||"null")}catch{return null}})();
+  user={
+    userId:previous?.userId||"",
+    email,
+    displayName:previous?.email===email?(previous.displayName||localName):localName,
+    totalBestScore:previous?.email===email?Number(previous.totalBestScore||0):0,
+    currentSeason:1
+  };
+  saveUser(user);
 
-    if(!qs?.length){
-      e.loginBackendText.textContent="กำลังโหลดคำถาม...";
-      const qData=await request(
-        `${C.BACKEND_URL}?action=questions&t=${Date.now()}`,
-        {timeoutMs:45000}
-      );
+  const localQuestions=Array.isArray(C.LOCAL_QUESTIONS)?C.LOCAL_QUESTIONS:[];
+  const cached=cachedQuestions();
+  questions=(cached?.length?cached:localQuestions).filter(x=>C.ENABLED_QUESTION_IDS.includes(x.questionId));
 
-      const enabled=new Set(C.ENABLED_QUESTION_IDS);
-      qs=(qData.questions||[]).filter(x=>enabled.has(x.questionId));
-      if(!qs.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
+  if(!questions.length){
+    e.loginBtn.disabled=false;
+    e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
+    toast("ไม่พบข้อมูลคำถามใน Frontend");
+    return;
+  }
 
-      localStorage.setItem(S_Q,JSON.stringify(qs));
-      localStorage.setItem(S_QT,String(Date.now()));
-    }
+  preload(questions);
+  e.loginBackendText.textContent="กำลังซิงก์คะแนนเบื้องหลัง...";
+  openGame();
 
-    questions=qs;
-    preload(questions);
+  // Do not block the player. Sync account + latest question metadata quietly.
+  (async()=>{
+    try{
+      const loginData=await api({action:"login",email});
+      if(loginData?.user){
+        saveUser(loginData.user);
+        renderUser();
+      }
+      setBackend(true);
 
-    e.loginBackendText.textContent="ระบบพร้อมใช้งาน";
-    openGame();
-
-  }catch(err){
-    setBackend(false);
-
-    // One gentle retry for transient Apps Script cold-start/network errors.
-    const msg=String(err?.message||err||"");
-    if(!/EMAIL_|INVALID_EMAIL|DOMAIN/i.test(msg)){
       try{
-        e.loginBackendText.textContent="กำลังเชื่อมต่ออีกครั้ง...";
-        await new Promise(r=>setTimeout(r,900));
-
-        const retry=await api({action:"login",email});
-        saveUser(retry.user);
-        setBackend(true);
-
-        let qs=cachedQuestions();
-        if(!qs?.length){
-          const qData=await request(
-            `${C.BACKEND_URL}?action=questions&t=${Date.now()}`,
-            {timeoutMs:45000}
-          );
-          const enabled=new Set(C.ENABLED_QUESTION_IDS);
-          qs=(qData.questions||[]).filter(x=>enabled.has(x.questionId));
-          if(!qs.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
-          localStorage.setItem(S_Q,JSON.stringify(qs));
+        const qData=await request(`${C.BACKEND_URL}?action=questions&t=${Date.now()}`,{timeoutMs:30000});
+        const enabled=new Set(C.ENABLED_QUESTION_IDS);
+        const latest=(qData.questions||[]).filter(x=>enabled.has(x.questionId));
+        if(latest.length){
+          localStorage.setItem(S_Q,JSON.stringify(latest));
           localStorage.setItem(S_QT,String(Date.now()));
         }
-
-        questions=qs;
-        preload(questions);
-        e.loginBackendText.textContent="ระบบพร้อมใช้งาน";
-        openGame();
-        return;
-      }catch(retryErr){
-        err=retryErr;
-      }
+      }catch(qErr){console.warn("Background question sync skipped",qErr)}
+    }catch(err){
+      setBackend(false);
+      console.warn("Background login sync failed",err);
+      // Submit still talks to backend and can create/update the user later.
+    }finally{
+      e.loginBtn.disabled=false;
+      e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
     }
-
-    const finalMsg=String(err?.message||err||"เชื่อมต่อไม่สำเร็จ");
-    e.loginBackendText.textContent=`เข้าสู่ระบบไม่ได้ • ${finalMsg}`;
-    toast(`เข้าสู่ระบบไม่สำเร็จ: ${finalMsg}`,5000);
-
-  }finally{
-    e.loginBtn.disabled=false;
-    busy(false);
-  }
+  })();
 }
 function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
 function setTotal(v){e.totalScore.textContent=v||0;e.sideTotalScore.textContent=`${v||0} คะแนน`}
