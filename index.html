@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f2fbff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
-  <link rel="stylesheet" href="app.css?v=10.0.0">
+  <link rel="stylesheet" href="app.css?v=12.0.0">
 </head>
 <body>
 
@@ -89,7 +89,26 @@
             <button id="gateLogoutBtn" class="gate-secondary hidden">ออกจากระบบ</button>
           </div>
         </div>
-        <div class="play-grid side-reason-layout">
+        <section class="question-strip-v12">
+          <div class="question-strip-main">
+            <div class="question-strip-copy">
+              <div class="question-strip-top">
+                <span class="question-kicker">คำถาม</span>
+                <div class="question-meta"><span id="questionIdTag">S1Q01</span><span id="hotspotCountTag">0 จุด</span></div>
+              </div>
+              <h2 id="questionText">จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?</h2>
+            </div>
+            <div class="question-strip-rules">
+              <div class="score-rules-inline">
+                <span>✓ ตำแหน่ง <b>50</b></span>
+                <span>★ เหตุผล <b>50</b></span>
+              </div>
+              <p class="save-rule">💾 บันทึกคำตอบก่อนหมดเวลา</p>
+            </div>
+          </div>
+        </section>
+
+        <div class="play-grid side-reason-layout v12-layout">
           <div class="image-wrap">
             <img id="questionImage" alt="ภาพคำถาม Food Safety">
             <div id="clickLayer" class="click-layer"></div>
@@ -98,27 +117,14 @@
             <div class="image-tip">👆 คลิก/แตะเพื่อเลือกจุด</div>
           </div>
 
-          <aside class="right-game-panel">
-            <section class="question-panel compact-question-panel">
-              <div class="question-topline">
-                <div class="question-kicker">คำถาม</div>
-                <div class="question-meta"><span id="questionIdTag">S1Q01</span><span id="hotspotCountTag">0 จุด</span></div>
-              </div>
-              <h2 id="questionText">จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?</h2>
-              <div class="score-rules-inline">
-                <span>✓ ตำแหน่ง <b>50</b></span>
-                <span>★ เหตุผล <b>50</b></span>
-              </div>
-              <p class="save-rule">💾 กด <b>บันทึกคำตอบ</b> ก่อนหมดเวลา</p>
-            </section>
-
-            <section class="reason-side-panel">
+          <aside class="right-game-panel v12-reason-column">
+            <section class="reason-side-panel v12-reason-panel">
               <div class="reason-head side-reason-head">
                 <div><b>เหตุผลรายจุด</b><small>พิมพ์สั้น ๆ ตามหมายเลขที่เลือก</small></div>
                 <div class="question-score"><small>คะแนนข้อนี้</small><b id="liveQuestionScore">--</b></div>
               </div>
 
-              <div id="reasonList" class="reason-list reason-scroll"></div>
+              <div id="reasonList" class="reason-list reason-scroll v12-reason-list"></div>
 
               <div class="side-submit-area">
                 <div id="actionStatus" class="action-status"><i class="mini-dot"></i><span>พร้อมเลือกจุดในภาพ</span></div>
@@ -177,7 +183,7 @@
 </div>
 <div id="toast" class="toast"></div>
 
-<script src="config.js?v=10.0.0"></script>
-<script src="app.js?v=10.0.0"></script>
+<script src="config.js?v=12.0.0"></script>
+<script src="app.js?v=12.0.0"></script>
 </body>
 </html>
