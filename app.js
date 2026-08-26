@@ -1,7 +1,33 @@
-(()=>{"use strict";console.info("Food Safety Hunting Game V14.8 IMAGE METADATA STABLE");
-const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v15",S_QT="fs_questions_v15_time";
+(()=>{"use strict";console.info("Food Safety Hunting Game V14.9 LOCAL QUESTION MASTER");
+const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false;
+const MASTER_QUESTIONS=[
+  {
+    questionId:"S1Q01",
+    season:1,
+    imageFile:"S1_Q01.jpg",
+    hotspotCount:5,
+    fullScore:100,
+    timeLimitSec:45
+  },
+  {
+    questionId:"S1Q02",
+    season:1,
+    imageFile:"S1_Q02.jpg",
+    hotspotCount:5,
+    fullScore:100,
+    timeLimitSec:45
+  }
+];
+function masterQuestionById(id){
+  const key=String(id||"").trim().toUpperCase();
+  return MASTER_QUESTIONS.find(x=>x.questionId===key)||null;
+}
+function masterQuestions(){
+  return MASTER_QUESTIONS.map(x=>({...x}));
+}
+
 const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 function toast(msg,ms=2300){e.toast.textContent=msg;e.toast.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.toast.classList.remove("show"),ms)}
 function busy(on,title="กำลังประมวลผล...",sub="กรุณารอสักครู่"){e.busyOverlay.classList.toggle("hidden-layer",!on);e.busyText.textContent=title;e.busySub.textContent=sub;document.body.style.overflow=on?"hidden":""}
@@ -106,79 +132,31 @@ function clearUser(){
   user=null;
   localStorage.removeItem(S_USER);
 }
-function localQuestionById(id){
-  return (Array.isArray(C.LOCAL_QUESTIONS)?C.LOCAL_QUESTIONS:[])
-    .find(x=>String(x.questionId)===String(id)) || null;
-}
-function normalizeQuestion(q){
-  if(!q)return null;
-  const local=localQuestionById(q.questionId)||{};
-  const hotspotCount=Number(q.hotspotCount);
-  const timeLimitSec=Number(q.timeLimitSec);
-  const fullScore=Number(q.fullScore);
-
-  return {
-    ...local,
-    ...q,
-    questionId:String(q.questionId||local.questionId||""),
-    imageFile:String(q.imageFile||local.imageFile||"").trim(),
-    hotspotCount:hotspotCount>0?hotspotCount:Number(local.hotspotCount||0),
-    timeLimitSec:timeLimitSec>0?timeLimitSec:Number(local.timeLimitSec||45),
-    fullScore:fullScore>0?fullScore:Number(local.fullScore||100),
-    season:Number(q.season||local.season||1)
-  };
-}
-function normalizeQuestions(items){
-  const enabled=new Set(C.ENABLED_QUESTION_IDS||[]);
-  const byId=new Map();
-
-  (Array.isArray(C.LOCAL_QUESTIONS)?C.LOCAL_QUESTIONS:[]).forEach(x=>{
-    if(enabled.has(x.questionId))byId.set(x.questionId,normalizeQuestion(x));
-  });
-
-  (Array.isArray(items)?items:[]).forEach(x=>{
-    if(!x||!enabled.has(x.questionId))return;
-    const current=byId.get(x.questionId)||{};
-    byId.set(x.questionId,normalizeQuestion({...current,...x}));
-  });
-
-  return [...byId.values()];
-}
 function cachedQuestions(){
-  try{
-    const raw=JSON.parse(localStorage.getItem(S_Q)||"null");
-    const normalized=normalizeQuestions(raw);
-    return normalized.length?normalized:null;
-  }catch{
-    return null;
-  }
+  // V14.9: Q1/Q2 metadata is local master data only.
+  return masterQuestions();
 }
 function imagePath(x){
-  const qn=normalizeQuestion(x)||{};
-  const file=String(qn.imageFile||"").replace(/^\.?\//,"");
-  const dir=String(C.QUESTION_IMAGE_DIR||"").replace(/^\/+/,"");
-  return `./${dir}${file}?v=${encodeURIComponent(C.ASSET_VERSION||"15")}`;
+  const mq=masterQuestionById(x?.questionId)||x||{};
+  const file=String(mq.imageFile||"").trim();
+  return `./${file}?v=20260826V149`;
 }
-function preload(items){(items||[]).forEach(x=>{const im=new Image();im.decoding="async";im.src=imagePath(x)})}
-async function loadQuestions(force=false){
-  if(!force){
-    const c=cachedQuestions();
-    if(c?.length){questions=c;preload(c);return c}
-    if(questionsPromise)return questionsPromise;
-  }
-  questionsPromise=(async()=>{
-    const d=await backendGet(`?action=questions&t=${Date.now()}`,60000);
-    const enabled=new Set(C.ENABLED_QUESTION_IDS);
-    questions=normalizeQuestions((d.questions||[]).filter(x=>enabled.has(x.questionId)));
-    if(!questions.length)throw Error("ยังไม่มีคำถามที่เปิดใช้งาน");
-    localStorage.setItem(S_Q,JSON.stringify(questions));
-    localStorage.setItem(S_QT,String(Date.now()));
-    preload(questions);
-    return questions;
-  })();
-  try{return await questionsPromise}finally{questionsPromise=null}
+function preload(items){
+  (items||masterQuestions()).forEach(x=>{
+    const im=new Image();
+    im.decoding="async";
+    im.src=imagePath(x);
+  });
 }
-function warmQuestions(){if(!cachedQuestions())loadQuestions().catch(()=>{})}
+async function loadQuestions(){
+  questions=masterQuestions();
+  preload(questions);
+  return questions;
+}
+function warmQuestions(){
+  preload(masterQuestions());
+}
+
 async function login(){
   const email=e.emailInput.value.trim().toLowerCase();
   if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}
@@ -201,9 +179,7 @@ async function login(){
   };
   saveUser(user);
 
-  const localQuestions=Array.isArray(C.LOCAL_QUESTIONS)?C.LOCAL_QUESTIONS:[];
-  const cached=cachedQuestions();
-  questions=normalizeQuestions(cached?.length?cached:localQuestions);
+  questions=masterQuestions();
 
   if(!questions.length){
     e.loginBtn.disabled=false;
@@ -226,16 +202,6 @@ async function login(){
         setTotal(Number(loginData.user.totalBestScore||0));
       }
       setBackend(true);
-
-      try{
-        const qData=await backendGet(`?action=questions&t=${Date.now()}`,30000);
-        const enabled=new Set(C.ENABLED_QUESTION_IDS);
-        const latest=normalizeQuestions((qData.questions||[]).filter(x=>enabled.has(x.questionId)));
-        if(latest.length){
-          localStorage.setItem(S_Q,JSON.stringify(latest));
-          localStorage.setItem(S_QT,String(Date.now()));
-        }
-      }catch(qErr){console.warn("Background question sync skipped",qErr)}
     }catch(err){
       setBackend(false);
       console.warn("Background login sync failed",err);
@@ -248,7 +214,7 @@ async function login(){
 }
 function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
 function setTotal(v){e.totalScore.textContent=v||0;e.sideTotalScore.textContent=`${v||0} คะแนน`}
-async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");if(!questions.length){busy(true,"กำลังโหลดเกม...");try{await loadQuestions()}finally{busy(false)}}startSession()}
+async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");questions=masterQuestions();preload(questions);startSession()}
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function startSession(){
   clearInterval(timer); started=false; ended=false;
@@ -262,9 +228,9 @@ function loadQ(startImmediately=false){
   e.resultOverlay.classList.add("hidden-layer");
   if(e.resultVisual)e.resultVisual.classList.add("hidden");
   e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.textContent="💾 บันทึกคำตอบ";e.liveQuestionScore.textContent="--";
-  q=normalizeQuestion(questions[order[idx]]);questions[order[idx]]=q;seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
+  q=masterQuestionById(questions[order[idx]]?.questionId)||questions[order[idx]];seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
   e.seasonText.textContent=`🌱 SEASON ${q.season||1} : จากฟาร์ม`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;
-  e.questionIdTag.textContent=q.questionId;e.hotspotCountTag.textContent=`${q.hotspotCount} จุด`;e.questionText.textContent='จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
+  e.questionIdTag.textContent=q.questionId;e.hotspotCountTag.textContent=`${Number(q.hotspotCount||5)} จุด`;e.questionText.textContent='จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
   e.progressFill.style.width=`${cur/total*100}%`;e.progressText.textContent=`ภาพที่ ${cur} / ${total}`;
   e.questionImage.classList.add("loading");e.questionImage.src=imagePath(q);tick();
   e.playCard.classList.add("game-paused");
@@ -495,18 +461,19 @@ async function history(){busy(true,"กำลังโหลดประวั�
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
 function logout(){clearInterval(timer);clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");setBackend(false)}
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
-  e.questionImage.dataset.fallbackTried="";
   e.questionImage.classList.remove("loading");
+  e.questionImage.dataset.retry="";
 };
 e.questionImage.onerror=()=>{
   e.questionImage.classList.remove("loading");
-  const local=localQuestionById(q?.questionId);
-  if(local?.imageFile && !e.questionImage.dataset.fallbackTried){
-    e.questionImage.dataset.fallbackTried="1";
-    e.questionImage.src=`./${local.imageFile}?v=${Date.now()}`;
+  const mq=masterQuestionById(q?.questionId);
+  if(mq && !e.questionImage.dataset.retry){
+    e.questionImage.dataset.retry="1";
+    e.questionImage.src=`./${mq.imageFile}?retry=${Date.now()}`;
     return;
   }
-  toast(`ไม่พบภาพ ${q?.imageFile||q?.questionId||""}`);
+  toast(`ไม่พบภาพ ${mq?.imageFile||q?.imageFile||""}`,4500);
 };
 localStorage.removeItem("fs_backend_url");
+["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
