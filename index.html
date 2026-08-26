@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
-  <meta name="theme-color" content="#061623">
+  <meta name="theme-color" content="#eaf7ff">
   <meta name="description" content="Food Safety Hunting Game">
   <title>Food Safety Hunting Game</title>
   <link rel="stylesheet" href="app.css">
@@ -56,7 +56,7 @@
         <div class="brand-icon">🛡️</div>
         <div>
           <div class="brand-title">FOOD SAFETY HUNTING GAME</div>
-          <div class="brand-sub">หาให้เจอ • อธิบายให้ได้ • ปลอดภัยตลอดห่วงโซ่</div>
+          <div class="brand-sub">เลือกจุดเสี่ยง • ใส่เหตุผล • เรียนรู้ Food Safety</div>
         </div>
       </div>
 
@@ -98,10 +98,7 @@
             <div id="questionText" class="question-text">
               จากภาพนี้ จุดใดที่ไม่สอดคล้องกับหลัก Food Safety?
             </div>
-            <div class="question-tip">
-              แตะ/คลิกจุดที่คิดว่าไม่สอดคล้อง → พิมพ์เหตุผลรายจุด → กด Submit
-              ระบบจะตรวจคำตอบที่ Backend เท่านั้น
-            </div>
+            <div class="question-tip">แตะ/คลิกเลือกจุดที่ไม่สอดคล้อง แล้วใส่เหตุผลสั้น ๆ ก่อนส่งคำตอบ</div>
           </div>
 
           <div class="image-shell">
@@ -134,20 +131,13 @@
             <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
             <p id="progressText">0 / 0 ข้อ</p>
           </div>
-
-          <div class="card glass">
-            <h3>🔐 Backend Scoring</h3>
-            <p>
-              พิกัดเฉลยและ Keyword ไม่อยู่ใน GitHub Frontend
-              ระบบจะส่งเฉพาะจุดที่ผู้เล่นเลือกและเหตุผลไปตรวจใน Google Apps Script
-            </p>
-          </div>
         </aside>
       </div>
     </section>
   </main>
 
   <footer class="actionbar">
+    <div class="action-status" id="actionStatus">พร้อมเลือกจุดในภาพ</div>
     <div class="actions">
       <button id="undoBtn" class="action-btn">↶ ลบจุดล่าสุด</button>
       <button id="clearBtn" class="action-btn">↻ ล้างทั้งหมด</button>
@@ -170,6 +160,13 @@
 </div>
 
 <div id="toast" class="toast"></div>
+<div id="busyOverlay" class="busy-overlay hidden" aria-live="polite">
+  <div class="busy-card">
+    <div class="busy-spinner"></div>
+    <div id="busyText" class="busy-text">กำลังประมวลผล...</div>
+    <div class="busy-sub">กรุณารอสักครู่</div>
+  </div>
+</div>
 
 <script src="config.js"></script>
 <script src="app.js"></script>

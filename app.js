@@ -51,7 +51,10 @@
     resultAnswers: $("resultAnswers"),
     resultHomeBtn: $("resultHomeBtn"),
     nextBtn: $("nextBtn"),
-    toast: $("toast")
+    toast: $("toast"),
+    actionStatus: $("actionStatus"),
+    busyOverlay: $("busyOverlay"),
+    busyText: $("busyText")
   };
 
   let user = null;
@@ -83,6 +86,17 @@
     el.loginBackendText.textContent = text || (ok ? "Backend พร้อมใช้งาน" : "Backend ไม่พร้อมใช้งาน");
     el.gameBackendText.textContent = ok ? "Backend Online" : "Backend Offline";
   }
+  function setActionStatus(message) {
+    if (el.actionStatus) el.actionStatus.textContent = message || "พร้อมเลือกจุดในภาพ";
+  }
+
+  function setBusy(isBusy, message = "กำลังประมวลผล...") {
+    if (!el.busyOverlay) return;
+    el.busyOverlay.classList.toggle("hidden", !isBusy);
+    if (el.busyText) el.busyText.textContent = message;
+    document.body.style.overflow = isBusy ? "hidden" : "";
+  }
+
 
   async function requestJson(url, options = {}) {
     const response = await fetch(url, {
@@ -162,6 +176,7 @@
 
     el.loginBtn.disabled = true;
     el.loginBtn.textContent = "กำลังเข้าสู่ระบบ...";
+    setBusy(true, "กำลังเข้าสู่ระบบ...");
 
     try {
       const data = await api({ action: "login", email });
@@ -172,6 +187,7 @@
     } finally {
       el.loginBtn.disabled = false;
       el.loginBtn.textContent = "🚀 เริ่มเล่นเกม";
+      setBusy(false);
     }
   }
 
@@ -184,6 +200,16 @@
     if (!questions.length) {
       throw new Error("ไม่พบคำถามที่เปิดใช้งานใน Frontend");
     }
+
+    preloadQuestionImages(questions);
+  }
+
+  function preloadQuestionImages(items) {
+    (items || []).forEach(q => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = imagePath(q);
+    });
   }
 
   async function syncProgress() {
@@ -210,6 +236,7 @@
     renderUser();
     el.loginScreen.classList.add("hidden");
     el.gameScreen.classList.remove("hidden");
+    setBusy(true, "กำลังโหลดเกม...");
 
     try {
       if (!questions.length) await loadQuestions();
@@ -219,6 +246,8 @@
       showToast(err.message, 3500);
       el.loginScreen.classList.remove("hidden");
       el.gameScreen.classList.add("hidden");
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -267,6 +296,8 @@
     el.questionIdTag.textContent = currentQuestion.questionId;
     el.hotspotCountTag.textContent = `⚠️ มี ${currentQuestion.hotspotCount} จุดไม่สอดคล้อง`;
     el.questionText.textContent = "จากภาพนี้ จุดใดที่ไม่สอดคล้องกับหลัก Food Safety?";
+    el.questionImage.classList.add("is-loading");
+    setActionStatus(`ข้อ ${current} จาก ${total} • เลือกได้สูงสุด ${currentQuestion.hotspotCount} จุด`);
     el.questionImage.src = imagePath(currentQuestion);
     el.questionImage.alt = `${currentQuestion.questionId} ${currentQuestion.sceneTitle || ""}`;
     el.progressFill.style.width = `${(current / total) * 100}%`;
@@ -353,9 +384,7 @@
   function renderReasons() {
     if (!selections.length) {
       el.reasonList.innerHTML = `
-        <div class="empty-reason">
-          ยังไม่ได้เลือกจุด • เมื่อแตะภาพ ระบบจะสร้างช่องเหตุผลตามหมายเลขที่เลือก
-        </div>
+        <div class="empty-reason">ยังไม่ได้เลือกจุด • เลือกจุดในภาพเพื่อเพิ่มช่องใส่เหตุผล</div>
       `;
       return;
     }
@@ -371,7 +400,7 @@
         <div>
           <textarea class="reason-input"
             placeholder="ทำไมจุดที่เลือก ${index + 1} จึงไม่สอดคล้องกับ Food Safety?"></textarea>
-          <div class="reason-note">ระบบจะตรวจเหตุผลเมื่อกด Submit เท่านั้น</div>
+          <div class="reason-note">อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร</div>
         </div>
       `;
 
@@ -412,7 +441,10 @@
 
     el.submitBtn.disabled = true;
     el.submitBtn.textContent = "กำลังตรวจ...";
+    el.submitBtn.classList.add("submitting");
     el.clickLayer.style.pointerEvents = "none";
+    setActionStatus("กำลังส่งคำตอบไปตรวจ...");
+    setBusy(true, "กำลังตรวจคำตอบ...");
 
     try {
       const data = await api({
@@ -463,6 +495,7 @@
       `;
 
       const hasNext = orderIndex < playOrder.length - 1;
+      setActionStatus(hasNext ? "ตรวจเสร็จแล้ว • ดูเฉลยและไปข้อถัดไปได้" : "ตรวจเสร็จแล้ว • จบรอบนี้แล้ว");
       el.resultTitle.textContent = hasNext ? "สรุปผลข้อนี้" : "จบ Session";
       el.nextBtn.textContent = hasNext ? "ไปข้อถัดไป" : "สุ่มเล่นใหม่";
       el.resultOverlay.classList.add("show");
@@ -475,15 +508,19 @@
       questionEnded = false;
       el.submitBtn.disabled = false;
       el.clickLayer.style.pointerEvents = "auto";
+      setActionStatus("ส่งคำตอบไม่สำเร็จ • ลองอีกครั้ง");
       showToast(`Submit ไม่สำเร็จ: ${err.message}`, 3500);
     } finally {
       el.submitBtn.textContent = "ส่งคำตอบ";
+      el.submitBtn.classList.remove("submitting");
+      setBusy(false);
     }
   }
 
   function nextQuestion() {
     clearTimeout(autoNextHandle);
     el.resultOverlay.classList.remove("show");
+    setActionStatus("กำลังเปิดข้อถัดไป...");
 
     if (orderIndex < playOrder.length - 1) {
       orderIndex += 1;
@@ -514,6 +551,7 @@
     el.resultOverlay.classList.remove("show");
     el.gameScreen.classList.add("hidden");
     el.loginScreen.classList.remove("hidden");
+    setBusy(false);
   }
 
   // Events
@@ -547,7 +585,12 @@
     e.preventDefault();
   }, { passive: false });
 
+  el.questionImage.addEventListener("load", () => {
+    el.questionImage.classList.remove("is-loading");
+  });
+
   el.questionImage.addEventListener("error", () => {
+    el.questionImage.classList.remove("is-loading");
     showToast(`ไม่พบภาพ ${currentQuestion?.imageFile || ""} ใน GitHub assets`, 3200);
   });
 
@@ -560,5 +603,6 @@
     el.emailInput.value = remembered.email;
   }
 
+  setActionStatus("พร้อมเลือกจุดในภาพ");
   pingBackend();
 })();
