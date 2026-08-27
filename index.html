@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.12-BOTTOM-CENTER-FLOATING-TIMER-20260827 • by Ketsirin">
+<meta name="fs-build" content="V16.9.13-FIXED-BOTTOM-TIMER-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2388,6 +2388,24 @@ body:before{
   .floating-game-timer .float-question-chip{font-size:9px;padding:4px 6px}
 }
 
+
+/* ===== V16.9.13 FIXED TIMER DOCK ===== */
+#gameScreen{
+  padding-bottom:82px!important;
+}
+.floating-game-timer{
+  position:fixed!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:12px!important;
+  z-index:38!important;
+}
+@media(max-width:720px){
+  #gameScreen{padding-bottom:76px!important}
+  .floating-game-timer{bottom:8px!important}
+}
+
 </style>
 
 <style id="v161-build-marker">
@@ -3271,7 +3289,7 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.12 • by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.13 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
@@ -3392,19 +3410,10 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
     const activelyPlaying = gate && gate.classList.contains("off");
     const overlayOpen = !isHidden(resultOverlay) || !isHidden(menuOverlay) || !isHidden(busyOverlay);
 
-    if (!gameVisible || !activelyPlaying || overlayOpen){
-      floating.classList.remove("show");
-      return;
-    }
-
-    const headerBottom = header.getBoundingClientRect().bottom;
-    const r = mainTimer.getBoundingClientRect();
-    const visibleTop = Math.max(r.top, headerBottom + 5);
-    const visibleBottom = Math.min(r.bottom, window.innerHeight - 5);
-    const visibleHeight = Math.max(0, visibleBottom - visibleTop);
-    const mainTimerClearlyVisible = visibleHeight >= r.height * 0.58;
-
-    floating.classList.toggle("show", !mainTimerClearlyVisible);
+    // V16.9.13:
+    // Timer is fixed at the bottom-center for the entire active question.
+    // It no longer moves in/out based on the main timer position.
+    floating.classList.toggle("show", !!(gameVisible && activelyPlaying && !overlayOpen));
   }
 
   // Timer and question number are updated by the existing game code.
