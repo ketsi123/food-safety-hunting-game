@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.1-LOGIN-HERO-CACHE-BUST-20260827">
+<meta name="fs-build" content="V16.9.2-LOGIN-NEON-BORDER-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2047,6 +2047,96 @@ body:before{
   .hud-season-ribbon{min-width:190px;max-width:85%;font-size:9px;padding-left:16px;padding-right:16px}
 }
 
+
+/* ===== V16.9.2 LOGIN NEON BORDER ===== */
+.login-card{
+  position:relative!important;
+  isolation:isolate!important;
+  border:1px solid rgba(210,231,245,.88)!important;
+  box-shadow:
+    0 18px 46px rgba(55,105,150,.13),
+    inset 0 1px 0 rgba(255,255,255,.95)!important;
+}
+
+/* animated neon line */
+.login-card::before{
+  content:""!important;
+  position:absolute!important;
+  inset:-4px!important;
+  z-index:-1!important;
+  border-radius:30px!important;
+  padding:3px!important;
+  pointer-events:none!important;
+  background:
+    conic-gradient(
+      from 0deg,
+      #42a5ff 0deg,
+      #31ecff 58deg,
+      #7a63ff 130deg,
+      #ff55e7 195deg,
+      #b45cff 255deg,
+      #36dfff 322deg,
+      #42a5ff 360deg
+    )!important;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0)!important;
+  -webkit-mask-composite:xor!important;
+  mask-composite:exclude!important;
+  animation:loginNeonSpin 3.8s linear infinite!important;
+  filter:
+    drop-shadow(0 0 5px rgba(58,197,255,.80))
+    drop-shadow(0 0 9px rgba(151,82,255,.48))!important;
+}
+
+/* soft glow around the card */
+.login-card::after{
+  content:""!important;
+  position:absolute!important;
+  inset:-7px!important;
+  z-index:-2!important;
+  border-radius:34px!important;
+  pointer-events:none!important;
+  background:
+    conic-gradient(
+      from 90deg,
+      rgba(55,201,255,.45),
+      rgba(129,90,255,.34),
+      rgba(255,78,221,.38),
+      rgba(58,221,255,.40)
+    )!important;
+  filter:blur(13px)!important;
+  opacity:.72!important;
+  animation:loginNeonGlow 2.4s ease-in-out infinite!important;
+}
+
+@keyframes loginNeonSpin{
+  to{transform:rotate(360deg)}
+}
+
+@keyframes loginNeonGlow{
+  0%,100%{opacity:.48;filter:blur(12px)}
+  50%{opacity:.82;filter:blur(17px)}
+}
+
+/* subtle interaction glow */
+.login-card:focus-within::after{
+  opacity:.92!important;
+  filter:blur(18px)!important;
+}
+
+@media (prefers-reduced-motion:reduce){
+  .login-card::before,
+  .login-card::after{
+    animation:none!important;
+  }
+}
+
+@media(max-width:720px){
+  .login-card::before{inset:-3px!important;border-radius:29px!important}
+  .login-card::after{inset:-5px!important;border-radius:31px!important}
+}
+
 </style>
 
 <style id="v161-build-marker">
@@ -2901,5 +2991,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.1-LOGIN-HERO-CACHE-BUST-20260827</div></body>
+<div id="fsBuildMarker">V16.9.2-LOGIN-NEON-BORDER-20260827</div></body>
 </html>
