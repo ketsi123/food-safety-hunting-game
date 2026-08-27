@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.7-JS-BREATHING-NEON-LEVEL-HUD-20260827">
+<meta name="fs-build" content="V16.9.8-STRICT-2-KEYWORDS-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2435,7 +2435,7 @@ body:before{
           <aside class="right-game-panel v12-reason-column">
             <section class="reason-side-panel v12-reason-panel">
               <div class="reason-head side-reason-head">
-                <div><b>เหตุผลรายจุด</b><small>พิมพ์สั้น ๆ ตามหมายเลขที่เลือก</small></div>
+                <div><b>เหตุผลรายจุด</b><small>ระบุอย่างน้อย 2 คำสำคัญ: สิ่งที่พบ + ปัญหา/ความเสี่ยง</small></div>
                 <b id="liveQuestionScore" class="logic-only-score" aria-hidden="true">--</b>
               </div>
 
@@ -2844,7 +2844,7 @@ function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/
 function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=Number(q.hotspotCount||1);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reason:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
 function renderMarkers(){e.markerLayer.innerHTML="";selections.forEach((s,i)=>{const b=document.createElement("button");b.className="marker";b.dataset.index=String(i);b.style.left=s.x+"%";b.style.top=s.y+"%";b.textContent=i+1;b.onclick=ev=>{ev.stopPropagation();if(ended)return;selections.splice(i,1);renderMarkers();renderReasons()};e.markerLayer.appendChild(b)})}
 function markSelectionResults(results){const markers=[...e.markerLayer.querySelectorAll(".marker")];markers.forEach((m,i)=>{m.classList.remove("correct","wrong");const r=(results||[])[i];if(!r)return;m.classList.add(r.pointMatched?"correct":"wrong")})}
-function renderReasons(){if(!selections.length){e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';return}e.reasonList.innerHTML="";selections.forEach((s,i)=>{const row=document.createElement("div");row.className="reason-row";row.innerHTML=`<div class="reason-number">${i+1}</div><div><textarea class="reason-input" placeholder="เหตุผลของจุดที่ ${i+1}"></textarea><div class="reason-note">อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร</div></div>`;const ta=row.querySelector("textarea");ta.value=s.reason||"";ta.oninput=()=>selections[i].reason=ta.value;e.reasonList.appendChild(row)})}
+function renderReasons(){if(!selections.length){e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';return}e.reasonList.innerHTML="";selections.forEach((s,i)=>{const row=document.createElement("div");row.className="reason-row";row.innerHTML=`<div class="reason-number">${i+1}</div><div><textarea class="reason-input" placeholder="เช่น สิ่งที่พบ + สภาพที่ไม่ถูกต้อง"></textarea><div class="reason-note">อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร</div></div>`;const ta=row.querySelector("textarea");ta.value=s.reason||"";ta.oninput=()=>selections[i].reason=ta.value;e.reasonList.appendChild(row)})}
 function reveal(list){e.revealLayer.innerHTML="";(list||[]).forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})}
 function renderResultVisual(revealList,results){
   if(!e.resultVisual||!e.resultVisualImage)return;
@@ -3061,7 +3061,7 @@ async function history(){
     busy(false);
   }
 }
-function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
 function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
@@ -3134,7 +3134,7 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.7-JS-BREATHING-NEON-LEVEL-HUD-20260827</div>
+<div id="fsBuildMarker">V16.9.8-STRICT-2-KEYWORDS-20260827</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
