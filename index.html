@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.13.2-DOCUMENT-BOTTOM-WATERMARK-20260827">
+<meta name="fs-build" content="V16.9.14.1-S1Q03-RANDOM-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2638,22 +2638,23 @@ body:before{
 <script id="v15-inline-config">
 window.FS_CONFIG = {
   BACKEND_URL: "https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec",
-  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02"],
+  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03"],
   LOCAL_QUESTIONS: [
     { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-    { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
+    { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q03", season:1, imageFile:"S1_Q03.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260826-V149",
+  ASSET_VERSION: "20260827-V16914",
   GAME_MODE: "NONCONFORMITY",
-  RANDOMIZE_QUESTIONS: false,
+  RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
   REMEMBER_EMAIL: true
 };
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.1 LOGIN HERO CACHE BUST");
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.14.1 • S1Q03 + randomized order");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -2670,6 +2671,14 @@ const MASTER_QUESTIONS=[
     questionId:"S1Q02",
     season:1,
     imageFile:"S1_Q02.jpg",
+    hotspotCount:5,
+    fullScore:100,
+    timeLimitSec:45
+  },
+  {
+    questionId:"S1Q03",
+    season:1,
+    imageFile:"S1_Q03.jpg",
     hotspotCount:5,
     fullScore:100,
     timeLimitSec:45
@@ -2788,13 +2797,13 @@ function clearUser(){
   localStorage.removeItem(S_USER);
 }
 function cachedQuestions(){
-  // V14.9: Q1/Q2 metadata is local master data only.
+  // V16.9.14: Q1-Q3 metadata is local master data only.
   return masterQuestions();
 }
 function imagePath(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  return `./${file}?v=20260826V149`;
+  return `./${file}?v=20260827V16914`;
 }
 function preload(items){
   (items||masterQuestions()).forEach(x=>{
@@ -3278,7 +3287,7 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.13.2 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.14.1 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
