@@ -1,12 +1,10 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.5-CROPPED-BANNER-20260827">
+<meta name="fs-build" content="V16.6-UX-REASON-TIMEOUT-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
-<!-- V16.5-CROPPED-BANNER-20260827 -->
-<meta name="fs-build" content="V15.3-HISTORY-DATE-SCORE-20260826">
 <!-- Food Safety Hunting Game V15.3 HISTORY DATE SCORE -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=5,viewport-fit=cover">
@@ -1375,6 +1373,310 @@ body:before{
   }
 }
 
+
+
+/* ===== V16.6 UX POLISH : reason panel + timeout popup ===== */
+.reason-side-panel{
+  overflow:hidden!important;
+  border-radius:24px!important;
+}
+.side-reason-head{
+  padding:14px 16px 14px!important;
+  align-items:center!important;
+  gap:12px!important;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,.12)!important;
+}
+.side-reason-head > div:first-child{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:2px!important;
+}
+.side-reason-head > div:first-child b{
+  font-size:17px!important;
+  line-height:1.1!important;
+}
+.side-reason-head > div:first-child small{
+  font-size:10px!important;
+  color:#d9ecff!important;
+  line-height:1.35!important;
+}
+.question-score{
+  min-width:110px!important;
+  padding:10px 12px!important;
+  border-radius:18px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:3px!important;
+  background:linear-gradient(180deg,#fff8d9 0%,#ffe78b 100%)!important;
+  border:2px solid #f1c451!important;
+  box-shadow:inset 0 1px 0 #fff,0 4px 0 #e9ba42!important;
+}
+.question-score small{
+  color:#9a6a00!important;
+  font-size:10px!important;
+  font-weight:1000!important;
+  letter-spacing:.2px!important;
+}
+.question-score b{
+  color:#7b5300!important;
+  font-size:23px!important;
+  line-height:1!important;
+}
+.v12-reason-list{
+  padding:12px!important;
+  gap:11px!important;
+}
+.reason-row,
+.v12-reason-list .reason-row{
+  border:2px solid #d3e7f7!important;
+  border-radius:18px!important;
+  padding:10px 12px!important;
+  gap:12px!important;
+  background:linear-gradient(180deg,#ffffff 0%,#f4fbff 100%)!important;
+  box-shadow:inset 0 1px 0 #fff,0 4px 0 #deedf7!important;
+}
+.reason-number,
+.v12-reason-list .reason-number{
+  flex:0 0 42px!important;
+  width:42px!important;
+  height:42px!important;
+  border-radius:50%!important;
+  font-size:21px!important;
+  box-shadow:0 4px 0 #1f62ab,0 0 0 3px #fff!important;
+}
+.reason-input,
+.v12-reason-list .reason-input{
+  min-height:48px!important;
+  padding:12px 14px!important;
+  font-size:15px!important;
+  line-height:1.35!important;
+  color:#234a69!important;
+  border:1.5px solid #bddbef!important;
+  border-radius:16px!important;
+  box-shadow:inset 0 1px 2px rgba(150,186,211,.15)!important;
+}
+.reason-input::placeholder,
+.v12-reason-list .reason-input::placeholder{
+  color:#8da4b8!important;
+}
+.side-submit-area{
+  padding:12px 12px 14px!important;
+  border-top:2px solid #d8ebf8!important;
+  background:linear-gradient(180deg,#f8fcff 0%,#e8f6ff 100%)!important;
+}
+.side-submit-area:before{
+  top:10px!important;
+  right:12px!important;
+  width:36px!important;
+  height:36px!important;
+  font-size:18px!important;
+  box-shadow:0 3px 0 #e39b0e,0 8px 16px rgba(130,83,0,.16)!important;
+}
+.action-status,
+.v12-reason-panel .side-submit-area .action-status{
+  min-height:40px!important;
+  padding:8px 56px 8px 12px!important;
+  border:1.5px solid #c9e1f1!important;
+  border-radius:999px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  background:linear-gradient(180deg,#ffffff 0%,#f0f9ff 100%)!important;
+  box-shadow:inset 0 1px 0 #fff,0 3px 0 #d8e8f2!important;
+  color:#2b5371!important;
+  font-size:13px!important;
+  font-weight:900!important;
+}
+.side-actions,
+.v12-reason-panel .side-actions{
+  grid-template-columns:.88fr 1fr 1.42fr!important;
+  gap:10px!important;
+  align-items:stretch!important;
+}
+.side-actions .btn,
+.v12-reason-panel .side-actions .btn{
+  min-height:68px!important;
+  padding:10px 8px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:6px!important;
+  text-align:center!important;
+  border-radius:18px!important;
+}
+.side-actions .btn span:last-child,
+.v12-reason-panel .side-actions .btn span:last-child{
+  display:block!important;
+  width:100%!important;
+  white-space:normal!important;
+  text-align:center!important;
+  line-height:1.08!important;
+  font-size:13px!important;
+  font-weight:1000!important;
+}
+.btn-game-icon{font-size:21px!important}
+.game-submit .btn-game-icon{transform:translateX(1px)}
+
+/* overlay + popup animation */
+.overlay{
+  background:rgba(209,231,245,.54)!important;
+  backdrop-filter:blur(10px)!important;
+  animation:overlayFadeIn .22s ease-out!important;
+}
+.modal-card{
+  animation:modalPopIn .34s cubic-bezier(.19,1.02,.32,1.02)!important;
+}
+@keyframes overlayFadeIn{
+  from{opacity:0}
+  to{opacity:1}
+}
+@keyframes modalPopIn{
+  0%{opacity:0;transform:translateY(18px) scale(.94)}
+  70%{opacity:1;transform:translateY(-4px) scale(1.015)}
+  100%{opacity:1;transform:translateY(0) scale(1)}
+}
+@keyframes iconPulseSoft{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-3px) scale(1.06)}
+}
+.result-modal.timeout{
+  max-width:880px!important;
+  overflow:hidden!important;
+  padding:26px 28px 26px!important;
+  border:3px solid #87c8ff!important;
+  border-radius:32px!important;
+  background:
+    radial-gradient(circle at top right,rgba(255,242,199,.7),transparent 28%),
+    linear-gradient(180deg,#fffefe 0%,#f4fbff 56%,#eef8ff 100%)!important;
+  box-shadow:inset 0 2px 0 #fff,0 10px 0 #c7e1f0,0 32px 70px rgba(36,97,144,.18)!important;
+}
+.result-modal.timeout:before{
+  content:"";
+  position:absolute;
+  left:24px;right:24px;top:0;
+  height:7px;
+  border-radius:0 0 16px 16px;
+  background:linear-gradient(90deg,#ffb938,#ffdb73,#6dc8ff,#8b73ff);
+}
+.result-modal.timeout .modal-x{
+  width:46px!important;
+  height:46px!important;
+  border-radius:50%!important;
+  border:1.5px solid #acd3ed!important;
+  background:linear-gradient(180deg,#f8fcff,#e7f4ff)!important;
+  color:#52728a!important;
+  box-shadow:0 4px 0 #d4e7f3!important;
+}
+.result-modal.timeout .result-icon{
+  width:78px;
+  height:78px;
+  margin:2px auto 6px;
+  display:grid;
+  place-items:center;
+  font-size:42px!important;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%,#fff7d7 0%,#ffe79b 38%,#ffbf4d 100%);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.9),0 8px 0 #efb23c,0 18px 34px rgba(226,158,34,.24);
+  animation:iconPulseSoft 1.9s ease-in-out infinite!important;
+}
+.result-modal.timeout h2,
+.result-modal.timeout .result-title{
+  margin:10px 0 4px!important;
+  color:#1d405b!important;
+  font-size:21px!important;
+}
+.result-modal.timeout .result-score{
+  margin:0 0 10px!important;
+  font-size:52px!important;
+  line-height:1!important;
+  color:#d88910!important;
+  text-shadow:0 1px 0 #fff;
+}
+.result-modal.timeout .result-line{
+  max-width:680px;
+  margin:0 auto!important;
+  color:#577388!important;
+  font-size:18px!important;
+  line-height:1.72!important;
+}
+.result-modal.timeout .result-line b{
+  color:#214563!important;
+}
+.result-modal.timeout .result-answers{
+  margin-top:18px!important;
+  padding-top:0!important;
+  border-top:none!important;
+}
+.timeout-note{
+  padding:16px 18px!important;
+  border-radius:18px!important;
+  background:linear-gradient(180deg,#fff8e4 0%,#fff1bf 100%)!important;
+  border:2px solid #f1d084!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 4px 0 #e8c874!important;
+  color:#8a5a07!important;
+  font-size:14px!important;
+  font-weight:1000!important;
+  line-height:1.65!important;
+}
+.result-modal.timeout .result-actions-v6{
+  margin-top:22px!important;
+  gap:14px!important;
+}
+.result-modal.timeout .result-actions-v6 .btn{
+  min-height:64px!important;
+  border-radius:20px!important;
+  font-size:17px!important;
+  font-weight:1000!important;
+  transition:transform .15s ease, box-shadow .15s ease!important;
+}
+.result-modal.timeout .result-actions-v6 .btn:hover{
+  transform:translateY(-2px)!important;
+}
+.result-modal.timeout .end-game{
+  border:2px solid #d6e6ef!important;
+  background:linear-gradient(180deg,#ffffff 0%,#f2f7fb 100%)!important;
+  color:#4a697e!important;
+  box-shadow:inset 0 1px 0 #fff,0 6px 0 #d6e4ee,0 14px 24px rgba(74,115,146,.10)!important;
+}
+.result-modal.timeout .submit{
+  border:2px solid #b6dbff!important;
+  background:linear-gradient(90deg,#2f8dfa 0%,#3f7ef4 50%,#6b55f5 100%)!important;
+  color:#fff!important;
+  text-shadow:0 2px 2px rgba(0,0,0,.16)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 7px 0 #c6dcff,0 18px 28px rgba(68,101,231,.22)!important;
+}
+
+@media(max-width:720px){
+  .side-actions,
+  .v12-reason-panel .side-actions{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .side-actions .game-submit,
+  .v12-reason-panel .side-actions .game-submit{
+    grid-column:1/-1!important;
+  }
+  .result-modal.timeout{
+    padding:22px 16px 18px!important;
+    border-radius:26px!important;
+  }
+  .result-modal.timeout .result-icon{
+    width:68px;height:68px;font-size:37px!important;
+  }
+  .result-modal.timeout .result-score{
+    font-size:44px!important;
+  }
+  .result-modal.timeout .result-line{
+    font-size:16px!important;
+  }
+  .result-modal.timeout .result-actions-v6 .btn{
+    min-height:58px!important;
+    font-size:16px!important;
+  }
+}
+
 </style>
 
 <style id="v161-build-marker">
@@ -1580,7 +1882,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.5 CROPPED BANNER");
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.6 UX reason + timeout popup");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -2093,5 +2395,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.5-CROPPED-BANNER-20260827</div></body>
+<div id="fsBuildMarker">V16.6-UX-REASON-TIMEOUT-20260827</div></body>
 </html>
