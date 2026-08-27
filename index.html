@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.13-FIXED-BOTTOM-TIMER-20260827">
+<meta name="fs-build" content="V16.9.13-TIMER-CONDITIONAL-WATERMARK-BOTTOM-RIGHT-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2389,22 +2389,6 @@ body:before{
 }
 
 
-/* ===== V16.9.13 FIXED TIMER DOCK ===== */
-#gameScreen{
-  padding-bottom:82px!important;
-}
-.floating-game-timer{
-  position:fixed!important;
-  left:50%!important;
-  right:auto!important;
-  top:auto!important;
-  bottom:12px!important;
-  z-index:38!important;
-}
-@media(max-width:720px){
-  #gameScreen{padding-bottom:76px!important}
-  .floating-game-timer{bottom:8px!important}
-}
 
 </style>
 
@@ -2418,6 +2402,7 @@ body:before{
   color:#5d7890;
   opacity:.28;
   pointer-events:none;
+  white-space:nowrap;
 }
 </style>
 </head>
@@ -3410,10 +3395,20 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
     const activelyPlaying = gate && gate.classList.contains("off");
     const overlayOpen = !isHidden(resultOverlay) || !isHidden(menuOverlay) || !isHidden(busyOverlay);
 
-    // V16.9.13:
-    // Timer is fixed at the bottom-center for the entire active question.
-    // It no longer moves in/out based on the main timer position.
-    floating.classList.toggle("show", !!(gameVisible && activelyPlaying && !overlayOpen));
+    if (!gameVisible || !activelyPlaying || overlayOpen){
+      floating.classList.remove("show");
+      return;
+    }
+
+    // แสดง timer ลอยเฉพาะเมื่อ timer หลักเลื่อนพ้นบริเวณใต้ Header
+    const headerBottom = header.getBoundingClientRect().bottom;
+    const r = mainTimer.getBoundingClientRect();
+    const visibleTop = Math.max(r.top, headerBottom + 5);
+    const visibleBottom = Math.min(r.bottom, window.innerHeight - 5);
+    const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+    const mainTimerClearlyVisible = visibleHeight >= r.height * 0.58;
+
+    floating.classList.toggle("show", !mainTimerClearlyVisible);
   }
 
   // Timer and question number are updated by the existing game code.
