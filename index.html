@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.11-CENTER-UNDER-IMAGE-TIMER-20260827 • by Ketsirin">
+<meta name="fs-build" content="V16.9.12-BOTTOM-CENTER-FLOATING-TIMER-20260827 • by Ketsirin">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2278,10 +2278,11 @@ body:before{
 /* ===== V16.9.10 FLOATING GAME TIMER ===== */
 .floating-game-timer{
   position:fixed;
-  top:118px;
   left:50%;
   right:auto;
-  z-index:39; /* header is 40, timer stays visually below it */
+  top:auto;
+  bottom:18px;
+  z-index:39; /* below header layer, above page content */
   min-width:174px;
   height:64px;
   padding:8px 13px;
@@ -2375,6 +2376,8 @@ body:before{
   .floating-game-timer{
     left:50%;
     right:auto;
+    top:auto!important;
+    bottom:12px!important;
     min-width:150px;
     height:57px;
     padding:7px 10px;
@@ -2390,34 +2393,13 @@ body:before{
 <style id="v161-build-marker">
 #fsBuildMarker{
   position:fixed;
-  left:320px;
-  right:auto;
-  bottom:14px;
+  right:10px;
+  bottom:8px;
   z-index:9998;
-  display:inline-flex;
-  align-items:center;
-  max-width:calc(100vw - 350px);
-  padding:6px 12px;
-  border-radius:999px;
-  border:1px solid rgba(157,193,219,.55);
-  background:rgba(255,255,255,.72);
-  box-shadow:0 6px 16px rgba(38,78,118,.08);
-  backdrop-filter:blur(6px);
-  -webkit-backdrop-filter:blur(6px);
-  font:700 10px/1.1 Arial,sans-serif;
-  color:#6d889f;
-  opacity:.68;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  font:700 9px/1 Arial,sans-serif;
+  color:#5d7890;
+  opacity:.28;
   pointer-events:none;
-}
-@media(max-width:1100px){
-  #fsBuildMarker{
-    left:14px;
-    bottom:12px;
-    max-width:calc(100vw - 28px);
-  }
 }
 </style>
 </head>
@@ -3289,7 +3271,7 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.11-CENTER-UNDER-IMAGE-TIMER-20260827 • by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.12 • by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
@@ -3366,7 +3348,6 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
   const mainTimerText = $("timerText");
   const questionCounter = $("questionCounter");
   const header = document.querySelector(".game-header");
-  const imageWrap = document.querySelector(".image-wrap");
   const gameScreen = $("gameScreen");
   const gate = $("questionGate");
   const resultOverlay = $("resultOverlay");
@@ -3390,30 +3371,17 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
   }
 
   function updatePosition(){
-    const headerRect = header.getBoundingClientRect();
-    const timerHeight = floating.offsetHeight || 64;
     const timerWidth = floating.offsetWidth || 174;
-
-    let centerX = window.innerWidth / 2;
-    let top = Math.max(8, Math.round(headerRect.bottom + 10));
-
-    if (imageWrap){
-      const wrapRect = imageWrap.getBoundingClientRect();
-      centerX = wrapRect.left + (wrapRect.width / 2);
-
-      // วางนาฬิกาไว้กึ่งกลางช่วงล่างของภาพ เพื่อไม่ให้บังช่องพิมพ์เหตุผล
-      const preferredTop = wrapRect.bottom - timerHeight - 14;
-      const maxTop = window.innerHeight - timerHeight - 12;
-      top = Math.min(maxTop, Math.max(Math.round(headerRect.bottom + 10), Math.round(preferredTop)));
-    }
-
     const minCenter = (timerWidth / 2) + 10;
     const maxCenter = window.innerWidth - (timerWidth / 2) - 10;
-    centerX = Math.max(minCenter, Math.min(maxCenter, centerX));
+    const centerX = Math.max(minCenter, Math.min(maxCenter, window.innerWidth / 2));
 
+    // V16.9.12: timer floats outside the game image,
+    // bottom-center of the viewport, aligned with the lower menu/logout row.
     floating.style.left = `${Math.round(centerX)}px`;
-    floating.style.top = `${top}px`;
-    floating.style.right = 'auto';
+    floating.style.right = "auto";
+    floating.style.top = "auto";
+    floating.style.bottom = window.innerWidth <= 720 ? "12px" : "18px";
   }
 
   function updateVisibility(){
