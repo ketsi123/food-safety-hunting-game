@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.6-LEVEL-RANK-HUD-20260827">
+<meta name="fs-build" content="V16.9.7-JS-BREATHING-NEON-LEVEL-HUD-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2247,6 +2247,30 @@ body:before{
     border-radius:35px!important;
   }
 }
+
+/* ===== V16.9.7 JS-DRIVEN BREATHING NEON ===== */
+.login-card{
+  --neonLineOpacity:.55;
+  --neonAuraOpacity:.12;
+  --neonBrightness:.9;
+  --neonBlur:13px;
+  animation:none!important;
+  will-change:box-shadow,border-color;
+}
+.login-card::before{
+  animation:none!important;
+  opacity:var(--neonLineOpacity)!important;
+  filter:
+    brightness(var(--neonBrightness))
+    drop-shadow(0 0 6px rgba(64,210,255,.58))
+    drop-shadow(0 0 13px rgba(135,90,255,.38))!important;
+}
+.login-card::after{
+  animation:none!important;
+  opacity:var(--neonAuraOpacity)!important;
+  filter:blur(var(--neonBlur))!important;
+}
+
 </style>
 
 <style id="v161-build-marker">
@@ -3110,5 +3134,69 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.6-LEVEL-RANK-HUD-20260827</div></body>
+<div id="fsBuildMarker">V16.9.7-JS-BREATHING-NEON-LEVEL-HUD-20260827</div>
+<script id="login-neon-breath-v1697">
+(() => {
+  "use strict";
+
+  const startNeonBreath = () => {
+    const card = document.querySelector(".login-card");
+    if (!card) return;
+
+    // Avoid duplicate animation loops after hot reload / repeated init.
+    if (card.dataset.neonBreathRunning === "1") return;
+    card.dataset.neonBreathRunning = "1";
+
+    const cycleMs = 2200;
+
+    const frame = (now) => {
+      // 0..1 smooth sine breathing cycle
+      const p = (Math.sin((now / cycleMs) * Math.PI * 2 - Math.PI / 2) + 1) / 2;
+      const eased = p * p * (3 - 2 * p);
+
+      const cyanA   = (0.16 + eased * 0.78).toFixed(3);
+      const violetA = (0.08 + eased * 0.58).toFixed(3);
+      const pinkA   = (0.03 + eased * 0.34).toFixed(3);
+
+      const blur1 = Math.round(5  + eased * 9);
+      const blur2 = Math.round(10 + eased * 18);
+      const blur3 = Math.round(16 + eased * 28);
+
+      // Animate the actual card shadow directly so the effect is visible
+      // even when CSS keyframe/mask animations are not rendered.
+      card.style.boxShadow = [
+        "0 18px 46px rgba(55,105,150,.13)",
+        "inset 0 1px 0 rgba(255,255,255,.96)",
+        `0 0 ${blur1}px rgba(70,216,255,${cyanA})`,
+        `0 0 ${blur2}px rgba(122,92,255,${violetA})`,
+        `0 0 ${blur3}px rgba(255,89,213,${pinkA})`
+      ].join(",");
+
+      // Slowly shift the visible border between cyan and violet.
+      const r = Math.round(112 + eased * 42);
+      const g = Math.round(204 - eased * 72);
+      const b = Math.round(247 + eased * 8);
+      card.style.borderColor = `rgb(${r},${g},${b})`;
+
+      // Pseudo-element glow intensity is driven through variables.
+      card.style.setProperty("--neonLineOpacity", (0.42 + eased * 0.58).toFixed(3));
+      card.style.setProperty("--neonAuraOpacity", (0.08 + eased * 0.58).toFixed(3));
+      card.style.setProperty("--neonBrightness", (0.82 + eased * 0.70).toFixed(3));
+      card.style.setProperty("--neonBlur", `${Math.round(12 + eased * 10)}px`);
+
+      requestAnimationFrame(frame);
+    };
+
+    requestAnimationFrame(frame);
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startNeonBreath, { once:true });
+  } else {
+    startNeonBreath();
+  }
+})();
+</script>
+
+</body>
 </html>
