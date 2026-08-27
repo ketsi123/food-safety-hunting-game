@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.4-LOGIN-BREATHING-NEON-20260827">
+<meta name="fs-build" content="V16.9.5-STRONG-BREATHING-NEON-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2048,133 +2048,138 @@ body:before{
 }
 
 
-/* ===== V16.9.4 LOGIN BREATHING NEON BORDER ===== */
+/* ===== V16.9.5 STRONG BREATHING NEON BORDER ===== */
 .login-card{
   position:relative!important;
   isolation:isolate!important;
-  border:1px solid rgba(211,232,247,.96)!important;
+  border:2px solid #71cfff!important;
   box-shadow:
     0 18px 46px rgba(55,105,150,.13),
-    inset 0 1px 0 rgba(255,255,255,.96)!important;
+    inset 0 1px 0 rgba(255,255,255,.96),
+    0 0 8px rgba(70,200,255,.18),
+    0 0 14px rgba(126,93,255,.10)!important;
+  animation:loginCardBreath 2.05s ease-in-out infinite!important;
 }
 
-/* เส้นนีออนอยู่กับที่ ไม่หมุน ไม่วิ่ง */
+/* เส้นนีออนคงที่รอบกรอบ */
 .login-card::before{
   content:""!important;
   position:absolute!important;
   inset:-4px!important;
   z-index:-1!important;
   border-radius:30px!important;
-  padding:2.5px!important;
+  padding:3px!important;
   pointer-events:none!important;
-
   background:
     linear-gradient(
       115deg,
-      #45baff 0%,
-      #4be7ff 24%,
-      #766cff 52%,
-      #bd62ff 76%,
-      #ff73d7 100%
+      #4fc5ff 0%,
+      #56ecff 22%,
+      #7a6bff 52%,
+      #bf64ff 77%,
+      #ff71d9 100%
     )!important;
-
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0)!important;
   -webkit-mask-composite:xor!important;
   mask-composite:exclude!important;
-
-  opacity:.72!important;
+  opacity:.62!important;
   filter:
-    brightness(.95)
-    drop-shadow(0 0 5px rgba(65,203,255,.45))
-    drop-shadow(0 0 10px rgba(134,93,255,.28))!important;
-
-  animation:loginNeonBorderBreath 2.8s ease-in-out infinite!important;
+    brightness(.9)
+    drop-shadow(0 0 4px rgba(64,205,255,.34))
+    drop-shadow(0 0 8px rgba(135,90,255,.22))!important;
+  animation:loginRingBreath 2.05s ease-in-out infinite!important;
 }
 
-/* แสงฟุ้งด้านนอก หายใจพร้อมเส้นขอบ */
+/* แสงฟุ้งภายนอก */
 .login-card::after{
   content:""!important;
   position:absolute!important;
-  inset:-8px!important;
+  inset:-12px!important;
   z-index:-2!important;
-  border-radius:34px!important;
+  border-radius:38px!important;
   pointer-events:none!important;
-
   background:
     linear-gradient(
       115deg,
-      rgba(69,186,255,.40) 0%,
-      rgba(75,231,255,.34) 24%,
-      rgba(118,108,255,.34) 52%,
-      rgba(189,98,255,.34) 76%,
-      rgba(255,115,215,.38) 100%
+      rgba(62,190,255,.60) 0%,
+      rgba(71,226,255,.48) 23%,
+      rgba(121,93,255,.52) 52%,
+      rgba(194,91,255,.48) 77%,
+      rgba(255,92,211,.56) 100%
     )!important;
-
-  filter:blur(14px)!important;
-  opacity:.25!important;
-  animation:loginNeonGlowBreath 2.8s ease-in-out infinite!important;
+  opacity:.16!important;
+  filter:blur(15px)!important;
+  animation:loginAuraBreath 2.05s ease-in-out infinite!important;
 }
 
-@keyframes loginNeonBorderBreath{
+/* หายใจที่ตัวกล่องโดยตรง — ทำให้เห็นชัดในทุก browser */
+@keyframes loginCardBreath{
   0%,100%{
-    opacity:.55;
+    border-color:#76ccf7;
+    box-shadow:
+      0 18px 46px rgba(55,105,150,.13),
+      inset 0 1px 0 rgba(255,255,255,.96),
+      0 0 5px rgba(70,200,255,.16),
+      0 0 9px rgba(126,93,255,.08);
+  }
+  50%{
+    border-color:#9b7cff;
+    box-shadow:
+      0 18px 46px rgba(55,105,150,.13),
+      inset 0 1px 0 rgba(255,255,255,.96),
+      0 0 13px rgba(70,216,255,.82),
+      0 0 25px rgba(122,92,255,.58),
+      0 0 38px rgba(255,89,213,.28);
+  }
+}
+
+@keyframes loginRingBreath{
+  0%,100%{
+    opacity:.48;
     filter:
-      brightness(.88)
-      drop-shadow(0 0 4px rgba(65,203,255,.30))
-      drop-shadow(0 0 7px rgba(134,93,255,.20));
+      brightness(.82)
+      drop-shadow(0 0 3px rgba(64,205,255,.26))
+      drop-shadow(0 0 6px rgba(135,90,255,.16));
   }
   50%{
     opacity:1;
     filter:
-      brightness(1.32)
-      drop-shadow(0 0 8px rgba(65,203,255,.90))
-      drop-shadow(0 0 17px rgba(134,93,255,.62))
-      drop-shadow(0 0 24px rgba(255,103,219,.28));
+      brightness(1.45)
+      drop-shadow(0 0 9px rgba(64,218,255,.95))
+      drop-shadow(0 0 18px rgba(136,91,255,.78))
+      drop-shadow(0 0 27px rgba(255,92,216,.38));
   }
 }
 
-@keyframes loginNeonGlowBreath{
+@keyframes loginAuraBreath{
   0%,100%{
-    opacity:.18;
-    filter:blur(12px);
+    opacity:.10;
+    filter:blur(13px);
   }
   50%{
-    opacity:.62;
-    filter:blur(19px);
+    opacity:.58;
+    filter:blur(22px);
   }
 }
 
-/* ตอนแตะช่อง email ให้สว่างขึ้นเล็กน้อย แต่ยังไม่เคลื่อน */
-.login-card:focus-within::before{
-  animation-duration:2.1s!important;
-}
+/* focus แล้วหายใจเร็วขึ้นนิดเดียว */
+.login-card:focus-within,
+.login-card:focus-within::before,
 .login-card:focus-within::after{
-  animation-duration:2.1s!important;
+  animation-duration:1.65s!important;
 }
 
-@media (prefers-reduced-motion:reduce){
-  .login-card::before,
-  .login-card::after{
-    animation:none!important;
-  }
-  .login-card::before{
-    opacity:.85!important;
-  }
-  .login-card::after{
-    opacity:.34!important;
-  }
-}
-
+/* ผู้ใช้ต้องการ animation จึงไม่ปิดด้วย prefers-reduced-motion */
 @media(max-width:720px){
   .login-card::before{
     inset:-3px!important;
     border-radius:29px!important;
   }
   .login-card::after{
-    inset:-6px!important;
-    border-radius:32px!important;
+    inset:-9px!important;
+    border-radius:35px!important;
   }
 }
 </style>
@@ -3031,5 +3036,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.4-LOGIN-BREATHING-NEON-20260827</div></body>
+<div id="fsBuildMarker">V16.9.5-STRONG-BREATHING-NEON-20260827</div></body>
 </html>
