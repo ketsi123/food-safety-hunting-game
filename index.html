@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9-CONCEPT-C-REAL-HUD-20260827">
+<meta name="fs-build" content="V17.0-LOGIN-NO-SCORE-RANGES-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2047,6 +2047,58 @@ body:before{
   .hud-season-ribbon{min-width:190px;max-width:85%;font-size:9px;padding-left:16px;padding-right:16px}
 }
 
+
+
+/* ===== V17.0 LOGIN HERO : remove misleading score ranges ===== */
+.login-hero{isolation:isolate}
+.login-hero:after{z-index:1}
+.season-score-masks{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  overflow:hidden;
+}
+.season-score-mask{
+  position:absolute;
+  top:75.6%;
+  height:4.55%;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 2px 7px rgba(0,30,60,.14);
+}
+.season-score-mask.s1{
+  left:11.8%;width:18.8%;
+  background:linear-gradient(180deg,rgba(64,139,32,.98),rgba(37,107,23,.98));
+}
+.season-score-mask.s2{
+  left:34.3%;width:18.5%;
+  background:linear-gradient(180deg,rgba(28,113,181,.98),rgba(16,76,143,.98));
+}
+.season-score-mask.s3{
+  left:56.6%;width:17.3%;
+  background:linear-gradient(180deg,rgba(205,116,28,.98),rgba(155,72,18,.98));
+}
+.season-score-mask.s4{
+  left:77.8%;width:17.4%;
+  background:linear-gradient(180deg,rgba(115,64,180,.98),rgba(76,42,145,.98));
+}
+/* ให้ดูเหมือน footer ตกแต่ง ไม่ใช่พื้นที่ข้อความที่ถูกปิดทับ */
+.season-score-mask:after{
+  content:"";
+  position:absolute;
+  left:12%;right:12%;top:50%;height:2px;
+  transform:translateY(-50%);
+  border-radius:99px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.28),transparent);
+}
+.hero-chips{z-index:3}
+
+@media(max-width:720px){
+  /* มือถือ background cover จะ crop ภาพ จึงซ่อน mask เพื่อไม่ให้เหลื่อม */
+  .season-score-masks{display:none}
+}
+
 </style>
 
 <style id="v161-build-marker">
@@ -2062,6 +2114,12 @@ body:before{
 <section id="loginScreen" class="login-screen">
   <div class="login-shell">
     <section class="login-hero" aria-label="Food Safety Hunting Game">
+      <div class="season-score-masks" aria-hidden="true">
+        <i class="season-score-mask s1"></i>
+        <i class="season-score-mask s2"></i>
+        <i class="season-score-mask s3"></i>
+        <i class="season-score-mask s4"></i>
+      </div>
       <div class="hero-chips">
         <span>🏆 เก็บคะแนน</span><span>⭐ สะสมแต้ม</span><span>🎁 ลุ้นรางวัล</span><span>🛡️ Food Safety</span>
       </div>
@@ -2292,7 +2350,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.9 Concept C REAL HUD");
+(()=>{"use strict";console.info("Food Safety Hunting Game V17.0 LOGIN NO SCORE RANGES");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -2901,5 +2959,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9-CONCEPT-C-REAL-HUD-20260827</div></body>
+<div id="fsBuildMarker">V17.0-LOGIN-NO-SCORE-RANGES-20260827</div></body>
 </html>
