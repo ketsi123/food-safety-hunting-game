@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.5-STRONG-BREATHING-NEON-20260827">
+<meta name="fs-build" content="V16.9.6-LEVEL-RANK-HUD-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2048,6 +2048,71 @@ body:before{
 }
 
 
+
+/* ===== V16.9.6 LEVEL / RANK HUD — NO FINAL SCORE TARGET ===== */
+.hud-level-progress{
+  border-color:rgba(105,222,255,.36)!important;
+  background:
+    radial-gradient(circle at 78% 15%,rgba(160,102,255,.18),transparent 34%),
+    linear-gradient(180deg,rgba(17,93,173,.76),rgba(5,44,105,.80))!important;
+}
+.hud-level-progress .hud-progress-head span{
+  color:#dff5ff!important;
+  letter-spacing:.15px;
+}
+.hud-level-progress .hud-progress-head b{
+  color:#ffe66a!important;
+  font-size:10px!important;
+  letter-spacing:.15px;
+  text-shadow:0 1px 2px rgba(0,0,0,.28),0 0 9px rgba(255,222,72,.18);
+}
+.hud-level-progress .hud-progress-track{
+  height:16px!important;
+  margin-top:7px!important;
+  margin-bottom:7px!important;
+  background:linear-gradient(180deg,#04285f,#092f70)!important;
+  overflow:visible!important;
+}
+.hud-level-progress .hud-progress-fill{
+  background:linear-gradient(90deg,#20d78b 0%,#55e76b 42%,#70ddff 74%,#a777ff 100%)!important;
+  box-shadow:0 0 10px rgba(69,232,175,.48),0 0 18px rgba(109,176,255,.22)!important;
+}
+.hud-level-progress .hud-progress-mark{
+  width:13px!important;
+  height:13px!important;
+  font-size:8px!important;
+  background:#1b5ca9!important;
+  border-color:#a8d9ff!important;
+  box-shadow:0 2px 0 #08336f!important;
+}
+.hud-level-progress .hud-progress-mark.done{
+  background:#25c979!important;
+  border-color:#c6ffd9!important;
+  box-shadow:0 2px 0 #087b48,0 0 9px rgba(55,232,139,.45)!important;
+}
+.hud-level-progress .hud-progress-mark.current{
+  width:16px!important;
+  height:16px!important;
+  color:#173b74!important;
+  background:#ffe35c!important;
+  border-color:#fff6ba!important;
+  box-shadow:0 2px 0 #aa7c05,0 0 13px rgba(255,225,74,.55)!important;
+  animation:hudLevelMarkerPulse 1.5s ease-in-out infinite;
+}
+.hud-level-progress .hud-progress-mark-label{display:none!important}
+.hud-level-progress .hud-progress-foot span:first-child{
+  color:#c8eaff!important;
+  font-weight:1000!important;
+  font-variant-numeric:tabular-nums;
+}
+.hud-level-progress .hud-progress-foot span:last-child{
+  color:#ffe36b!important;
+  font-weight:1000!important;
+}
+@keyframes hudLevelMarkerPulse{
+  50%{filter:brightness(1.2);transform:translate(-50%,-50%) scale(1.12)}
+}
+
 /* ===== V16.9.5 STRONG BREATHING NEON BORDER ===== */
 .login-card{
   position:relative!important;
@@ -2242,18 +2307,18 @@ body:before{
             </div>
           </div>
 
-          <div class="hud-c-progress">
+          <div class="hud-c-progress hud-level-progress">
             <div class="hud-progress-head">
-              <span>ความคืบหน้าคะแนน</span>
-              <b id="headerProgressCaption">เป้าหมาย 2,000</b>
+              <span>ระดับผู้เล่น</span>
+              <b id="headerProgressCaption">ROOKIE · LV.1</b>
             </div>
-            <div class="hud-progress-track">
+            <div class="hud-progress-track" aria-label="EXP ของ Level ปัจจุบัน">
               <div class="hud-progress-fill" id="headerProgressFill"></div>
               <div class="hud-progress-marks" id="headerProgressMarks"></div>
             </div>
             <div class="hud-progress-foot">
-              <span id="headerProgressNow">0 คะแนน</span>
-              <span id="headerProgressNext">อีก 500 คะแนน</span>
+              <span id="headerProgressNow">EXP 0 / 500</span>
+              <span id="headerProgressNext">อีก 500 คะแนนขึ้น LV.2</span>
             </div>
           </div>
 
@@ -2643,34 +2708,43 @@ async function login(){
 }
 function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
 function formatGameNumber(v){return Number(v||0).toLocaleString("th-TH")}
+function getPlayerRank(level){
+  if(level<=1)return "ROOKIE";
+  if(level===2)return "EXPLORER";
+  if(level===3)return "SAFETY SCOUT";
+  if(level===4)return "FOOD SAFETY HUNTER";
+  if(level===5)return "SPECIALIST";
+  if(level===6)return "EXPERT";
+  if(level===7)return "MASTER";
+  if(level===8)return "LEGEND";
+  return "ELITE LEGEND";
+}
 function updateHeaderScoreProgress(value){
   const score=Math.max(0,Number(value||0));
-  const step=500;
-  const goal=Math.max(2000,Math.ceil(Math.max(score,1)/step)*step);
-  const first=Math.max(step,goal-(step*3));
-  const marks=[];
-  for(let n=first;n<=goal;n+=step)marks.push(n);
+  const expPerLevel=500;
+  const level=Math.floor(score/expPerLevel)+1;
+  const currentExp=score%expPerLevel;
+  const expPercent=Math.max(0,Math.min(100,(currentExp/expPerLevel)*100));
+  const remaining=expPerLevel-currentExp;
+  const rank=getPlayerRank(level);
 
   const fill=$("headerProgressFill"),wrap=$("headerProgressMarks"),caption=$("headerProgressCaption"),now=$("headerProgressNow"),next=$("headerProgressNext");
-  if(fill)fill.style.width=`${Math.min(100,(score/goal)*100)}%`;
-  if(caption)caption.textContent=`เป้าหมาย ${formatGameNumber(goal)}`;
-  if(now)now.textContent=`${formatGameNumber(score)} คะแนน`;
-  const nextGoal=marks.find(n=>score<n)||goal;
-  if(next)next.textContent=score>=goal?"ถึงเป้าหมายแล้ว!":`อีก ${formatGameNumber(nextGoal-score)} คะแนน`;
+  if(fill)fill.style.width=`${expPercent}%`;
+  if(caption)caption.textContent=`${rank} · LV.${level}`;
+  if(now)now.textContent=`EXP ${formatGameNumber(currentExp)} / ${formatGameNumber(expPerLevel)}`;
+  if(next)next.textContent=`อีก ${formatGameNumber(remaining)} คะแนนขึ้น LV.${level+1}`;
 
   if(wrap){
     wrap.innerHTML="";
-    marks.forEach(n=>{
+    [25,50,75,100].forEach((pct,i)=>{
       const dot=document.createElement("span");
-      const pct=Math.max(0,Math.min(100,n/goal*100));
-      dot.className="hud-progress-mark"+(score>=n?" done":"")+(score<n && nextGoal===n?" current":"");
+      const done=expPercent>=pct;
+      const thresholds=[125,250,375,500];
+      dot.className="hud-progress-mark"+(done?" done":"")+(!done && (i===0 || expPercent>=[25,50,75][i-1])?" current":"");
       dot.style.left=`${pct}%`;
-      dot.textContent=score>=n?"✓":"";
-      const label=document.createElement("span");
-      label.className="hud-progress-mark-label";
-      label.style.left=`${pct}%`;
-      label.textContent=formatGameNumber(n);
-      wrap.appendChild(dot);wrap.appendChild(label);
+      dot.textContent=done?"✓":(pct===100?"↑":"");
+      dot.setAttribute("title",`${thresholds[i]} EXP`);
+      wrap.appendChild(dot);
     });
   }
 }
@@ -3036,5 +3110,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.5-STRONG-BREATHING-NEON-20260827</div></body>
+<div id="fsBuildMarker">V16.9.6-LEVEL-RANK-HUD-20260827</div></body>
 </html>
