@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.7-RESULT-BELOW-HEADER-20260827">
+<meta name="fs-build" content="V16.8-NO-LIVE-SCORE-OVERLAY-SAFE-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -1679,31 +1679,28 @@ body:before{
 
 
 
-/* ===== V16.7 RESULT OVERLAY BELOW HEADER ===== */
-:root{--fs-game-header-height:104px}
-#resultOverlay{
-  top:var(--fs-game-header-height)!important;
-  right:0!important;
-  bottom:0!important;
-  left:0!important;
-  height:auto!important;
-  padding:24px 18px!important;
-  place-items:center!important;
-  background:rgba(218,237,248,.58)!important;
-  backdrop-filter:blur(10px)!important;
-  -webkit-backdrop-filter:blur(10px)!important;
-  border-top:1px solid rgba(122,183,222,.28)!important;
+
+
+/* ===== V16.8 NO LIVE SCORE + ALL OVERLAYS BELOW REAL HEADER ===== */
+.logic-only-score{display:none!important}
+.side-reason-head{justify-content:flex-start!important;min-height:76px!important}
+.side-reason-head>div:first-child{width:100%!important}
+.side-reason-head>div:first-child b{font-size:18px!important}
+.side-reason-head>div:first-child small{font-size:11px!important}
+:root{--fs-overlay-top:0px;--fs-game-header-height:0px}
+#resultOverlay,#menuOverlay,#busyOverlay{
+  top:var(--fs-overlay-top)!important;right:0!important;bottom:0!important;left:0!important;height:auto!important
 }
-#resultOverlay .result-modal{
-  max-height:calc(100vh - var(--fs-game-header-height) - 42px)!important;
+#resultOverlay .result-modal,#menuOverlay .menu-modal{max-height:calc(100vh - var(--fs-overlay-top) - 34px)!important}
+#busyOverlay .busy-card{max-height:calc(100vh - var(--fs-overlay-top) - 28px)!important}
+#questionGate.fs-gate-viewport{
+  position:fixed!important;z-index:35!important;margin:0!important;border-radius:0 0 24px 24px!important;overflow:hidden!important
 }
+.game-header{z-index:60!important}
 @media(max-width:720px){
-  #resultOverlay{
-    padding:12px 10px!important;
-  }
-  #resultOverlay .result-modal{
-    max-height:calc(100vh - var(--fs-game-header-height) - 22px)!important;
-  }
+  #resultOverlay,#menuOverlay,#busyOverlay{padding:12px 10px!important}
+  #resultOverlay .result-modal,#menuOverlay .menu-modal{max-height:calc(100vh - var(--fs-overlay-top) - 20px)!important}
+  #questionGate.fs-gate-viewport{border-radius:0 0 18px 18px!important}
 }
 
 </style>
@@ -1831,7 +1828,7 @@ body:before{
             <section class="reason-side-panel v12-reason-panel">
               <div class="reason-head side-reason-head">
                 <div><b>เหตุผลรายจุด</b><small>พิมพ์สั้น ๆ ตามหมายเลขที่เลือก</small></div>
-                <div class="question-score"><small>คะแนนข้อนี้</small><b id="liveQuestionScore">--</b></div>
+                <b id="liveQuestionScore" class="logic-only-score" aria-hidden="true">--</b>
               </div>
 
               <div id="reasonList" class="reason-list reason-scroll v12-reason-list"></div>
@@ -1911,7 +1908,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.7 result below header");
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.8 no live score + overlay safe");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -1943,7 +1940,7 @@ function masterQuestions(){
 
 const esc=v=>String(v??"").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 function toast(msg,ms=2300){e.toast.textContent=msg;e.toast.classList.add("show");clearTimeout(toast.t);toast.t=setTimeout(()=>e.toast.classList.remove("show"),ms)}
-function busy(on,title="กำลังประมวลผล...",sub="กรุณารอสักครู่"){e.busyOverlay.classList.toggle("hidden-layer",!on);e.busyText.textContent=title;e.busySub.textContent=sub;document.body.style.overflow=on?"hidden":""}
+function busy(on,title="กำลังประมวลผล...",sub="กรุณารอสักครู่"){if(on)syncAllOverlayGeometry();e.busyOverlay.classList.toggle("hidden-layer",!on);e.busyText.textContent=title;e.busySub.textContent=sub;document.body.style.overflow=on?"hidden":""}
 function action(msg,state="ready"){e.actionStatus.innerHTML=`<i class="mini-dot ${state==='ok'?'online':''}"></i><span>${esc(msg)}</span>`}
 async function request(url,opt={}){
   const timeoutMs=Number(opt.timeoutMs||60000);
@@ -2127,7 +2124,7 @@ async function login(){
 }
 function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
 function setTotal(v){e.totalScore.textContent=v||0;e.sideTotalScore.textContent=`${v||0} คะแนน`}
-async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");questions=masterQuestions();preload(questions);startSession()}
+async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");syncAllOverlayGeometry();questions=masterQuestions();preload(questions);startSession()}
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function startSession(){
   clearInterval(timer); started=false; ended=false;
@@ -2151,7 +2148,7 @@ function loadQ(startImmediately=false){
   e.gateIcon.textContent="🎯";e.gateKicker.textContent=cur===1?"ก่อนเริ่มเกมส์":"พร้อมสำหรับข้อต่อไป";e.gateTitle.textContent=cur===1?"กด START เพื่อเริ่มข้อ 1":`Season 1 • ข้อ ${cur}`;
   e.gateText.textContent=`เวลา ${q.timeLimitSec||45} วินาทีจะเริ่มนับหลังจากกด START เท่านั้น`;
   e.startQuestionBtn.textContent=cur===1?"▶ START ข้อ 1":"▶ START ข้อนี้";
-  e.questionGate.classList.remove("off");
+  showQuestionGateSafely();
   action("รอกด START เพื่อเริ่มจับเวลา");
   if(startImmediately) startQuestion();
   window.scrollTo({top:0,behavior:"smooth"})
@@ -2170,6 +2167,7 @@ function startQuestion(){
 
   e.playCard.classList.remove("game-paused");
   e.questionGate.classList.add("off");
+  setTimeout(clearQuestionGateViewportGeometry,220);
   e.submitBtn.disabled=false;
   e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';
   action(`เริ่มแล้ว • เลือกได้สูงสุด ${q.hotspotCount} จุด`,"ok");
@@ -2227,7 +2225,7 @@ function timeoutQuestion(){
   e.nextBtn.textContent="▶ เริ่มข้อถัดไป";e.nextBtn.classList.toggle("hidden",!more);
   e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
   e.endGameBtn.parentElement.classList.toggle("final",!more);
-  e.resultOverlay.classList.remove("hidden-layer");
+  syncAllOverlayGeometry();e.resultOverlay.classList.remove("hidden-layer");
 }
 async function submit(auto=false){
   if(ended)return;
@@ -2313,7 +2311,7 @@ async function submit(auto=false){
     e.endGameBtn.parentElement.classList.toggle("final",!more);
 
     busy(false);
-    e.resultOverlay.classList.remove("hidden-layer");
+    syncAllOverlayGeometry();e.resultOverlay.classList.remove("hidden-layer");
     action(more?"บันทึกสำเร็จ • กดเริ่มข้อถัดไปเมื่อพร้อม":"บันทึกสำเร็จ • กดจบเกมส์","ok");
 
   }catch(err){
@@ -2350,11 +2348,11 @@ function endGame(){
   e.playCard.classList.add("game-paused","session-done");
   e.gateIcon.textContent="🏆";e.gateKicker.textContent="SESSION COMPLETE";e.gateTitle.textContent="จบเกมส์แล้ว";
   e.gateText.textContent=`คะแนนสะสมทั้งหมด ${Number(user?.totalBestScore||0)} คะแนน`;
-  e.startQuestionBtn.textContent="↻ เล่นใหม่ Season 1";e.gateLogoutBtn.classList.remove("hidden");e.questionGate.classList.remove("off");
+  e.startQuestionBtn.textContent="↻ เล่นใหม่ Season 1";e.gateLogoutBtn.classList.remove("hidden");showQuestionGateSafely();
   e.startQuestionBtn.onclick=()=>{e.playCard.classList.remove("session-done");e.startQuestionBtn.onclick=startQuestion;startSession()};
   action("จบเกมส์แล้ว • เลือกเล่นใหม่หรือออกจากระบบ","ok")
 }
-function modal(title,html){e.menuModalTitle.textContent=title;e.menuModalBody.innerHTML=html;e.menuOverlay.classList.remove("hidden-layer")}
+function modal(title,html){syncAllOverlayGeometry();e.menuModalTitle.textContent=title;e.menuModalBody.innerHTML=html;e.menuOverlay.classList.remove("hidden-layer")}
 async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,30000),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${esc(r.totalBestScore||0)}</b></td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
 async function history(){
   busy(true,"กำลังโหลดประวัติ...");
@@ -2405,20 +2403,57 @@ async function history(){
   }
 }
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>อธิบายสั้น ๆ ว่าจุดนั้นเสี่ยงอย่างไร</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
-function logout(){clearInterval(timer);clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");setBackend(false)}
+function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
-function syncResultOverlayHeaderOffset(){
-  const header=document.querySelector('.game-header');
-  if(!header)return;
-  const h=Math.ceil(header.getBoundingClientRect().height||104);
-  document.documentElement.style.setProperty('--fs-game-header-height',`${h}px`);
+function visibleGameHeaderBottom(){
+  if(!e.gameScreen || e.gameScreen.classList.contains("hidden"))return 0;
+  const header=document.querySelector(".game-header");
+  if(!header)return 0;
+  const hr=header.getBoundingClientRect();
+  const logo=header.querySelector(".game-logo-v16");
+  const lr=logo?logo.getBoundingClientRect():null;
+  return Math.max(0,Math.ceil(Math.max(hr.bottom,lr?.bottom||0)));
 }
-syncResultOverlayHeaderOffset();
-window.addEventListener('resize',syncResultOverlayHeaderOffset,{passive:true});
-window.addEventListener('orientationchange',()=>setTimeout(syncResultOverlayHeaderOffset,120),{passive:true});
-if('ResizeObserver' in window){
-  const fsHeaderObserver=new ResizeObserver(syncResultOverlayHeaderOffset);
-  const fsHeader=document.querySelector('.game-header');
+function positionQuestionGateBelowHeader(){
+  if(!e.questionGate || !e.playCard || e.gameScreen.classList.contains("hidden"))return;
+  if(e.questionGate.classList.contains("off"))return;
+  const pr=e.playCard.getBoundingClientRect();
+  const headerBottom=visibleGameHeaderBottom();
+  const left=Math.max(0,Math.round(pr.left));
+  const right=Math.min(window.innerWidth,Math.round(pr.right));
+  const top=Math.max(headerBottom,Math.round(pr.top));
+  const width=Math.max(280,right-left);
+  const height=Math.max(300,window.innerHeight-top);
+  e.questionGate.classList.add("fs-gate-viewport");
+  e.questionGate.style.left=`${left}px`;
+  e.questionGate.style.top=`${top}px`;
+  e.questionGate.style.width=`${width}px`;
+  e.questionGate.style.height=`${height}px`;
+  e.questionGate.style.right="auto";
+  e.questionGate.style.bottom="auto";
+}
+function clearQuestionGateViewportGeometry(){
+  if(!e.questionGate)return;
+  e.questionGate.classList.remove("fs-gate-viewport");
+  ["left","top","width","height","right","bottom"].forEach(k=>e.questionGate.style[k]="");
+}
+function syncAllOverlayGeometry(){
+  const top=visibleGameHeaderBottom();
+  document.documentElement.style.setProperty("--fs-overlay-top",`${top}px`);
+  document.documentElement.style.setProperty("--fs-game-header-height",`${top}px`);
+  positionQuestionGateBelowHeader();
+}
+function showQuestionGateSafely(){
+  e.questionGate.classList.remove("off");
+  requestAnimationFrame(()=>{syncAllOverlayGeometry();requestAnimationFrame(positionQuestionGateBelowHeader)});
+}
+syncAllOverlayGeometry();
+window.addEventListener("resize",syncAllOverlayGeometry,{passive:true});
+window.addEventListener("scroll",syncAllOverlayGeometry,{passive:true});
+window.addEventListener("orientationchange",()=>setTimeout(syncAllOverlayGeometry,120),{passive:true});
+if("ResizeObserver" in window){
+  const fsHeaderObserver=new ResizeObserver(syncAllOverlayGeometry);
+  const fsHeader=document.querySelector(".game-header");
   if(fsHeader)fsHeaderObserver.observe(fsHeader);
 }
 
@@ -2440,5 +2475,5 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.7-RESULT-BELOW-HEADER-20260827</div></body>
+<div id="fsBuildMarker">V16.8-NO-LIVE-SCORE-OVERLAY-SAFE-20260827</div></body>
 </html>
