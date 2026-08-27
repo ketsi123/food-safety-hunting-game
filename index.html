@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.8-STRICT-2-KEYWORDS-20260827">
+<meta name="fs-build" content="V16.9.10-FLOATING-TIMER-STRICT-REASON-20260827">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2271,6 +2271,118 @@ body:before{
   filter:blur(var(--neonBlur))!important;
 }
 
+
+/* ===== V16.9.9 QUALIFIER UI ===== */
+.hud-qualifier-mini{margin-top:4px;padding:2px 7px;border-radius:999px;font-style:normal;font-size:7px;font-weight:1000;color:#d9ecff;background:rgba(5,36,88,.72);border:1px solid rgba(126,201,255,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.12);white-space:nowrap}.hud-qualifier-mini.qualified{color:#173400;background:linear-gradient(180deg,#f8ee69,#79db30);border-color:#fff39a;box-shadow:0 0 12px rgba(166,245,70,.42),inset 0 1px 0 #fff}.qualifier-nav em{min-width:34px;padding:4px 6px;border-radius:999px;text-align:center;font-style:normal;font-size:9px!important;font-weight:1000;color:#fff;background:#296bc5;border:1px solid #8fc7ff}.qualifier-nav.qualified{border-color:#e8cc4b!important;background:linear-gradient(180deg,#fffbe5,#fff3a8)!important}.qualifier-nav.qualified em{color:#173400;background:linear-gradient(180deg,#f9ed5b,#75d72a);border-color:#fff18b}.qualifier-summary{display:grid;gap:12px}.qualifier-hero{padding:16px;border-radius:18px;text-align:center;background:linear-gradient(135deg,#eaf8ff,#f3efff);border:1px solid #cce3f6}.qualifier-hero strong{display:block;font-size:22px;color:#175c9f}.qualifier-hero.qualified{background:linear-gradient(135deg,#f8ffe4,#fff3a8);border-color:#ead45a}.qualifier-hero.qualified strong{color:#2b760b}.qualifier-rule{margin-top:5px;color:#657e90;font-size:12px;line-height:1.55}.qualifier-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.qualifier-season{padding:12px 13px;border-radius:16px;border:1px solid #d7e7f1;background:#fff}.qualifier-season .q-top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-weight:1000;color:#244c67}.qualifier-season .q-score{margin-top:7px;font-size:17px;font-weight:1000;color:#1768ad}.qualifier-season .q-bar{height:8px;margin-top:8px;border-radius:999px;background:#e9f0f5;overflow:hidden}.qualifier-season .q-fill{height:100%;border-radius:999px;background:linear-gradient(90deg,#23b8e8,#635cf3);width:0}.qualifier-season.pass{border-color:#9edb81;background:#f6fff0}.qualifier-season.pass .q-score{color:#25820d}.qualifier-season.pass .q-fill{background:linear-gradient(90deg,#45ce48,#99e43a)}.lb-qual{display:inline-flex;align-items:center;justify-content:center;padding:4px 8px;border-radius:999px;font-size:10px;font-weight:1000;white-space:nowrap;background:#edf5fb;color:#47718a}.lb-qual.yes{background:#eaffcf;color:#2b790d;border:1px solid #a9dc70}.lb-qual.no{background:#eef4ff;color:#45688b;border:1px solid #cfdfef}@media(max-width:720px){.qualifier-grid{grid-template-columns:1fr}}
+
+/* ===== V16.9.10 FLOATING GAME TIMER ===== */
+.floating-game-timer{
+  position:fixed;
+  top:118px;
+  right:22px;
+  z-index:39; /* header is 40, timer stays visually below it */
+  min-width:174px;
+  height:64px;
+  padding:8px 13px;
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#fff;
+  border-radius:20px;
+  border:2px solid rgba(255,220,88,.92);
+  background:linear-gradient(135deg,rgba(10,81,156,.97),rgba(40,91,204,.97) 56%,rgba(101,76,235,.97));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.35),
+    0 5px 0 rgba(15,61,135,.38),
+    0 15px 34px rgba(18,72,143,.26),
+    0 0 18px rgba(86,185,255,.22);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(-10px) scale(.94);
+  pointer-events:none;
+  transition:opacity .18s ease,transform .18s ease,visibility .18s;
+}
+.floating-game-timer.show{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0) scale(1);
+}
+.floating-game-timer .float-timer-icon{
+  width:42px;
+  height:42px;
+  flex:0 0 42px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  font-size:22px;
+  background:linear-gradient(145deg,#20d4d4,#2679f3);
+  border:2px solid rgba(255,255,255,.72);
+  box-shadow:0 4px 0 rgba(5,53,128,.35),0 0 14px rgba(45,224,255,.38);
+}
+.floating-game-timer .float-timer-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+}
+.floating-game-timer .float-timer-copy small{
+  color:#dcefff;
+  font-size:9px;
+  font-weight:1000;
+  letter-spacing:.2px;
+}
+.floating-game-timer .float-timer-copy b{
+  margin-top:4px;
+  color:#fff;
+  font-size:24px;
+  font-weight:1000;
+  letter-spacing:.5px;
+  text-shadow:0 2px 0 rgba(0,0,0,.15);
+}
+.floating-game-timer .float-question-chip{
+  margin-left:auto;
+  padding:5px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.26);
+  color:#fff;
+  font-size:10px;
+  font-weight:1000;
+  white-space:nowrap;
+}
+.floating-game-timer.warning{
+  border-color:#ffcf42;
+  background:linear-gradient(135deg,#ef8b13,#f05e24 55%,#df3a3a);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.35),
+    0 5px 0 rgba(148,46,18,.32),
+    0 15px 36px rgba(224,77,31,.28),
+    0 0 22px rgba(255,185,45,.48);
+  animation:floatingTimerUrgent .72s ease-in-out infinite alternate;
+}
+.floating-game-timer.warning .float-timer-icon{
+  background:linear-gradient(145deg,#ffd84f,#ff7437);
+  box-shadow:0 4px 0 rgba(148,46,18,.28),0 0 16px rgba(255,210,67,.58);
+}
+@keyframes floatingTimerUrgent{
+  from{filter:brightness(.96);transform:translateY(0) scale(1)}
+  to{filter:brightness(1.18);transform:translateY(0) scale(1.025)}
+}
+@media(max-width:720px){
+  .floating-game-timer{
+    right:10px;
+    min-width:150px;
+    height:57px;
+    padding:7px 10px;
+    border-radius:17px;
+  }
+  .floating-game-timer .float-timer-icon{width:36px;height:36px;flex-basis:36px;font-size:19px}
+  .floating-game-timer .float-timer-copy b{font-size:21px}
+  .floating-game-timer .float-question-chip{font-size:9px;padding:4px 6px}
+}
+
 </style>
 
 <style id="v161-build-marker">
@@ -2351,6 +2463,7 @@ body:before{
             <small>ภารกิจปัจจุบัน</small>
             <b id="headerMissionName">จากฟาร์ม</b>
             <span id="headerMissionSeason">SEASON 1</span>
+            <em id="headerQualifierStatus" class="hud-qualifier-mini" title="Qualifier: ต้องครบ 4 Season และแต่ละ Season ≥ 5,000 คะแนน">QUALIFIER 0/4</em>
           </div>
         </div>
       </div>
@@ -2361,6 +2474,12 @@ body:before{
       </div>
     </div>
   </header>
+
+  <div id="floatingGameTimer" class="floating-game-timer" aria-live="polite" aria-label="เวลาที่เหลือแบบลอย">
+    <div class="float-timer-icon">⏱</div>
+    <div class="float-timer-copy"><small>เวลาที่เหลือ</small><b id="floatingTimerText">00:45</b></div>
+    <span id="floatingQuestionChip" class="float-question-chip">ข้อ 1/2</span>
+  </div>
 
   <main class="workspace">
     <aside class="sidebar">
@@ -2380,6 +2499,7 @@ body:before{
         <button class="nav-item locked" data-season="4"><i>🏠</i><span><b>Season 4</b><small>บ้าน / ครัวผู้บริโภค</small></span><em>🔒</em></button>
         <hr>
         <button id="leaderboardBtn" class="nav-item"><i>🏆</i><span><b>Leaderboard</b><small>อันดับคะแนนรวม</small></span></button>
+        <button id="qualifierBtn" class="nav-item qualifier-nav"><i>🏅</i><span><b>Qualifier</b><small>ครบ 4 Season • ≥ 5,000/Season</small></span><em id="qualifierNavStatus">0/4</em></button>
         <button id="historyBtn" class="nav-item"><i>🕘</i><span><b>ประวัติการเล่น</b><small>ผลการเล่นของฉัน</small></span></button>
         <button id="howToBtn" class="nav-item"><i>ⓘ</i><span><b>วิธีการเล่น</b><small>กติกาและคะแนน</small></span></button>
         <button id="changeUserBtn" class="nav-item logout"><i>↪</i><span><b>ออกจากระบบ</b><small>เปลี่ยนผู้เล่น</small></span></button>
@@ -2518,7 +2638,7 @@ window.FS_CONFIG = {
 <script id="v15-inline-app">
 (()=>{"use strict";console.info("Food Safety Hunting Game V16.9.1 LOGIN HERO CACHE BUST");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
-const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
 const MASTER_QUESTIONS=[
   {
@@ -2730,7 +2850,7 @@ async function login(){
     }
   })();
 }
-function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0)}
+function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0);updateQualifierUI(user.qualifier||{})}
 function formatGameNumber(v){return Number(v||0).toLocaleString("th-TH")}
 function getPlayerRank(level){
   if(level<=1)return "ROOKIE";
@@ -2782,6 +2902,9 @@ function updateHeaderMission(question,cur,total){
   if(missionSeason)missionSeason.textContent=`SEASON ${season}`;
   if(status)status.textContent=cur>=total?"ข้อสุดท้ายของ Season":"ภารกิจกำลังดำเนินการ";
 }
+function normalizeQualifier(qf){const min=Number(qf?.minimumPerSeason||5000),scores=qf?.seasonScores||{},status=qf?.seasonStatus||{},n={qualified:false,minimumPerSeason:min,requiredSeasons:4,playedSeasons:0,qualifiedSeasons:0,seasonScores:{},seasonStatus:{}};[1,2,3,4].forEach(s=>{const score=Number(scores[String(s)]??scores[s]??0),st=status[String(s)]||status[s]||{},played=!!st.played||Number(st.attempts||0)>0||score>0,passed=played&&score>=min;n.seasonScores[String(s)]=score;n.seasonStatus[String(s)]={played,passed,score,remaining:Math.max(0,min-score)};if(played)n.playedSeasons++;if(passed)n.qualifiedSeasons++});n.qualified=n.playedSeasons===4&&n.qualifiedSeasons===4;return n}
+function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title=`ต้องครบ 4 Season และแต่ละ Season ≥ ${formatGameNumber(q.minimumPerSeason)} คะแนน`}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
+function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"จากฟาร์ม",2:"จากโรงงาน",3:"โลจิสติกส์ & ตลาด",4:"บ้าน / ครัวผู้บริโภค"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],pct=Math.max(0,Math.min(100,(st.score/q.minimumPerSeason)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(q.minimumPerSeason)} คะแนน</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เงื่อนไข: เล่นครบ Season 1–4 และคะแนนสะสมของแต่ละ Season ต้องไม่ต่ำกว่า ${formatGameNumber(q.minimumPerSeason)} คะแนน</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
 async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");syncAllOverlayGeometry();questions=masterQuestions();preload(questions);startSession()}
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -2943,7 +3066,9 @@ async function submit(auto=false){
 
     if(user){
       user.totalBestScore=cumulative;
+      if(d.qualifier)user.qualifier=d.qualifier;
       saveUser(user);
+      updateQualifierUI(user.qualifier||{});
     }
 
     e.liveQuestionScore.textContent=earnedNow;
@@ -3012,7 +3137,7 @@ function endGame(){
   action("จบเกมส์แล้ว • เลือกเล่นใหม่หรือออกจากระบบ","ok")
 }
 function modal(title,html){syncAllOverlayGeometry();e.menuModalTitle.textContent=title;e.menuModalBody.innerHTML=html;e.menuOverlay.classList.remove("hidden-layer")}
-async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,30000),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนน</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${esc(r.totalBestScore||0)}</b></td></tr>`).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
+async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,30000),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนนรวม</th><th>Qualifier</th></tr></thead><tbody>${rows.map(r=>{const q=normalizeQualifier(r.qualifier||{});return `<tr><td>${q.qualified?"🏆 "+esc(r.qualifiedRank||r.rank):esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${formatGameNumber(r.totalBestScore||0)}</b></td><td><span class="lb-qual ${q.qualified?"yes":"no"}">${q.qualified?"QUALIFIED":q.qualifiedSeasons+"/4"}</span></td></tr>`}).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
 async function history(){
   busy(true,"กำลังโหลดประวัติ...");
   try{
@@ -3021,8 +3146,10 @@ async function history(){
 
     if(user){
       user.totalBestScore=Number(d.totalCumulativeScore??d.totalBestScore??0);
+      if(d.qualifier)user.qualifier=d.qualifier;
       saveUser(user);
       setTotal(user.totalBestScore);
+      updateQualifierUI(user.qualifier||{});
     }
 
     modal(
@@ -3061,7 +3188,7 @@ async function history(){
     busy(false);
   }
 }
-function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div></div>`)}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>ตำแหน่ง 50 + เหตุผล 50 คะแนน • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>ต้องเล่นครบ Season 1–4 และคะแนนสะสมแต่ละ Season ≥ 5,000 คะแนน</div></div></div>`)}
 function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
@@ -3116,7 +3243,7 @@ if("ResizeObserver" in window){
   if(fsHeader)fsHeaderObserver.observe(fsHeader);
 }
 
-e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
+e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>Number(b.dataset.season)===1?toast("Season 1 : จากฟาร์ม"):toast(`Season ${b.dataset.season} ยังไม่เปิดให้เล่น`));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
   e.questionImage.classList.remove("loading");
   e.questionImage.dataset.retry="";
 };
@@ -3134,7 +3261,7 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.8-STRICT-2-KEYWORDS-20260827</div>
+<div id="fsBuildMarker">V16.9.10-FLOATING-TIMER-STRICT-REASON-20260827</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
@@ -3195,6 +3322,95 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
   } else {
     startNeonBreath();
   }
+})();
+</script>
+
+
+<script id="floating-timer-v16910">
+(() => {
+  "use strict";
+
+  const $ = id => document.getElementById(id);
+  const floating = $("floatingGameTimer");
+  const floatingText = $("floatingTimerText");
+  const floatingChip = $("floatingQuestionChip");
+  const mainTimer = document.querySelector(".question-strip-timer");
+  const mainTimerText = $("timerText");
+  const questionCounter = $("questionCounter");
+  const header = document.querySelector(".game-header");
+  const gameScreen = $("gameScreen");
+  const gate = $("questionGate");
+  const resultOverlay = $("resultOverlay");
+  const menuOverlay = $("menuOverlay");
+  const busyOverlay = $("busyOverlay");
+
+  if (!floating || !mainTimer || !mainTimerText || !header) return;
+
+  const isHidden = el => !el || el.classList.contains("hidden") || el.classList.contains("hidden-layer");
+
+  function secondsFromText(text){
+    const m = String(text || "").match(/(\d+):(\d+)/);
+    return m ? Number(m[1]) * 60 + Number(m[2]) : 999;
+  }
+
+  function syncText(){
+    const text = mainTimerText.textContent || "00:00";
+    floatingText.textContent = text;
+    floatingChip.textContent = `ข้อ ${questionCounter?.textContent || "-"}`;
+    floating.classList.toggle("warning", secondsFromText(text) <= 10);
+  }
+
+  function updatePosition(){
+    const headerRect = header.getBoundingClientRect();
+    floating.style.top = `${Math.max(8, Math.round(headerRect.bottom + 10))}px`;
+  }
+
+  function updateVisibility(){
+    updatePosition();
+    syncText();
+
+    const gameVisible = gameScreen && !gameScreen.classList.contains("hidden");
+    const activelyPlaying = gate && gate.classList.contains("off");
+    const overlayOpen = !isHidden(resultOverlay) || !isHidden(menuOverlay) || !isHidden(busyOverlay);
+
+    if (!gameVisible || !activelyPlaying || overlayOpen){
+      floating.classList.remove("show");
+      return;
+    }
+
+    const headerBottom = header.getBoundingClientRect().bottom;
+    const r = mainTimer.getBoundingClientRect();
+    const visibleTop = Math.max(r.top, headerBottom + 5);
+    const visibleBottom = Math.min(r.bottom, window.innerHeight - 5);
+    const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+    const mainTimerClearlyVisible = visibleHeight >= r.height * 0.58;
+
+    floating.classList.toggle("show", !mainTimerClearlyVisible);
+  }
+
+  // Timer and question number are updated by the existing game code.
+  new MutationObserver(() => { syncText(); updateVisibility(); })
+    .observe(mainTimerText, { childList:true, characterData:true, subtree:true });
+
+  if (questionCounter){
+    new MutationObserver(() => { syncText(); updateVisibility(); })
+      .observe(questionCounter, { childList:true, characterData:true, subtree:true });
+  }
+
+  if (gate){
+    new MutationObserver(updateVisibility).observe(gate, { attributes:true, attributeFilter:["class"] });
+  }
+
+  [resultOverlay, menuOverlay, busyOverlay].filter(Boolean).forEach(el => {
+    new MutationObserver(updateVisibility).observe(el, { attributes:true, attributeFilter:["class"] });
+  });
+
+  window.addEventListener("scroll", updateVisibility, { passive:true });
+  window.addEventListener("resize", updateVisibility, { passive:true });
+  window.addEventListener("orientationchange", () => setTimeout(updateVisibility, 120), { passive:true });
+
+  syncText();
+  updateVisibility();
 })();
 </script>
 
