@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.16-S1Q01-Q08-RANDOM-20260828">
+<meta name="fs-build" content="V16.9.17-S1Q01-Q13-RANDOM-20260828">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2446,7 +2446,7 @@ body:before{
             <div class="hud-c-icon">🎯</div>
             <div class="hud-c-copy">
               <small>ข้อปัจจุบัน</small>
-              <b id="questionCounter">1/8</b>
+              <b id="questionCounter">1/13</b>
               <span id="headerQuestionStatus">พร้อมเริ่มภารกิจ</span>
             </div>
           </div>
@@ -2524,7 +2524,7 @@ body:before{
     </aside>
 
     <section class="content">
-      <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : จากฟาร์ม</b><span id="stepText">ภาพที่ 1 / 8</span></div>
+      <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : จากฟาร์ม</b><span id="stepText">ภาพที่ 1 / 13</span></div>
 
       <section class="play-card" id="playCard">
         <div id="questionGate" class="question-gate">
@@ -2638,7 +2638,7 @@ body:before{
 <script id="v15-inline-config">
 window.FS_CONFIG = {
   BACKEND_URL: "https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec",
-  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05", "S1Q06", "S1Q07", "S1Q08"],
+  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05", "S1Q06", "S1Q07", "S1Q08", "S1Q09", "S1Q10", "S1Q11", "S1Q12", "S1Q13"],
   LOCAL_QUESTIONS: [
     { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
     { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
@@ -2647,10 +2647,15 @@ window.FS_CONFIG = {
     { questionId:"S1Q05", season:1, imageFile:"S1_Q05.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
     { questionId:"S1Q06", season:1, imageFile:"S1_Q06.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
     { questionId:"S1Q07", season:1, imageFile:"S1_Q07.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-    { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
+    { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q09", season:1, imageFile:"S1_Q09.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q10", season:1, imageFile:"S1_Q10.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q11", season:1, imageFile:"S1_Q11.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q12", season:1, imageFile:"S1_Q12.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q13", season:1, imageFile:"S1_Q13.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260828-V16915-Q01Q08",
+  ASSET_VERSION: "20260828-V16917-Q01Q13",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -2659,7 +2664,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.16 • S1Q01-Q08 + randomized order");
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.17 • S1Q01-Q13 + randomized order");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -2671,7 +2676,12 @@ const MASTER_QUESTIONS=[
   { questionId:"S1Q05", season:1, imageFile:"S1_Q05.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
   { questionId:"S1Q06", season:1, imageFile:"S1_Q06.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
   { questionId:"S1Q07", season:1, imageFile:"S1_Q07.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-  { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
+  { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+  { questionId:"S1Q09", season:1, imageFile:"S1_Q09.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+  { questionId:"S1Q10", season:1, imageFile:"S1_Q10.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+  { questionId:"S1Q11", season:1, imageFile:"S1_Q11.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+  { questionId:"S1Q12", season:1, imageFile:"S1_Q12.jpg", hotspotCount:4, fullScore:100, timeLimitSec:45 },
+  { questionId:"S1Q13", season:1, imageFile:"S1_Q13.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
 ];
 function masterQuestionById(id){
   const key=String(id||"").trim().toUpperCase();
