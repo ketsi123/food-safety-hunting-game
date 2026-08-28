@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.19-S1Q01-Q20-RANDOM-20260828">
+<meta name="fs-build" content="V16.9.20-S1Q01-Q20-USER-COUNT-20260828">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2409,6 +2409,64 @@ body:before{
   white-space:nowrap;
 }
 </style>
+
+<style id="total-user-count-v16920">
+/* V16.9.20 — live registered-user count below the REAL user box */
+.header-inner > .user-chip{
+  position:relative!important;
+  overflow:visible!important;
+}
+.total-user-badge{
+  position:absolute;
+  right:6px;
+  top:calc(100% + 6px);
+  z-index:70;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  min-width:158px;
+  height:25px;
+  padding:3px 10px;
+  border-radius:999px;
+  color:#eaf8ff;
+  font-size:9px;
+  font-weight:800;
+  white-space:nowrap;
+  background:linear-gradient(180deg,rgba(26,105,160,.96),rgba(8,65,115,.96));
+  border:1px solid rgba(150,218,255,.62);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.20),0 5px 12px rgba(0,0,0,.16);
+  backdrop-filter:blur(6px);
+}
+.total-user-badge b{
+  color:#ffe85a;
+  font-size:11px;
+  font-weight:1000;
+  line-height:1;
+}
+.total-user-icon{font-size:11px}
+@media(max-width:1180px){
+  .total-user-badge{
+    right:0;
+    min-width:128px;
+    font-size:8px;
+    padding-left:7px;
+    padding-right:7px;
+  }
+}
+@media(max-width:620px){
+  .total-user-badge{
+    top:calc(100% + 4px);
+    right:0;
+    min-width:122px;
+    height:23px;
+    font-size:7.5px;
+    gap:4px;
+  }
+  .total-user-badge b{font-size:10px}
+}
+</style>
+
 </head>
 <body>
 
@@ -2488,6 +2546,12 @@ body:before{
         <div id="avatar" class="avatar">U</div>
         <div class="user-copy"><b id="displayName">ผู้เล่น</b><small id="userEmail"></small></div>
         <span class="ready-dot" id="gameReadyDot"></span>
+        <div class="total-user-badge" title="จำนวนผู้เล่นที่ลงทะเบียนในชีต USERS">
+          <span class="total-user-icon">👥</span>
+          <span>ผู้เล่นทั้งหมด</span>
+          <b id="totalUserCount">--</b>
+          <span>คน</span>
+        </div>
       </div>
     </div>
   </header>
@@ -2524,7 +2588,7 @@ body:before{
     </aside>
 
     <section class="content">
-      <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : จากฟาร์ม</b><span id="stepText">ภาพที่ 1 / 17</span></div>
+      <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : จากฟาร์ม</b><span id="stepText">ภาพที่ 1 / 20</span></div>
 
       <section class="play-card" id="playCard">
         <div id="questionGate" class="question-gate">
@@ -2662,7 +2726,7 @@ window.FS_CONFIG = {
     { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260828-V16919-Q01Q20",
+  ASSET_VERSION: "20260828-V16920-Q01Q20-USERCOUNT",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -2671,9 +2735,9 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.19 • S1Q01-Q20 + randomized order");
-const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time";
-const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.20 • S1Q01-Q20 + user count");
+const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
@@ -2883,6 +2947,7 @@ async function login(){
         renderUser();
         setTotal(Number(loginData.user.totalBestScore||0));
       }
+      renderTotalUsers(loginData?.totalUsers);
       setBackend(true);
     }catch(err){
       setBackend(false);
@@ -2893,6 +2958,17 @@ async function login(){
       e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
     }
   })();
+}
+function renderTotalUsers(value){
+  const n=Number(value);
+  if(!e.totalUserCount)return;
+  if(Number.isFinite(n)&&n>=0){
+    e.totalUserCount.textContent=formatGameNumber(n);
+    localStorage.setItem(S_TOTAL_USERS,String(n));
+  }else{
+    const cached=Number(localStorage.getItem(S_TOTAL_USERS));
+    e.totalUserCount.textContent=Number.isFinite(cached)&&cached>=0?formatGameNumber(cached):"--";
+  }
 }
 function renderUser(){e.displayName.textContent=user.displayName||"ผู้เล่น";e.userEmail.textContent=user.email||"";e.avatar.textContent=(user.displayName||user.email||"U")[0].toUpperCase();setTotal(user.totalBestScore||0);updateQualifierUI(user.qualifier||{})}
 function formatGameNumber(v){return Number(v||0).toLocaleString("th-TH")}
@@ -2950,7 +3026,7 @@ function normalizeQualifier(qf){const min=Number(qf?.minimumPerSeason||5000),sco
 function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title=`ต้องครบ 4 Season และแต่ละ Season ≥ ${formatGameNumber(q.minimumPerSeason)} คะแนน`}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
 function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"จากฟาร์ม",2:"จากโรงงาน",3:"โลจิสติกส์ & ตลาด",4:"บ้าน / ครัวผู้บริโภค"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],pct=Math.max(0,Math.min(100,(st.score/q.minimumPerSeason)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(q.minimumPerSeason)} คะแนน</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เงื่อนไข: เล่นครบ Season 1–4 และคะแนนสะสมของแต่ละ Season ต้องไม่ต่ำกว่า ${formatGameNumber(q.minimumPerSeason)} คะแนน</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
-async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");syncAllOverlayGeometry();questions=masterQuestions();preload(questions);startSession()}
+async function openGame(){renderUser();renderTotalUsers();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");syncAllOverlayGeometry();questions=masterQuestions();preload(questions);startSession()}
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function startSession(){
   clearInterval(timer); started=false; ended=false;
@@ -3305,7 +3381,7 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.19 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.20 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
