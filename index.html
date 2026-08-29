@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.29-Q01-Q20-DYNAMIC-SCORE-20260829">
+<meta name="fs-build" content="V16.9.30-Q01-Q20-SMART-RANDOM-20260829">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2832,7 +2832,7 @@ window.FS_CONFIG = {
     { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260829-V16929-Q01Q20-DYNAMIC-SCORE",
+  ASSET_VERSION: "20260829-V16930-Q01Q20-SMART-RANDOM",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -3133,10 +3133,94 @@ function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{
 function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"จากฟาร์ม",2:"จากโรงงาน",3:"โลจิสติกส์ & ตลาด",4:"บ้าน / ครัวผู้บริโภค"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],pct=Math.max(0,Math.min(100,(st.score/q.minimumPerSeason)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(q.minimumPerSeason)} คะแนน</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เงื่อนไข: เล่นครบ Season 1–4 และคะแนนสะสมของแต่ละ Season ต้องไม่ต่ำกว่า ${formatGameNumber(q.minimumPerSeason)} คะแนน</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
 async function openGame(){renderUser();renderTotalUsers();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");syncAllOverlayGeometry();questions=masterQuestions();preload(questions);startSession()}
-function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function shuffle(a){
+  a=[...a];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function questionNoByIndex(i){
+  const m=String(questions[i]?.questionId||"").match(/Q(\d+)/i);
+  return m?Number(m[1]):i+1;
+}
+function questionGroupByIndex(i){
+  // Season 1 content is intentionally built in 5-question journeys:
+  // 01-05 Logistic, 06-10 Modern Trade, 11-15 Retail, 16-20 Consumer.
+  return Math.floor((questionNoByIndex(i)-1)/5);
+}
+function smartRandomOrder(){
+  const base=questions.map((_,i)=>i);
+  if(base.length<=2)return shuffle(base);
+
+  let previous=[];
+  try{
+    previous=JSON.parse(localStorage.getItem("FS_LAST_SMART_ORDER")||"[]");
+    if(!Array.isArray(previous))previous=[];
+  }catch(_){previous=[]}
+
+  const prevIds=previous.map(String);
+  const idOf=i=>String(questions[i]?.questionId||i);
+  const scoreOrder=arr=>{
+    let score=0;
+    let runDir=0,runLen=1;
+    for(let p=0;p<arr.length;p++){
+      const qn=questionNoByIndex(arr[p]);
+      const qid=idOf(arr[p]);
+
+      // Do not make a new game look like the previous game.
+      if(prevIds[p]===qid) score+=6;
+      if(p<3 && prevIds[p]===qid) score+=14;
+
+      if(p>0){
+        const prev=arr[p-1];
+        const prevNo=questionNoByIndex(prev);
+        const diff=Math.abs(qn-prevNo);
+
+        // Biggest visual pattern: consecutive questions from the same 5-question topic block.
+        if(questionGroupByIndex(prev)===questionGroupByIndex(arr[p])) score+=32;
+
+        // Avoid obvious numeric sequences such as 7→8, 12→11, 18→19.
+        if(diff===1) score+=24;
+        else if(diff===2) score+=10;
+
+        const dir=Math.sign(qn-prevNo);
+        if(dir && dir===runDir){
+          runLen++;
+          if(runLen>=3)score+=18*(runLen-2);
+        }else{
+          runDir=dir;
+          runLen=2;
+        }
+      }
+    }
+    // Avoid starting with the exact same first question as the last session.
+    if(prevIds.length && idOf(arr[0])===prevIds[0])score+=30;
+    return score;
+  };
+
+  // Generate many genuinely random candidates, then choose the one with
+  // the fewest human-visible patterns. Every question still appears exactly once.
+  let best=null,bestScore=Infinity;
+  const attempts=Math.max(160,base.length*12);
+  for(let k=0;k<attempts;k++){
+    const candidate=shuffle(base);
+    const s=scoreOrder(candidate)+Math.random()*1.5; // random tie-break
+    if(s<bestScore){bestScore=s;best=candidate}
+  }
+
+  const finalOrder=best||shuffle(base);
+  try{
+    localStorage.setItem("FS_LAST_SMART_ORDER",JSON.stringify(finalOrder.map(idOf)));
+  }catch(_){}
+  return finalOrder;
+}
 function startSession(){
   clearInterval(timer); started=false; ended=false;
-  order=(C.RANDOMIZE_QUESTIONS?shuffle(questions.map((_,i)=>i)):questions.map((_,i)=>i).sort((a,b)=>String(questions[a].questionId).localeCompare(String(questions[b].questionId))));
+  order=(C.RANDOMIZE_QUESTIONS
+    ? smartRandomOrder()
+    : questions.map((_,i)=>i).sort((a,b)=>String(questions[a].questionId).localeCompare(String(questions[b].questionId))));
   idx=0;loadQ(false)
 }
 function loadQ(startImmediately=false){
