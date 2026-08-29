@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.20-S1Q01-Q20-USER-COUNT-20260828">
+<meta name="fs-build" content="V16.9.22-S1Q01-Q20-USER-COUNT-IN-CARD-20260829">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2467,6 +2467,111 @@ body:before{
 }
 </style>
 
+
+<style id="total-user-count-balanced-v16921">
+/* V16.9.21 — balanced user metric under the user card */
+.header-inner > .user-chip{
+  position:relative!important;
+  overflow:visible!important;
+  width:264px!important;
+  min-width:264px!important;
+}
+
+/* Match the lower metric to the exact width and visual axis of the user box */
+.header-inner > .user-chip .total-user-badge{
+  position:absolute!important;
+  left:0!important;
+  right:0!important;
+  top:calc(100% + 7px)!important;
+  width:100%!important;
+  min-width:0!important;
+  height:32px!important;
+  padding:0 13px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:10px!important;
+  border-radius:13px!important;
+  color:#eaf7ff!important;
+  background:
+    linear-gradient(180deg,rgba(36,116,170,.94),rgba(12,73,123,.96))!important;
+  border:1px solid rgba(139,208,248,.68)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.18),
+    0 5px 13px rgba(0,28,55,.18)!important;
+  backdrop-filter:blur(7px)!important;
+  white-space:nowrap!important;
+  font-size:9px!important;
+  font-weight:800!important;
+}
+
+.total-user-label{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  min-width:0;
+  letter-spacing:.05px;
+}
+.total-user-icon{
+  width:19px;
+  height:19px;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  border-radius:7px;
+  font-size:10px!important;
+  background:rgba(109,217,255,.12);
+  border:1px solid rgba(151,226,255,.22);
+}
+.total-user-value{
+  display:flex;
+  align-items:baseline;
+  gap:4px;
+  flex:0 0 auto;
+  padding-left:11px;
+  border-left:1px solid rgba(183,229,255,.25);
+}
+.total-user-value b{
+  color:#ffe66a!important;
+  font-size:14px!important;
+  font-weight:1000!important;
+  line-height:1!important;
+  font-variant-numeric:tabular-nums;
+}
+.total-user-value small{
+  color:#dff4ff;
+  font-size:8px;
+  font-weight:800;
+}
+
+/* Keep the two cards visually centered as one unit on narrower layouts */
+@media(max-width:1180px){
+  .header-inner > .user-chip{
+    width:238px!important;
+    min-width:238px!important;
+  }
+  .header-inner > .user-chip .total-user-badge{
+    height:30px!important;
+    padding:0 11px!important;
+  }
+}
+@media(max-width:620px){
+  .header-inner > .user-chip{
+    width:230px!important;
+    min-width:230px!important;
+  }
+  .header-inner > .user-chip .total-user-badge{
+    top:calc(100% + 5px)!important;
+    height:29px!important;
+    border-radius:12px!important;
+    padding:0 10px!important;
+  }
+  .total-user-label{gap:5px}
+  .total-user-value{padding-left:8px}
+  .total-user-value b{font-size:13px!important}
+}
+</style>
+
 </head>
 <body>
 
@@ -2547,10 +2652,11 @@ body:before{
         <div class="user-copy"><b id="displayName">ผู้เล่น</b><small id="userEmail"></small></div>
         <span class="ready-dot" id="gameReadyDot"></span>
         <div class="total-user-badge" title="จำนวนผู้เล่นที่ลงทะเบียนในชีต USERS">
-          <span class="total-user-icon">👥</span>
-          <span>ผู้เล่นทั้งหมด</span>
-          <b id="totalUserCount">--</b>
-          <span>คน</span>
+          <span class="total-user-label">
+            <span class="total-user-icon">👥</span>
+            <span>ผู้เล่นที่เข้าร่วมทั้งหมด</span>
+          </span>
+          <span class="total-user-value"><b id="totalUserCount">--</b><small>คน</small></span>
         </div>
       </div>
     </div>
@@ -2726,7 +2832,7 @@ window.FS_CONFIG = {
     { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260828-V16920-Q01Q20-USERCOUNT",
+  ASSET_VERSION: "20260829-V16922-Q01Q20-USERCOUNT-INCARD",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -2735,7 +2841,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.20 • S1Q01-Q20 + user count");
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.22 • S1Q01-Q20 + user count in card");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -3381,7 +3487,7 @@ localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
 </script>
-<div id="fsBuildMarker">V16.9.20 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.22 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
@@ -3543,6 +3649,90 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
   updateVisibility();
 })();
 </script>
+
+
+<style id="user-card-integrated-v16922">
+.header-inner > .user-chip{
+  position:relative!important;
+  overflow:hidden!important;
+  box-sizing:border-box!important;
+  display:grid!important;
+  grid-template-columns:46px minmax(0,1fr) 12px!important;
+  grid-template-rows:auto auto!important;
+  column-gap:9px!important;
+  row-gap:7px!important;
+  align-items:center!important;
+  width:246px!important;
+  min-width:246px!important;
+  padding:9px 11px 7px!important;
+  border-radius:21px!important;
+}
+.header-inner > .user-chip > .avatar{
+  grid-column:1!important;grid-row:1!important;margin:0!important;
+}
+.header-inner > .user-chip > .user-copy{
+  grid-column:2!important;grid-row:1!important;min-width:0!important;align-self:center!important;
+}
+.header-inner > .user-chip > .ready-dot{
+  grid-column:3!important;grid-row:1!important;justify-self:end!important;align-self:center!important;margin:0!important;
+}
+.header-inner > .user-chip > .total-user-badge{
+  position:static!important;
+  grid-column:1/-1!important;
+  grid-row:2!important;
+  width:auto!important;
+  min-width:0!important;
+  height:26px!important;
+  margin:0!important;
+  padding:6px 3px 0!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  border:0!important;
+  border-top:1px solid rgba(173,220,249,.28)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  color:#dff4ff!important;
+  font-size:8.5px!important;
+  font-weight:800!important;
+}
+.header-inner > .user-chip .total-user-label{
+  display:flex!important;align-items:center!important;gap:6px!important;min-width:0!important;
+}
+.header-inner > .user-chip .total-user-icon{
+  display:inline!important;width:auto!important;height:auto!important;padding:0!important;border:0!important;
+  border-radius:0!important;background:transparent!important;font-size:10px!important;
+}
+.header-inner > .user-chip .total-user-value{
+  display:flex!important;align-items:baseline!important;gap:4px!important;padding:0!important;border:0!important;white-space:nowrap!important;
+}
+.header-inner > .user-chip .total-user-value b{
+  color:#ffe65f!important;font-size:13px!important;font-weight:1000!important;
+}
+.header-inner > .user-chip .total-user-value small{
+  color:#dff4ff!important;font-size:8px!important;font-weight:800!important;
+}
+@media(max-width:1180px){
+  .header-inner > .user-chip{
+    width:230px!important;min-width:230px!important;grid-template-columns:42px minmax(0,1fr) 11px!important;
+    padding:8px 10px 6px!important;row-gap:6px!important;
+  }
+  .header-inner > .user-chip > .total-user-badge{height:25px!important;padding-top:5px!important}
+}
+@media(max-width:620px){
+  .header-inner > .user-chip{
+    width:220px!important;min-width:220px!important;grid-template-columns:38px minmax(0,1fr) 10px!important;
+    padding:7px 9px 6px!important;row-gap:5px!important;
+  }
+  .header-inner > .user-chip > .total-user-badge{
+    height:24px!important;padding-top:5px!important;font-size:8px!important;
+  }
+  .header-inner > .user-chip .total-user-value b{font-size:12px!important}
+}
+</style>
 
 </body>
 </html>
