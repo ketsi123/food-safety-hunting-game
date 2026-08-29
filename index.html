@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.39-Q01-Q20-PRESTART-HINT-5SEC-20260829">
+<meta name="fs-build" content="V16.9.41-Q01-Q20-PREHINT-ONCE-PER-SEASON-20260829">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2866,7 +2866,7 @@ window.FS_CONFIG = {
     { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260829-V16939-PRESTART-HINT",
+  ASSET_VERSION: "20260829-V16941-PREHINT-ONCE-PER-SEASON",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -3284,7 +3284,7 @@ const PRESTART_HINTS={
   3:[["👀","เห็นความเสี่ยงแล้วไม่หยุด"],["🗣️","ไม่ Speak Up"],["📝","บันทึกไม่ตรงความจริง"],["✅","ข้ามขั้นตอนสำคัญ"],["🤝","พฤติกรรมไม่หนุนความปลอดภัย"]],
   4:[["🧠","อ่านคำถามให้ครบ"],["🎯","เลือกคำตอบที่ปลอดภัยที่สุด"],["⏱️","บริหารเวลา"],["⭐","เก็บดาวระหว่างทาง"],["❤️","รักษาหัวใจให้ถึงเส้นชัย"]]
 };
-let preHintTimer=null,preHintRemaining=0,preHintOnFinish=null;
+let preHintTimer=null,preHintRemaining=0,preHintOnFinish=null,preHintShownSeasons=new Set();
 function renderPreStartHint(season){
   const list=document.getElementById("preHintList"),items=PRESTART_HINTS[Number(season||1)]||PRESTART_HINTS[1];
   if(list)list.innerHTML=items.map(([ic,tx])=>`<div class="prehint-item"><i>${ic}</i><span>${tx}</span></div>`).join("");
@@ -3305,7 +3305,7 @@ function showPreStartHint(season,onFinish){
 document.getElementById("preHintClose")?.addEventListener("click",()=>hidePreStartHint(true));
 
 function startSession(){
-  clearInterval(timer); started=false; ended=false;
+  clearInterval(timer); started=false; ended=false; preHintShownSeasons=new Set();
   order=(C.RANDOMIZE_QUESTIONS
     ? smartRandomOrder()
     : questions.map((_,i)=>i).sort((a,b)=>String(questions[a].questionId).localeCompare(String(questions[b].questionId))));
@@ -3342,9 +3342,8 @@ function startQuestion(){
   if(started||ended)return;
   e.questionGate.classList.add("off");
   setTimeout(clearQuestionGateViewportGeometry,220);
-  action("กำลังแสดง Hint ก่อนเริ่มเกม");
 
-  showPreStartHint(q?.season||1,()=>{
+  const beginActualQuestion=()=>{
     if(started||ended)return;
     started=true;
     if(!backendOnline){ping().catch(()=>{})}
@@ -3357,7 +3356,19 @@ function startQuestion(){
       seconds--;tick();
       if(seconds<=0){clearInterval(timer);timeoutQuestion()}
     },1000);
-  });
+  };
+
+  const currentSeason=Number(q?.season||1);
+
+  // Show the short Food Safety hint only on the FIRST START of each Season.
+  // Each Season uses its own hint content from PRESTART_HINTS.
+  if(!preHintShownSeasons.has(currentSeason)){
+    preHintShownSeasons.add(currentSeason);
+    action(`กำลังแสดง Hint ของ Season ${currentSeason}`);
+    showPreStartHint(currentSeason,beginActualQuestion);
+  }else{
+    beginActualQuestion();
+  }
 }
 function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/60))).padStart(2,"0")}:${String(Math.max(0,seconds%60)).padStart(2,"0")}`;e.timerText.style.color=seconds<=10?"#ffd057":""}
 function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=actualHotspotCount(q);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reason:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
