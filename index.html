@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.38-Q01-Q20-DYNAMIC-SEASON-STRUCTURE-20260829">
+<meta name="fs-build" content="V16.9.39-Q01-Q20-PRESTART-HINT-5SEC-20260829">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2390,6 +2390,24 @@ body:before{
 
 
 
+
+/* ===== V16.9.39 PRE-START FOOD SAFETY HINT ===== */
+.prehint-overlay{position:absolute;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;background:rgba(4,31,60,.66);backdrop-filter:blur(4px);opacity:1;visibility:visible;transition:opacity .18s ease,visibility .18s ease}
+.prehint-overlay.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.prehint-card{position:relative;width:min(430px,88vw);padding:46px 28px 22px;border-radius:28px;background:radial-gradient(circle at 50% -10%,rgba(89,218,255,.22),transparent 35%),linear-gradient(180deg,#fff 0%,#f8fcff 55%,#edf7ff 100%);border:3px solid #74d8ff;box-shadow:0 0 0 3px rgba(116,93,255,.50),0 18px 55px rgba(0,38,82,.38),inset 0 3px 0 rgba(255,255,255,.95);text-align:center}
+.prehint-emblem{position:absolute;left:50%;top:-43px;transform:translateX(-50%);width:86px;height:86px;border-radius:26px;display:grid;place-items:center;font-size:44px;background:linear-gradient(145deg,#17b7ff,#3155dd 60%,#773ee8);border:4px solid #fff;box-shadow:0 8px 0 #164d9a,0 13px 28px rgba(0,57,128,.34)}
+.prehint-close{position:absolute;right:14px;top:14px;width:39px;height:39px;border:0;border-radius:50%;background:linear-gradient(180deg,#45caff,#1788dd);color:#fff;font-size:20px;font-weight:1000;cursor:pointer;box-shadow:0 4px 0 #0a62ad,0 7px 14px rgba(0,64,120,.24)}
+.prehint-kicker{display:inline-block;padding:6px 17px;border-radius:999px;color:#fff;font-size:13px;font-weight:1000;background:linear-gradient(180deg,#2f9df2,#1168c4);box-shadow:0 4px 0 #0b4e99}
+.prehint-title{margin:15px 0 14px;color:#123f75;font-size:24px;line-height:1.25;font-weight:1000}.prehint-title b{color:#136ee0}
+.prehint-list{display:grid;gap:8px;margin:0 auto 15px;max-width:340px}
+.prehint-item{min-height:42px;padding:8px 13px;display:flex;align-items:center;gap:10px;border-radius:999px;background:linear-gradient(180deg,#fff,#edf7ff);border:1.5px solid #c6e3f8;box-shadow:0 3px 8px rgba(32,91,142,.08);color:#174674;font-size:14px;font-weight:900;text-align:left}
+.prehint-item i{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:20px;background:#fff}
+.prehint-count-wrap{margin-top:4px;padding-top:13px;border-top:1px solid #d6e8f7}
+.prehint-count-line{display:flex;align-items:center;justify-content:center;gap:8px;color:#263e55;font-weight:900;font-size:17px}.prehint-count-line b{font-size:29px;color:#176ee0}
+.prehint-progress{height:8px;margin:8px auto 0;max-width:275px;border-radius:999px;background:#dfeaf4;overflow:hidden;border:1px solid #bad4e7}.prehint-progress>span{display:block;height:100%;width:100%;background:linear-gradient(90deg,#20bdf2,#2e70ee);transform-origin:left center}
+.prehint-foot{margin-top:10px;color:#72869a;font-size:12px;font-weight:800}
+@media(max-width:700px){.prehint-card{width:min(400px,92vw);padding:40px 18px 18px}.prehint-title{font-size:20px}.prehint-item{font-size:12px;min-height:38px}.prehint-emblem{width:72px;height:72px;top:-36px;font-size:36px}}
+
 </style>
 
 <style id="v161-build-marker">
@@ -2707,6 +2725,22 @@ body:before{
             <button id="gateLogoutBtn" class="gate-secondary hidden">ออกจากระบบ</button>
           </div>
         </div>
+
+        <div id="preStartHint" class="prehint-overlay hidden" aria-live="polite">
+          <div class="prehint-card" role="dialog" aria-modal="true" aria-label="Food Safety Hint">
+            <div class="prehint-emblem">🛡️</div>
+            <button id="preHintClose" class="prehint-close" type="button" title="เริ่มทันที">×</button>
+            <div class="prehint-kicker">ก่อนเริ่มภารกิจ</div>
+            <div class="prehint-title">มองหาสิ่งที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety</div>
+            <div id="preHintList" class="prehint-list"></div>
+            <div class="prehint-count-wrap">
+              <div class="prehint-count-line">เริ่มใน <b id="preHintCount">5</b> วินาที</div>
+              <div class="prehint-progress"><span id="preHintProgress"></span></div>
+              <div class="prehint-foot">💡 Hint สั้น ๆ ก่อนเริ่มเกม</div>
+            </div>
+          </div>
+        </div>
+
         <section class="question-strip-v12">
           <div class="question-strip-main">
             <div class="question-strip-copy">
@@ -2832,7 +2866,7 @@ window.FS_CONFIG = {
     { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260829-V16938-DYNAMIC-SEASON-STRUCTURE",
+  ASSET_VERSION: "20260829-V16939-PRESTART-HINT",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -3242,6 +3276,34 @@ function smartRandomOrder(){
   }catch(_){}
   return finalOrder;
 }
+
+const PRESTART_HINT_SECONDS=5;
+const PRESTART_HINTS={
+  1:[["🌡️","อุณหภูมิไม่เหมาะสม"],["🥩","ดิบ–สุกปะปน"],["🏷️","หมดอายุ / ฉลากผิด"],["📦","วางพื้น / สัมผัสสิ่งสกปรก"],["🧤","สุขลักษณะไม่เหมาะสม"]],
+  2:[["🧼","การทำความสะอาดไม่เหมาะสม"],["↔️","ดิบ–สุก / โซนไม่แยก"],["🌡️","อุณหภูมิหรือเวลาผิดเกณฑ์"],["🧪","สารเคมี / สิ่งแปลกปลอม"],["🧤","สุขลักษณะพนักงาน"]],
+  3:[["👀","เห็นความเสี่ยงแล้วไม่หยุด"],["🗣️","ไม่ Speak Up"],["📝","บันทึกไม่ตรงความจริง"],["✅","ข้ามขั้นตอนสำคัญ"],["🤝","พฤติกรรมไม่หนุนความปลอดภัย"]],
+  4:[["🧠","อ่านคำถามให้ครบ"],["🎯","เลือกคำตอบที่ปลอดภัยที่สุด"],["⏱️","บริหารเวลา"],["⭐","เก็บดาวระหว่างทาง"],["❤️","รักษาหัวใจให้ถึงเส้นชัย"]]
+};
+let preHintTimer=null,preHintRemaining=0,preHintOnFinish=null;
+function renderPreStartHint(season){
+  const list=document.getElementById("preHintList"),items=PRESTART_HINTS[Number(season||1)]||PRESTART_HINTS[1];
+  if(list)list.innerHTML=items.map(([ic,tx])=>`<div class="prehint-item"><i>${ic}</i><span>${tx}</span></div>`).join("");
+}
+function hidePreStartHint(runFinish=true){
+  clearInterval(preHintTimer);preHintTimer=null;
+  document.getElementById("preStartHint")?.classList.add("hidden");
+  if(runFinish&&typeof preHintOnFinish==="function"){const fn=preHintOnFinish;preHintOnFinish=null;fn()}else if(!runFinish){preHintOnFinish=null}
+}
+function showPreStartHint(season,onFinish){
+  clearInterval(preHintTimer);preHintOnFinish=onFinish;preHintRemaining=PRESTART_HINT_SECONDS;renderPreStartHint(season);
+  const overlay=document.getElementById("preStartHint"),count=document.getElementById("preHintCount"),bar=document.getElementById("preHintProgress");
+  if(count)count.textContent=preHintRemaining;
+  if(bar){bar.style.transition="none";bar.style.transform="scaleX(1)";requestAnimationFrame(()=>{bar.style.transition=`transform ${PRESTART_HINT_SECONDS}s linear`;bar.style.transform="scaleX(0)"})}
+  overlay?.classList.remove("hidden");
+  preHintTimer=setInterval(()=>{preHintRemaining--;if(count)count.textContent=Math.max(0,preHintRemaining);if(preHintRemaining<=0)hidePreStartHint(true)},1000);
+}
+document.getElementById("preHintClose")?.addEventListener("click",()=>hidePreStartHint(true));
+
 function startSession(){
   clearInterval(timer); started=false; ended=false;
   order=(C.RANDOMIZE_QUESTIONS
@@ -3250,7 +3312,7 @@ function startSession(){
   idx=0;loadQ(false)
 }
 function loadQ(startImmediately=false){
-  clearInterval(timer);selections=[];ended=false;started=false;currentAttemptId=null;
+  clearInterval(timer);clearInterval(preHintTimer);preHintTimer=null;document.getElementById("preStartHint")?.classList.add("hidden");selections=[];ended=false;started=false;currentAttemptId=null;
   e.markerLayer.innerHTML="";e.revealLayer.innerHTML="";e.clickLayer.style.pointerEvents="auto";if(e.resultIcon)e.resultIcon.textContent="🏆";const resultCard=e.resultOverlay.querySelector(".result-modal");if(resultCard)resultCard.classList.remove("timeout");
   e.reasonList.innerHTML='<div class="empty-reason">กด START ก่อนเริ่มข้อ แล้วจึงเลือกจุดในภาพ</div>';
   e.resultOverlay.classList.add("hidden-layer");
@@ -3278,31 +3340,24 @@ function loadQ(startImmediately=false){
 }
 function startQuestion(){
   if(started||ended)return;
-
-  // V15.2: START ต้องเริ่มทันที ไม่รอ Backend ping
-  // Backend จะถูกเรียกจริงตอนกดบันทึกคำตอบเท่านั้น
-  started=true;
-
-  // ถ้ายังไม่ online ให้ตรวจเบื้องหลัง แต่ห้าม block ผู้เล่น
-  if(!backendOnline){
-    ping().catch(()=>{});
-  }
-
-  e.playCard.classList.remove("game-paused");
   e.questionGate.classList.add("off");
   setTimeout(clearQuestionGateViewportGeometry,220);
-  e.submitBtn.disabled=false;
-  e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';
-  action(`เริ่มแล้ว • เลือกได้สูงสุด ${actualHotspotCount(q)} จุด`,"ok");
-  clearInterval(timer);
-  timer=setInterval(()=>{
-    seconds--;
-    tick();
-    if(seconds<=0){
-      clearInterval(timer);
-      timeoutQuestion();
-    }
-  },1000);
+  action("กำลังแสดง Hint ก่อนเริ่มเกม");
+
+  showPreStartHint(q?.season||1,()=>{
+    if(started||ended)return;
+    started=true;
+    if(!backendOnline){ping().catch(()=>{})}
+    e.playCard.classList.remove("game-paused");
+    e.submitBtn.disabled=false;
+    e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';
+    action(`เริ่มแล้ว • เลือกได้สูงสุด ${actualHotspotCount(q)} จุด`,"ok");
+    clearInterval(timer);
+    timer=setInterval(()=>{
+      seconds--;tick();
+      if(seconds<=0){clearInterval(timer);timeoutQuestion()}
+    },1000);
+  });
 }
 function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/60))).padStart(2,"0")}:${String(Math.max(0,seconds%60)).padStart(2,"0")}`;e.timerText.style.color=seconds<=10?"#ffd057":""}
 function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=actualHotspotCount(q);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reason:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
