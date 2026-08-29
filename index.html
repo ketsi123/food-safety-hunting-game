@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.24-S1Q01-Q10-FOOD-JOURNEY-20260829">
+<meta name="fs-build" content="V16.9.25-S1Q01-Q10-FIXED-20260829">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2694,7 +2694,7 @@ body:before{
     </aside>
 
     <section class="content">
-      <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : FOOD JOURNEY</b><span id="stepText">ภาพที่ 1 / 5</span></div>
+      <div class="season-bar"><b id="seasonText">🌱 SEASON 1 : FOOD JOURNEY</b><span id="stepText">ภาพที่ 1 / 10</span></div>
 
       <section class="play-card" id="playCard">
         <div id="questionGate" class="question-gate">
@@ -2732,7 +2732,7 @@ body:before{
 
         <div class="play-grid side-reason-layout v12-layout">
           <div class="image-wrap">
-            <img id="questionImage" alt="ภาพคำถาม Food Safety" src="./S1_Q01.jpg?v=16923">
+            <img id="questionImage" alt="ภาพคำถาม Food Safety" src="./S1_Q01.jpg?v=16925">
             <div id="clickLayer" class="click-layer"></div>
             <div id="markerLayer"></div>
             <div id="revealLayer"></div>
@@ -2819,15 +2819,10 @@ window.FS_CONFIG = {
     { questionId:"S1Q07", season:1, imageFile:"S1_Q07.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
     { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
     { questionId:"S1Q09", season:1, imageFile:"S1_Q09.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
-    { questionId:"S1Q10", season:1, imageFile:"S1_Q10.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-    { questionId:"S1Q06", season:1, imageFile:"S1_Q06.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
-    { questionId:"S1Q07", season:1, imageFile:"S1_Q07.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-    { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-    { questionId:"S1Q09", season:1, imageFile:"S1_Q09.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
     { questionId:"S1Q10", season:1, imageFile:"S1_Q10.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260829-V16924-Q01Q10",
+  ASSET_VERSION: "20260829-V16925-Q01Q10-FIXED",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -2845,7 +2840,12 @@ const MASTER_QUESTIONS=[
   { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
   { questionId:"S1Q03", season:1, imageFile:"S1_Q03.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
   { questionId:"S1Q04", season:1, imageFile:"S1_Q04.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
-  { questionId:"S1Q05", season:1, imageFile:"S1_Q05.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 }
+  { questionId:"S1Q05", season:1, imageFile:"S1_Q05.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+  { questionId:"S1Q06", season:1, imageFile:"S1_Q06.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+  { questionId:"S1Q07", season:1, imageFile:"S1_Q07.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+  { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+  { questionId:"S1Q09", season:1, imageFile:"S1_Q09.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+  { questionId:"S1Q10", season:1, imageFile:"S1_Q10.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
 ];
 function masterQuestionById(id){
   const key=String(id||"").trim().toUpperCase();
@@ -2971,7 +2971,7 @@ function cachedQuestions(){
 function imagePath(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  return `./${file}?v=20260829V16924`;
+  return `./${file}?v=20260829V16925`;
 }
 function preload(items){
   (items||masterQuestions()).forEach(x=>{
