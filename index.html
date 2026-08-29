@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.36-Q01-Q20-TOPBAR-FIXED-20260829">
+<meta name="fs-build" content="V16.9.37-Q01-Q20-ALL-SEASON-LABELS-FIXED-20260829">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2832,7 +2832,7 @@ window.FS_CONFIG = {
     { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260829-V16936-TOPBAR-FIXED",
+  ASSET_VERSION: "20260829-V16937-ALL-SEASON-LABELS",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -3231,7 +3231,7 @@ function loadQ(startImmediately=false){
   if(e.resultVisual)e.resultVisual.classList.add("hidden");
   e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.innerHTML='<span class="btn-game-icon">➤</span><span>บันทึกคำตอบ</span>';e.liveQuestionScore.textContent="--";
   q=masterQuestionById(questions[order[idx]]?.questionId)||questions[order[idx]];seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
-  e.seasonText.textContent=`🍽️ SEASON ${q.season||1} : FOOD JOURNEY`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;updateHeaderMission(q,cur,total);
+  e.seasonText.textContent=`🍽️ SEASON ${q.season||1} : โลจิสติกส์ & ตลาดถึงมือผู้บริโภค`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;updateHeaderMission(q,cur,total);
   const hotspotCount=actualHotspotCount(q);
   e.questionIdTag.textContent=q.questionId;
   e.hotspotCountTag.textContent=`${hotspotCount} จุด`;
