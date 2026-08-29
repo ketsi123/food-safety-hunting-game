@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V16.9.23-S1Q01-Q05-NEW-SEASON1-20260829">
+<meta name="fs-build" content="V16.9.24-S1Q01-Q10-FOOD-JOURNEY-20260829">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2609,7 +2609,7 @@ body:before{
             <div class="hud-c-icon">🎯</div>
             <div class="hud-c-copy">
               <small>ข้อปัจจุบัน</small>
-              <b id="questionCounter">1/5</b>
+              <b id="questionCounter">1/10</b>
               <span id="headerQuestionStatus">พร้อมเริ่มภารกิจ</span>
             </div>
           </div>
@@ -2808,16 +2808,26 @@ body:before{
 <script id="v15-inline-config">
 window.FS_CONFIG = {
   BACKEND_URL: "https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec",
-  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05"],
+  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05", "S1Q06", "S1Q07", "S1Q08", "S1Q09", "S1Q10"],
   LOCAL_QUESTIONS: [
     { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
     { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
     { questionId:"S1Q03", season:1, imageFile:"S1_Q03.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
     { questionId:"S1Q04", season:1, imageFile:"S1_Q04.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
-    { questionId:"S1Q05", season:1, imageFile:"S1_Q05.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 }
+    { questionId:"S1Q05", season:1, imageFile:"S1_Q05.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+    { questionId:"S1Q06", season:1, imageFile:"S1_Q06.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+    { questionId:"S1Q07", season:1, imageFile:"S1_Q07.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q09", season:1, imageFile:"S1_Q09.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+    { questionId:"S1Q10", season:1, imageFile:"S1_Q10.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q06", season:1, imageFile:"S1_Q06.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+    { questionId:"S1Q07", season:1, imageFile:"S1_Q07.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q08", season:1, imageFile:"S1_Q08.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S1Q09", season:1, imageFile:"S1_Q09.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
+    { questionId:"S1Q10", season:1, imageFile:"S1_Q10.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260829-V16923-Q01Q05-NEW",
+  ASSET_VERSION: "20260829-V16924-Q01Q10",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -2826,7 +2836,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.23 • S1Q01-Q05 Logistic + user count");
+(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.24 • S1Q01-Q10 Food Journey + user count");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -2955,13 +2965,13 @@ function clearUser(){
   localStorage.removeItem(S_USER);
 }
 function cachedQuestions(){
-  // V16.9.16: Q1-Q8 metadata is local master data only.
+  // V16.9.24: Q1-Q10 metadata is local master data only.
   return masterQuestions();
 }
 function imagePath(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  return `./${file}?v=20260829V16923`;
+  return `./${file}?v=20260829V16924`;
 }
 function preload(items){
   (items||masterQuestions()).forEach(x=>{
@@ -3117,7 +3127,7 @@ function loadQ(startImmediately=false){
   if(e.resultVisual)e.resultVisual.classList.add("hidden");
   e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.innerHTML='<span class="btn-game-icon">➤</span><span>บันทึกคำตอบ</span>';e.liveQuestionScore.textContent="--";
   q=masterQuestionById(questions[order[idx]]?.questionId)||questions[order[idx]];seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
-  e.seasonText.textContent=`🚚 SEASON ${q.season||1} : LOGISTIC`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;updateHeaderMission(q,cur,total);
+  e.seasonText.textContent=`🍽️ SEASON ${q.season||1} : FOOD JOURNEY`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;updateHeaderMission(q,cur,total);
   e.questionIdTag.textContent=q.questionId;e.hotspotCountTag.textContent=`${actualHotspotCount(q)} จุด`;e.questionText.textContent='จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
   e.progressFill.style.width=`${cur/total*100}%`;e.progressText.textContent=`ภาพที่ ${cur} / ${total}`;
   e.questionImage.classList.add("loading");e.questionImage.src=imagePath(q);tick();
