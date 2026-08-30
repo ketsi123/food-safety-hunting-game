@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.7-MANUAL-SEASON-ADMIN-20260830">
+<meta name="fs-build" content="V18.8-SHEET-SEASON-CONTROL-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2707,7 +2707,6 @@ body:before{
         <button id="qualifierBtn" class="nav-item qualifier-nav"><i>🏅</i><span><b>Qualifier</b><small>ครบ 4 Season • ≥ 5,000/Season</small></span><em id="qualifierNavStatus">0/4</em></button>
         <button id="historyBtn" class="nav-item"><i>🕘</i><span><b>ประวัติการเล่น</b><small>ผลการเล่นของฉัน</small></span></button>
         <button id="howToBtn" class="nav-item"><i>ⓘ</i><span><b>วิธีการเล่น</b><small>กติกาและคะแนน</small></span></button>
-        <button id="adminBtn" class="nav-item hidden"><i>⚙️</i><span><b>Admin</b><small>เปิด / ปิด Season</small></span><em>🔐</em></button>
         <button id="changeUserBtn" class="nav-item logout"><i>↪</i><span><b>ออกจากระบบ</b><small>เปลี่ยนผู้เล่น</small></span></button>
       </section>
     </aside>
@@ -2879,10 +2878,9 @@ window.FS_CONFIG = {
 (()=>{"use strict";console.info("Food Safety Hunting Game V16.9.22 • S1Q01-Q20 + user count in card");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
 let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
-let isAdminUser=false;
 let activeSeason=1;
 
-const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),adminBtn:$("adminBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -3091,9 +3089,7 @@ async function login(){
         saveUser(loginData.user);
         renderUser();
         setTotal(Number(loginData.user.totalBestScore||0));
-      }
-      isAdminUser=!!loginData?.isAdmin;
-      if(loginData?.seasons)setSeasonControlFromServer(loginData.seasons);
+      }      if(loginData?.seasons)setSeasonControlFromServer(loginData.seasons);
       else applySeasonControlUI();
       renderTotalUsers(loginData?.totalUsers);
       setBackend(true);
@@ -3202,29 +3198,25 @@ function setSeasonControlFromServer(rows){
 }
 
 function isSeasonOpenFrontend(season){
-  return seasonControl[Number(season||1)]==='OPEN' || isAdminUser;
+  return seasonControl[Number(season||1)]==='OPEN';
 }
 
 function applySeasonControlUI(){
   document.querySelectorAll(".nav-item[data-season]").forEach(b=>{
     const s=Number(b.dataset.season||1);
-    const publicOpen=seasonControl[s]==='OPEN';
-    const canEnter=publicOpen||isAdminUser;
-    b.classList.toggle("locked",!canEnter);
-    b.classList.toggle("admin-preview",!publicOpen&&isAdminUser);
+    const open=seasonControl[s]==='OPEN';
+    b.classList.toggle("locked",!open);
     let em=b.querySelector("em");
     if(!em){em=document.createElement("em");b.appendChild(em)}
-    em.textContent=publicOpen?"🟢":(isAdminUser?"👁️":"🔒");
-    em.title=publicOpen?"เปิดให้ผู้เล่น":(isAdminUser?"Admin Preview":"ยังไม่เปิด");
+    em.textContent=open?"🟢":"🔒";
+    em.title=open?"เปิดให้ผู้เล่น":"ยังไม่เปิด";
   });
-  if(e.adminBtn)e.adminBtn.classList.toggle("hidden",!isAdminUser);
 }
 
 async function refreshSeasonControl(){
   try{
     const d=await api({action:"seasonstatus",email:user?.email||""});
     if(d?.seasons)setSeasonControlFromServer(d.seasons);
-    if(typeof d?.isAdmin==="boolean"){isAdminUser=d.isAdmin;applySeasonControlUI()}
     return d;
   }catch(err){
     console.warn("seasonstatus failed",err);
@@ -3256,51 +3248,10 @@ function switchSeason(season){
     b.classList.toggle("active",Number(b.dataset.season||0)===s)
   );
   startSession();
-  toast(`${isAdminUser&&seasonControl[s]!=='OPEN'?"Admin Preview • ":""}Season ${s} : ${m.title}`);
+  toast(`Season ${s} : ${m.title}`);
 }
 
-async function openAdminPanel(){
-  if(!isAdminUser){toast("ไม่มีสิทธิ์ Admin");return}
-  let d;
-  try{d=await api({action:"adminseasons",email:user.email})}
-  catch(err){toast("ไม่สามารถโหลดหน้า Admin ได้");return}
-  if(d?.seasons)setSeasonControlFromServer(d.seasons);
 
-  const cards=[1,2,3,4].map(s=>{
-    const m=seasonMeta(s),open=seasonControl[s]==='OPEN';
-    return `<div class="admin-season-row" data-admin-season="${s}">
-      <div><b>${m.icon} Season ${s}</b><small>${esc(m.title)}</small></div>
-      <button class="admin-season-toggle ${open?"open":"locked"}" data-season="${s}" data-next="${open?"LOCKED":"OPEN"}">
-        ${open?"🟢 OPEN — กดเพื่อล็อก":"🔒 LOCKED — กดเพื่อเปิด"}
-      </button>
-    </div>`;
-  }).join("");
-
-  modal("⚙️ Admin • Season Control",
-    `<div class="admin-season-panel">
-      <div class="admin-note">ควบคุมแบบ Manual เท่านั้น • ไม่มีวัน/เวลาเปิดอัตโนมัติ<br>Admin สามารถ Preview Season ที่ LOCKED ได้</div>
-      ${cards}
-    </div>`
-  );
-
-  setTimeout(()=>{
-    document.querySelectorAll(".admin-season-toggle").forEach(btn=>{
-      btn.onclick=async()=>{
-        const s=Number(btn.dataset.season),status=btn.dataset.next;
-        btn.disabled=true;btn.textContent="กำลังบันทึก...";
-        try{
-          const r=await api({action:"adminsetseason",email:user.email,season:s,status});
-          if(r?.seasons)setSeasonControlFromServer(r.seasons);
-          toast(`Season ${s} → ${status}`);
-          openAdminPanel();
-        }catch(err){
-          toast("บันทึกสถานะไม่สำเร็จ");
-          btn.disabled=false;
-        }
-      };
-    });
-  },0);
-}
 
 function updateHeaderMission(question,cur,total){
   const season=Number(question?.season||1);
@@ -3774,7 +3725,7 @@ if("ResizeObserver" in window){
   if(fsHeader)fsHeaderObserver.observe(fsHeader);
 }
 
-e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));if(e.adminBtn)e.adminBtn.onclick=openAdminPanel;e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
+e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
   e.questionImage.classList.remove("loading");
   e.questionImage.dataset.retry="";
 };
@@ -4037,18 +3988,6 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
   }
   .header-inner > .user-chip .total-user-value b{font-size:12px!important}
 }
-
-/* ===== V18.7 Manual Season Admin ===== */
-.nav-item.admin-preview{border-color:#f0b83e!important;background:linear-gradient(180deg,#fffaf0,#fff3d8)!important;opacity:1!important}
-.admin-season-panel{display:grid;gap:10px}
-.admin-note{padding:12px 14px;border-radius:14px;background:#eef8ff;border:1px solid #cae5f7;color:#466a7d;font-size:12px;line-height:1.6}
-.admin-season-row{display:grid;grid-template-columns:1fr minmax(190px,.65fr);gap:12px;align-items:center;padding:13px;border:1px solid #dce8ef;border-radius:14px;background:#fff}
-.admin-season-row b,.admin-season-row small{display:block}.admin-season-row small{margin-top:4px;color:#748a98;font-size:11px}
-.admin-season-toggle{min-height:46px;border:0;border-radius:13px;font-weight:1000;color:#fff}
-.admin-season-toggle.open{background:linear-gradient(100deg,#19b879,#33c558);box-shadow:0 6px 0 #b7e4c8}
-.admin-season-toggle.locked{background:linear-gradient(100deg,#66778a,#445568);box-shadow:0 6px 0 #d0d8df}
-.admin-season-toggle:disabled{opacity:.55}
-@media(max-width:620px){.admin-season-row{grid-template-columns:1fr}.admin-season-toggle{width:100%}}
 
 </style>
 
