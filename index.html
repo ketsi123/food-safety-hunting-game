@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.10-NO-START-FLASH-20260830">
+<meta name="fs-build" content="V18.11-FAST-LOGIN-SEASON-STATE-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3087,29 +3087,46 @@ async function login(){
   }
 
   preload(questions);
-  e.loginBackendText.textContent="กำลังซิงก์คะแนนเบื้องหลัง...";
-  openGame();
+  e.loginBackendText.textContent="กำลังตรวจสอบบัญชีและสถานะ Season...";
 
-  // Do not block the player. Sync account + latest question metadata quietly.
-  (async()=>{
-    try{
-      const loginData=await api({action:"login",email});
-      if(loginData?.user){
-        saveUser(loginData.user);
-        renderUser();
-        setTotal(Number(loginData.user.totalBestScore||0));
-      }
-      renderTotalUsers(loginData?.totalUsers);
-      setBackend(true);
-    }catch(err){
-      setBackend(false);
-      console.warn("Background login sync failed",err);
-      // Submit still talks to backend and can create/update the user later.
-    }finally{
-      e.loginBtn.disabled=false;
-      e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
+  try{
+    // V18.11: one request only.
+    // Backend login already returns user + totalUsers + seasons,
+    // so do not call seasonstatus again before opening the game.
+    const loginData=await api({action:"login",email});
+
+    if(loginData?.user){
+      saveUser(loginData.user);
+      renderUser();
+      setTotal(Number(loginData.user.totalBestScore||0));
     }
-  })();
+
+    if(loginData?.seasons){
+      setSeasonControlFromServer(loginData.seasons);
+    }
+
+    renderTotalUsers(loginData?.totalUsers);
+    setBackend(true);
+
+    // Now open immediately using the Season state already returned above.
+    openGame();
+
+    // Optional background re-check after the game is already visible.
+    // This never blocks login or causes START -> LOCKED flashing.
+    setTimeout(()=>{ refreshSeasonControl(); }, 5000);
+
+  }catch(err){
+    setBackend(false);
+    console.warn("Login sync failed",err);
+
+    // Fail closed: without fresh Season state we do not open gameplay.
+    seasonControlLoaded=false;
+    e.loginBackendText.textContent="เชื่อมต่อระบบไม่สำเร็จ กรุณาลองอีกครั้ง";
+    toast("ไม่สามารถตรวจสอบสถานะ Season ได้");
+  }finally{
+    e.loginBtn.disabled=false;
+    e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
+  }
 }
 function renderTotalUsers(value){
   const n=Number(value);
@@ -3332,35 +3349,24 @@ function normalizeQualifier(qf){const min=Number(qf?.minimumPerSeason||5000),sco
 function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title=`ต้องครบ 4 Season และแต่ละ Season ≥ ${formatGameNumber(q.minimumPerSeason)} คะแนน`}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
 function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"จากฟาร์ม",2:"จากโรงงาน",3:"โลจิสติกส์ & ตลาด",4:"บ้าน / ครัวผู้บริโภค"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],pct=Math.max(0,Math.min(100,(st.score/q.minimumPerSeason)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(q.minimumPerSeason)} คะแนน</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เงื่อนไข: เล่นครบ Season 1–4 และคะแนนสะสมของแต่ละ Season ต้องไม่ต่ำกว่า ${formatGameNumber(q.minimumPerSeason)} คะแนน</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
-async function openGame(){
+function openGame(){
   renderUser();
   renderTotalUsers();
 
-  // V18.10: keep login screen visible while checking SEASON_CONTROL.
-  // This prevents the START screen from flashing before a LOCKED screen.
-  e.loginBackendText.textContent="กำลังตรวจสอบสถานะ Season...";
-
   activeSeason=1;
 
-  try{
-    const d=await api({action:"seasonstatus",email:user?.email||""});
-    if(d?.seasons)setSeasonControlFromServer(d.seasons);
-  }catch(err){
-    console.warn("Initial season status failed",err);
-  }
-
-  // Only reveal game UI after Season status is resolved (or failed closed).
+  // V18.11: Season state was already returned by login().
+  // No second API request here.
   e.loginScreen.classList.add("hidden");
   e.gameScreen.classList.remove("hidden");
   syncAllOverlayGeometry();
   applySeasonControlUI();
 
   if(!seasonControlLoaded){
-    // Fail closed if backend status could not be read.
     questions=[];
     showSeasonLockedScreen(activeSeason);
     if(e.seasonLockTitle)e.seasonLockTitle.textContent="ยังไม่สามารถตรวจสอบสถานะ Season ได้";
-    if(e.seasonLockText)e.seasonLockText.textContent="กรุณารีเฟรชหน้าเกมแล้วลองอีกครั้ง";
+    if(e.seasonLockText)e.seasonLockText.textContent="กรุณากลับไปเข้าสู่ระบบแล้วลองอีกครั้ง";
     return;
   }
 
