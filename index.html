@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.11-FAST-LOGIN-SEASON-STATE-20260830">
+<meta name="fs-build" content="V18.12-BALANCED-RANDOM-FAST-START-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2885,7 +2885,7 @@ window.FS_CONFIG = {
 <script id="v15-inline-app">
 (()=>{"use strict";console.info("Food Safety Hunting Game V16.9.22 • S1Q01-Q20 + user count in card");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
-let seasonControl={1:'LOCKED',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
+let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
 let seasonControlLoaded=false;
 
@@ -3059,13 +3059,12 @@ async function login(){
   const email=e.emailInput.value.trim().toLowerCase();
   if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}
 
-  // V14.2: Enter game immediately. Backend sync happens in background.
   e.loginBtn.disabled=true;
   e.loginBtn.textContent="กำลังเปิดเกม...";
 
   const localName=email.split("@")[0]
     .replace(/[._-]+/g," ")
-    .replace(/[a-z]/g,c=>c.toUpperCase());
+    .replace(/\b[a-z]/g,c=>c.toUpperCase());
 
   const previous=cachedUserByEmail(email)||(()=>{try{return JSON.parse(localStorage.getItem(S_USER)||"null")}catch{return null}})();
   user={
@@ -3078,7 +3077,6 @@ async function login(){
   saveUser(user);
 
   questions=masterQuestions();
-
   if(!questions.length){
     e.loginBtn.disabled=false;
     e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
@@ -3086,47 +3084,44 @@ async function login(){
     return;
   }
 
-  preload(questions);
-  e.loginBackendText.textContent="กำลังตรวจสอบบัญชีและสถานะ Season...";
+  // V18.12: Season 1 is permanently open, so enter immediately like the old flow.
+  seasonControl[1]='OPEN';
+  seasonControlLoaded=true;
+  activeSeason=1;
+  openGame();
 
-  try{
-    // V18.11: one request only.
-    // Backend login already returns user + totalUsers + seasons,
-    // so do not call seasonstatus again before opening the game.
-    const loginData=await api({action:"login",email});
+  e.loginBackendText.textContent="กำลังซิงก์ข้อมูลเบื้องหลัง...";
 
-    if(loginData?.user){
-      saveUser(loginData.user);
-      renderUser();
-      setTotal(Number(loginData.user.totalBestScore||0));
+  // Account + Season 2-4 status sync in background; does not block opening the game.
+  (async()=>{
+    try{
+      const loginData=await api({action:"login",email});
+
+      if(loginData?.user){
+        saveUser(loginData.user);
+        renderUser();
+        setTotal(Number(loginData.user.totalBestScore||0));
+      }
+
+      if(loginData?.seasons)setSeasonControlFromServer(loginData.seasons);
+      seasonControl[1]='OPEN';
+      applySeasonControlUI();
+
+      renderTotalUsers(loginData?.totalUsers);
+      setBackend(true);
+
+      // Re-check later without blocking gameplay.
+      setTimeout(()=>{ refreshSeasonControl(); },5000);
+    }catch(err){
+      setBackend(false);
+      console.warn("Background login sync failed",err);
+      // Season 1 remains playable; backend will still protect Season 2-4.
+    }finally{
+      e.loginBtn.disabled=false;
+      e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
+      e.loginBackendText.textContent="พร้อมใช้งาน";
     }
-
-    if(loginData?.seasons){
-      setSeasonControlFromServer(loginData.seasons);
-    }
-
-    renderTotalUsers(loginData?.totalUsers);
-    setBackend(true);
-
-    // Now open immediately using the Season state already returned above.
-    openGame();
-
-    // Optional background re-check after the game is already visible.
-    // This never blocks login or causes START -> LOCKED flashing.
-    setTimeout(()=>{ refreshSeasonControl(); }, 5000);
-
-  }catch(err){
-    setBackend(false);
-    console.warn("Login sync failed",err);
-
-    // Fail closed: without fresh Season state we do not open gameplay.
-    seasonControlLoaded=false;
-    e.loginBackendText.textContent="เชื่อมต่อระบบไม่สำเร็จ กรุณาลองอีกครั้ง";
-    toast("ไม่สามารถตรวจสอบสถานะ Season ได้");
-  }finally{
-    e.loginBtn.disabled=false;
-    e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
-  }
+  })();
 }
 function renderTotalUsers(value){
   const n=Number(value);
@@ -3218,6 +3213,7 @@ function setSeasonControlFromServer(rows){
   });
   // Safety fallback: Season 1 stays open only if the backend did not return control data.
   if(!Array.isArray(rows)||!rows.length) next[1]='OPEN';
+  next[1]='OPEN'; // V18.12: Season 1 is permanently open.
   seasonControl=next;
   seasonControlLoaded=Array.isArray(rows)&&rows.length>0;
   applySeasonControlUI();
@@ -3289,10 +3285,11 @@ async function refreshSeasonControl(){
     const d=await api({action:"seasonstatus",email:user?.email||""});
     if(d?.seasons){
       setSeasonControlFromServer(d.seasons);
+      seasonControl[1]='OPEN';
+      applySeasonControlUI();
 
-      // If the active Season was locked while the player had the page open,
-      // stop the gameplay UI immediately after the next refresh/status check.
-      if(!isSeasonOpenFrontend(activeSeason)){
+      // Season 1 is always open. Only Season 2-4 can be locked by the Sheet.
+      if(activeSeason!==1 && !isSeasonOpenFrontend(activeSeason)){
         showSeasonLockedScreen(activeSeason);
       }else{
         hideSeasonLockedScreen();
@@ -3354,29 +3351,14 @@ function openGame(){
   renderTotalUsers();
 
   activeSeason=1;
+  seasonControl[1]='OPEN';
 
-  // V18.11: Season state was already returned by login().
-  // No second API request here.
   e.loginScreen.classList.add("hidden");
   e.gameScreen.classList.remove("hidden");
   syncAllOverlayGeometry();
   applySeasonControlUI();
 
-  if(!seasonControlLoaded){
-    questions=[];
-    showSeasonLockedScreen(activeSeason);
-    if(e.seasonLockTitle)e.seasonLockTitle.textContent="ยังไม่สามารถตรวจสอบสถานะ Season ได้";
-    if(e.seasonLockText)e.seasonLockText.textContent="กรุณากลับไปเข้าสู่ระบบแล้วลองอีกครั้ง";
-    return;
-  }
-
-  if(!isSeasonOpenFrontend(activeSeason)){
-    questions=[];
-    showSeasonLockedScreen(activeSeason);
-    return;
-  }
-
-  questions=questionsForSeason(activeSeason);
+  questions=questionsForSeason(1);
   preload(questions);
   hideSeasonLockedScreen();
   startSession();
@@ -3410,59 +3392,95 @@ function smartRandomOrder(){
 
   const prevIds=previous.map(String);
   const idOf=i=>String(questions[i]?.questionId||i);
-  const scoreOrder=arr=>{
-    let score=0;
-    let runDir=0,runLen=1;
-    for(let p=0;p<arr.length;p++){
-      const qn=questionNoByIndex(arr[p]);
-      const qid=idOf(arr[p]);
+  const qNo=i=>questionNoByIndex(i);
 
-      // Do not make a new game look like the previous game.
-      if(prevIds[p]===qid) score+=6;
-      if(p<3 && prevIds[p]===qid) score+=14;
+  // Build topic groups (01-05 / 06-10 / 11-15 / 16-20 for a 20-question Season).
+  const groups=new Map();
+  base.forEach(i=>{
+    const g=questionGroupByIndex(i);
+    if(!groups.has(g))groups.set(g,[]);
+    groups.get(g).push(i);
+  });
 
-      if(p>0){
-        const prev=arr[p-1];
-        const prevNo=questionNoByIndex(prev);
-        const diff=Math.abs(qn-prevNo);
+  // Shuffle questions inside each topic first.
+  for(const [g,arr] of groups)groups.set(g,shuffle(arr));
 
-        // Biggest visual pattern: consecutive questions from the same 5-question topic block.
-        if(questionGroupByIndex(prev)===questionGroupByIndex(arr[p])) score+=32;
+  const groupIds=[...groups.keys()];
+  const result=[];
+  let lastGroup=null;
 
-        // Avoid obvious numeric sequences such as 7→8, 12→11, 18→19.
-        if(diff===1) score+=24;
-        else if(diff===2) score+=10;
+  // Score one candidate question against the already-built order.
+  const itemPenalty=(candidate,pos)=>{
+    let p=0;
+    const qn=qNo(candidate);
+    const qid=idOf(candidate);
 
-        const dir=Math.sign(qn-prevNo);
-        if(dir && dir===runDir){
-          runLen++;
-          if(runLen>=3)score+=18*(runLen-2);
-        }else{
-          runDir=dir;
-          runLen=2;
-        }
-      }
+    if(prevIds[pos]===qid)p+=16;                    // same position as previous game
+    if(pos===0 && prevIds[0]===qid)p+=28;           // same first question
+
+    if(result.length){
+      const prev=result[result.length-1];
+      const diff=Math.abs(qn-qNo(prev));
+      if(diff===1)p+=26;                            // avoid 7→8 / 12→11
+      else if(diff===2)p+=10;
+      if(questionGroupByIndex(prev)===questionGroupByIndex(candidate))p+=80;
     }
-    // Avoid starting with the exact same first question as the last session.
-    if(prevIds.length && idOf(arr[0])===prevIds[0])score+=30;
-    return score;
+    return p+Math.random()*2;
   };
 
-  // Generate many genuinely random candidates, then choose the one with
-  // the fewest human-visible patterns. Every question still appears exactly once.
-  let best=null,bestScore=Infinity;
-  const attempts=Math.max(160,base.length*12);
-  for(let k=0;k<attempts;k++){
-    const candidate=shuffle(base);
-    const s=scoreOrder(candidate)+Math.random()*1.5; // random tie-break
-    if(s<bestScore){bestScore=s;best=candidate}
+  // Round-robin: each round uses at most one question from every topic group.
+  // Therefore a 20-question / 4-group Season naturally spreads as 4 different
+  // topic groups per block of ~4 questions instead of clustering.
+  while(result.length<base.length){
+    let available=groupIds.filter(g=>(groups.get(g)||[]).length>0);
+    if(!available.length)break;
+
+    // Randomize the group order each round, but never repeat the group at the boundary.
+    let bestGroupOrder=null,bestGroupScore=Infinity;
+    const trials=Math.max(24,available.length*12);
+
+    for(let t=0;t<trials;t++){
+      const orderTry=shuffle(available);
+      let score=0;
+      if(lastGroup!==null && orderTry[0]===lastGroup)score+=100;
+
+      // Also avoid repeating the exact group pattern from the previous round.
+      for(let k=1;k<orderTry.length;k++){
+        if(orderTry[k]===orderTry[k-1])score+=100;
+      }
+
+      score+=Math.random()*3;
+      if(score<bestGroupScore){bestGroupScore=score;bestGroupOrder=orderTry}
+    }
+
+    const roundOrder=bestGroupOrder||shuffle(available);
+
+    for(const g of roundOrder){
+      const pool=groups.get(g)||[];
+      if(!pool.length)continue;
+
+      // Pick the best remaining item from this group for the current position.
+      let bestIdx=0,bestPenalty=Infinity;
+      for(let j=0;j<pool.length;j++){
+        const penalty=itemPenalty(pool[j],result.length);
+        if(penalty<bestPenalty){bestPenalty=penalty;bestIdx=j}
+      }
+
+      const chosen=pool.splice(bestIdx,1)[0];
+      result.push(chosen);
+      lastGroup=g;
+    }
   }
 
-  const finalOrder=best||shuffle(base);
+  // Safety fallback: every question must appear exactly once.
+  const used=new Set(result);
+  for(const i of base)if(!used.has(i))result.push(i);
+
   try{
-    localStorage.setItem("FS_LAST_SMART_ORDER",JSON.stringify(finalOrder.map(idOf)));
+    localStorage.setItem("FS_LAST_SMART_ORDER",JSON.stringify(result.map(idOf)));
   }catch(_){}
-  return finalOrder;
+
+  return result;
 }
 
 const PRESTART_HINT_SECONDS=5;
