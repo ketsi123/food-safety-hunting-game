@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.8-SHEET-SEASON-CONTROL-20260830">
+<meta name="fs-build" content="V18.9-FRONTEND-SEASON-LOCK-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2712,7 +2712,15 @@ body:before{
     </aside>
 
     <section class="content">
-      <div class="season-bar"><b id="seasonText">🌿 SEASON 1 : โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</b><span id="stepText">ภาพที่ 1 / 20</span></div>
+      <div id="seasonLockScreen" class="season-lock-screen hidden">
+          <div class="season-lock-card">
+            <div class="season-lock-icon">🔒</div>
+            <h2 id="seasonLockTitle">Season ยังไม่เปิดให้เล่น</h2>
+            <p id="seasonLockText">Season นี้ยังถูกล็อกอยู่ กรุณารอการเปิดจากผู้ดูแลระบบ</p>
+            <div class="season-lock-badge">สถานะ: LOCKED</div>
+          </div>
+        </div>
+        <div class="season-bar"><b id="seasonText">🌿 SEASON 1 : โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</b><span id="stepText">ภาพที่ 1 / 20</span></div>
 
       <section class="play-card" id="playCard">
         <div id="questionGate" class="question-gate">
@@ -2880,7 +2888,7 @@ const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_e
 let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
 
-const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn")};
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -3213,10 +3221,65 @@ function applySeasonControlUI(){
   });
 }
 
+function showSeasonLockedScreen(season){
+  const s=Number(season||1),m=seasonMeta(s);
+  activeSeason=s;
+
+  if(e.seasonLockTitle)e.seasonLockTitle.textContent=`Season ${s} ยังไม่เปิดให้เล่น`;
+  if(e.seasonLockText)e.seasonLockText.textContent=`${m.title} ยังถูกล็อกอยู่ กรุณารอการเปิดจากผู้ดูแลระบบ`;
+
+  if(e.seasonLockScreen)e.seasonLockScreen.classList.remove("hidden");
+  document.querySelector(".season-bar")?.classList.add("hidden");
+  document.querySelector(".play-card")?.classList.add("hidden");
+
+  document.querySelectorAll(".nav-item[data-season]").forEach(b=>
+    b.classList.toggle("active",Number(b.dataset.season||0)===s)
+  );
+}
+
+function hideSeasonLockedScreen(){
+  if(e.seasonLockScreen)e.seasonLockScreen.classList.add("hidden");
+  document.querySelector(".season-bar")?.classList.remove("hidden");
+  document.querySelector(".play-card")?.classList.remove("hidden");
+}
+
+function firstOpenSeason(){
+  for(let s=1;s<=4;s++) if(seasonControl[s]==='OPEN') return s;
+  return null;
+}
+
+function enforceSeasonAvailabilityOnLoad(){
+  // If current/starting Season is locked, do not render or start a question.
+  if(!isSeasonOpenFrontend(activeSeason)){
+    const fallback=firstOpenSeason();
+    if(fallback!==null){
+      activeSeason=fallback;
+      questions=questionsForSeason(fallback);
+      hideSeasonLockedScreen();
+      return true;
+    }
+    showSeasonLockedScreen(activeSeason);
+    return false;
+  }
+  hideSeasonLockedScreen();
+  return true;
+}
+
+
 async function refreshSeasonControl(){
   try{
     const d=await api({action:"seasonstatus",email:user?.email||""});
-    if(d?.seasons)setSeasonControlFromServer(d.seasons);
+    if(d?.seasons){
+      setSeasonControlFromServer(d.seasons);
+
+      // If the active Season was locked while the player had the page open,
+      // stop the gameplay UI immediately after the next refresh/status check.
+      if(!isSeasonOpenFrontend(activeSeason)){
+        showSeasonLockedScreen(activeSeason);
+      }else{
+        hideSeasonLockedScreen();
+      }
+    }
     return d;
   }catch(err){
     console.warn("seasonstatus failed",err);
@@ -3231,7 +3294,9 @@ function questionsForSeason(season){
 
 function switchSeason(season){
   const s=Number(season||1),m=seasonMeta(s);
+
   if(!isSeasonOpenFrontend(s)){
+    showSeasonLockedScreen(s);
     toast(`Season ${s} : ${m.title} ยังไม่เปิด`);
     return;
   }
@@ -3242,6 +3307,7 @@ function switchSeason(season){
     return;
   }
 
+  hideSeasonLockedScreen();
   activeSeason=s;
   questions=qs;
   document.querySelectorAll(".nav-item[data-season]").forEach(b=>
@@ -3265,7 +3331,28 @@ function normalizeQualifier(qf){const min=Number(qf?.minimumPerSeason||5000),sco
 function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title=`ต้องครบ 4 Season และแต่ละ Season ≥ ${formatGameNumber(q.minimumPerSeason)} คะแนน`}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
 function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"จากฟาร์ม",2:"จากโรงงาน",3:"โลจิสติกส์ & ตลาด",4:"บ้าน / ครัวผู้บริโภค"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],pct=Math.max(0,Math.min(100,(st.score/q.minimumPerSeason)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(q.minimumPerSeason)} คะแนน</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เงื่อนไข: เล่นครบ Season 1–4 และคะแนนสะสมของแต่ละ Season ต้องไม่ต่ำกว่า ${formatGameNumber(q.minimumPerSeason)} คะแนน</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
-async function openGame(){renderUser();renderTotalUsers();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");syncAllOverlayGeometry();activeSeason=1;questions=questionsForSeason(activeSeason);preload(questions);applySeasonControlUI();startSession();refreshSeasonControl()}
+async function openGame(){
+  renderUser();
+  renderTotalUsers();
+  e.loginScreen.classList.add("hidden");
+  e.gameScreen.classList.remove("hidden");
+  syncAllOverlayGeometry();
+
+  activeSeason=1;
+  questions=questionsForSeason(activeSeason);
+  preload(questions);
+  applySeasonControlUI();
+
+  // Do not start a locked Season.
+  if(isSeasonOpenFrontend(activeSeason)){
+    hideSeasonLockedScreen();
+    startSession();
+  }else{
+    showSeasonLockedScreen(activeSeason);
+  }
+
+  refreshSeasonControl();
+}
 function shuffle(a){
   a=[...a];
   for(let i=a.length-1;i>0;i--){
@@ -3988,6 +4075,26 @@ const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{
   }
   .header-inner > .user-chip .total-user-value b{font-size:12px!important}
 }
+
+
+/* ===== V18.9 Frontend Season Lock ===== */
+.season-lock-screen{
+  min-height:520px;display:grid;place-items:center;padding:28px;border-radius:0 0 22px 22px;
+  background:linear-gradient(135deg,#f7fbff,#eef7fb 55%,#f6fbf8);
+}
+.season-lock-card{
+  width:min(560px,calc(100% - 24px));padding:34px 30px;text-align:center;border-radius:24px;
+  background:#fff;border:1px solid #dce8f0;box-shadow:0 22px 60px rgba(52,96,130,.14)
+}
+.season-lock-icon{font-size:54px}
+.season-lock-card h2{margin:10px 0 6px;color:#24485b;font-size:26px}
+.season-lock-card p{margin:0;color:#718896;font-size:13px;line-height:1.7}
+.season-lock-badge{
+  display:inline-flex;align-items:center;gap:7px;margin-top:16px;padding:8px 13px;border-radius:999px;
+  background:#fff4e8;color:#9a6114;border:1px solid #f1d3a5;font-size:12px;font-weight:1000
+}
+.nav-item.locked{pointer-events:auto!important}
+.nav-item.locked:hover{transform:none!important}
 
 </style>
 
