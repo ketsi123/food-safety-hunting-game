@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.9-FRONTEND-SEASON-LOCK-20260830">
+<meta name="fs-build" content="V18.10-NO-START-FLASH-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2885,8 +2885,9 @@ window.FS_CONFIG = {
 <script id="v15-inline-app">
 (()=>{"use strict";console.info("Food Safety Hunting Game V16.9.22 • S1Q01-Q20 + user count in card");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
-let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
+let seasonControl={1:'LOCKED',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
+let seasonControlLoaded=false;
 
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
@@ -3097,8 +3098,7 @@ async function login(){
         saveUser(loginData.user);
         renderUser();
         setTotal(Number(loginData.user.totalBestScore||0));
-      }      if(loginData?.seasons)setSeasonControlFromServer(loginData.seasons);
-      else applySeasonControlUI();
+      }
       renderTotalUsers(loginData?.totalUsers);
       setBackend(true);
     }catch(err){
@@ -3202,6 +3202,7 @@ function setSeasonControlFromServer(rows){
   // Safety fallback: Season 1 stays open only if the backend did not return control data.
   if(!Array.isArray(rows)||!rows.length) next[1]='OPEN';
   seasonControl=next;
+  seasonControlLoaded=Array.isArray(rows)&&rows.length>0;
   applySeasonControlUI();
 }
 
@@ -3334,24 +3335,45 @@ function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGam
 async function openGame(){
   renderUser();
   renderTotalUsers();
+
+  // V18.10: keep login screen visible while checking SEASON_CONTROL.
+  // This prevents the START screen from flashing before a LOCKED screen.
+  e.loginBackendText.textContent="กำลังตรวจสอบสถานะ Season...";
+
+  activeSeason=1;
+
+  try{
+    const d=await api({action:"seasonstatus",email:user?.email||""});
+    if(d?.seasons)setSeasonControlFromServer(d.seasons);
+  }catch(err){
+    console.warn("Initial season status failed",err);
+  }
+
+  // Only reveal game UI after Season status is resolved (or failed closed).
   e.loginScreen.classList.add("hidden");
   e.gameScreen.classList.remove("hidden");
   syncAllOverlayGeometry();
-
-  activeSeason=1;
-  questions=questionsForSeason(activeSeason);
-  preload(questions);
   applySeasonControlUI();
 
-  // Do not start a locked Season.
-  if(isSeasonOpenFrontend(activeSeason)){
-    hideSeasonLockedScreen();
-    startSession();
-  }else{
+  if(!seasonControlLoaded){
+    // Fail closed if backend status could not be read.
+    questions=[];
     showSeasonLockedScreen(activeSeason);
+    if(e.seasonLockTitle)e.seasonLockTitle.textContent="ยังไม่สามารถตรวจสอบสถานะ Season ได้";
+    if(e.seasonLockText)e.seasonLockText.textContent="กรุณารีเฟรชหน้าเกมแล้วลองอีกครั้ง";
+    return;
   }
 
-  refreshSeasonControl();
+  if(!isSeasonOpenFrontend(activeSeason)){
+    questions=[];
+    showSeasonLockedScreen(activeSeason);
+    return;
+  }
+
+  questions=questionsForSeason(activeSeason);
+  preload(questions);
+  hideSeasonLockedScreen();
+  startSession();
 }
 function shuffle(a){
   a=[...a];
