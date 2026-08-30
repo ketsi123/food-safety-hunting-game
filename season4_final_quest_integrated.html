@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Food Safety Final Quest - Season 4</title>
+<meta name="fs-build" content="V18.14-SEASON4-INTEGRATED-20260830">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
+body{display:grid;place-items:center}
+#shell{position:relative;width:min(100vw,1280px);aspect-ratio:16/9;max-height:100vh;overflow:hidden;border-radius:24px;background:#9fdcff;
+box-shadow:0 28px 90px rgba(0,0,0,.45),0 0 0 2px rgba(255,255,255,.22) inset,0 0 50px rgba(71,190,255,.18)}
+canvas{width:100%;height:100%;display:block}
+.top{position:absolute;top:0;left:0;width:100%;height:74px;padding:9px 13px;display:flex;gap:9px;align-items:center;pointer-events:none}
+.brand{color:#fff;background:linear-gradient(180deg,#3ca9f7 0%,#126cb8 42%,#074979 100%);border:2px solid rgba(255,255,255,.62);border-radius:16px;padding:9px 16px;font-weight:1000;text-shadow:0 2px 3px rgba(0,0,0,.35);box-shadow:0 7px 0 #04395f,0 11px 20px rgba(0,0,0,.24),inset 0 3px 0 rgba(255,255,255,.32)}
+.hud{margin-left:auto;display:flex;gap:8px}
+.box{min-width:100px;text-align:center;color:#eaf7ff;background:linear-gradient(180deg,rgba(23,78,116,.94),rgba(3,37,63,.96));border:2px solid rgba(255,255,255,.38);border-radius:14px;padding:6px 10px;font-size:11px;font-weight:800;box-shadow:0 5px 0 rgba(0,22,38,.8),0 9px 18px rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.18)}
+.box b{display:block;color:#ffe467;font-size:17px}
+#question{position:absolute;left:50%;top:210px;transform:translateX(-50%);width:min(860px,84%);padding:15px 24px 16px;border-radius:22px;border:4px solid #ffd34d;
+background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#103f61;text-align:center;font-weight:1000;font-size:21px;line-height:1.42;box-shadow:0 0 0 3px rgba(41,157,222,.92),0 10px 0 #126d9f,0 18px 34px rgba(0,0,0,.25),inset 0 4px 0 rgba(255,255,255,.95);display:none;z-index:7}
+#question small{display:inline-block;color:#ffffff;background:linear-gradient(180deg,#258bc5,#0d679d);border:2px solid #9ee4ff;border-radius:999px;padding:4px 13px;font-size:12px;margin-bottom:8px;font-weight:1000;box-shadow:0 3px 0 #084a75;text-shadow:0 1px 2px rgba(0,0,0,.28)}
+#question span{display:block;text-shadow:0 1px 0 #fff}
+#notice{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(.8);opacity:0;padding:12px 24px;border-radius:18px;color:#fff;font-size:27px;font-weight:1000;transition:.18s;z-index:8}
+#notice.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#notice.ok{background:linear-gradient(#4ed971,#159b42);border:3px solid #bcffca}
+#notice.bad{background:linear-gradient(#ff6868,#c52b2b);border:3px solid #ffd0d0}
+#progress{position:absolute;left:18px;bottom:18px;width:min(430px,44%);height:14px;border-radius:999px;background:rgba(3,36,61,.7);border:1px solid rgba(255,255,255,.35);overflow:hidden}
+#bar{height:100%;width:0;background:linear-gradient(90deg,#48d36d,#ffd847);transition:.25s}
+.pauseBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.38);border-radius:14px;padding:6px 14px;min-width:92px;text-align:center;color:#fff;background:linear-gradient(180deg,#ffca4e,#df8c12);font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 rgba(117,67,0,.9),0 9px 18px rgba(0,0,0,.2),inset 0 2px 0 rgba(255,255,255,.2)}
+.fireBtn{position:static;width:52px;height:52px;border-radius:50%;border:3px solid rgba(255,255,255,.75);background:radial-gradient(circle at 35% 28%,#fff7ad 0,#ffb52e 28%,#ff652d 58%,#c72518 100%);color:#fff;font-size:22px;font-weight:1000;cursor:pointer;z-index:12;box-shadow:0 5px 0 #8f2415,0 10px 18px rgba(0,0,0,.26),inset 0 4px 0 rgba(255,255,255,.5);text-shadow:0 2px 3px rgba(90,0,0,.5)}
+.fireBtn:active{transform:translateY(3px);box-shadow:0 2px 0 #8f2415,0 6px 12px rgba(0,0,0,.22)}
+.fireWrap{position:relative;display:flex;align-items:center;justify-content:center}.fireHint{position:absolute;top:-18px;left:50%;transform:translateX(-50%);padding:2px 8px;border-radius:999px;background:rgba(3,37,63,.92);border:1px solid rgba(255,255,255,.35);color:#fff8c6;font:900 11px Tahoma,"Noto Sans Thai",sans-serif;line-height:1;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.input{width:100%;padding:12px 14px;border:2px solid #8cd6ff;border-radius:14px;font:700 16px Tahoma,"Noto Sans Thai",sans-serif;color:#12435f;background:#fff;outline:none;box-shadow:inset 0 2px 7px rgba(0,0,0,.06)}
+.row{display:flex;gap:10px;align-items:center}.finishBtns{justify-content:center;flex-wrap:nowrap;margin-top:8px;gap:14px}.finishBtns .btn{width:50%;min-width:0;padding:14px 12px;font-size:17px}
+.mini{font-size:12px;color:#597487;font-weight:700;line-height:1.5}
+#pauseModal{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(3,26,45,.22),rgba(2,14,26,.72));z-index:21}
+#heartsRow{position:absolute;left:18px;top:84px;display:flex;gap:5px;align-items:center;background:rgba(3,37,63,.72);border:2px solid rgba(255,255,255,.28);border-radius:16px;padding:8px 12px;box-shadow:0 6px 14px rgba(0,0,0,.18);backdrop-filter:blur(2px)}
+.heart{font-size:20px;line-height:1;color:#ff69b4;text-shadow:0 1px 0 rgba(255,255,255,.35),0 2px 4px rgba(120,0,70,.28);filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.heart.off{color:#8aa0b2;opacity:.28;text-shadow:none;filter:none}
+#intro,#finish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(rgba(3,26,45,.26),rgba(2,14,26,.78));z-index:20}
+#finish{display:none}
+.card{width:min(590px,90%);padding:28px;text-align:center;background:linear-gradient(180deg,#ffffff 0%,#f2fbff 58%,#d6efff 100%);border:4px solid #6fd2ff;border-radius:28px;box-shadow:0 12px 0 #176b9b,0 28px 70px rgba(0,0,0,.38),inset 0 4px 0 rgba(255,255,255,.95)}
+.card .icon{font-size:58px}.card h1{margin:3px 0;color:#0a4d7e;font-size:31px}.sub{color:#62798a;font-weight:700;margin-bottom:14px}
+.btn{width:100%;padding:15px;border:0;border-radius:18px;background:linear-gradient(180deg,#81ef5b 0%,#42cf27 45%,#1ea50a 100%);color:white;font-size:20px;font-weight:1000;cursor:pointer;text-shadow:0 2px 2px rgba(0,0,0,.28);box-shadow:0 8px 0 #128007,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)}
+.finishBtns .btn.endBtn{background:linear-gradient(180deg,#ff8e80 0%,#e9584f 48%,#b93430 100%);box-shadow:0 8px 0 #8c2724,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.4)}
+.finishBtns .btn.playAgainBtn{background:linear-gradient(180deg,#7df35a 0%,#42cf27 48%,#1ea50a 100%);box-shadow:0 8px 0 #128007,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)}
+#mobile{position:absolute;right:18px;bottom:16px;display:flex;gap:8px;pointer-events:auto;align-items:center}.mb{position:static;width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(3,51,87,.78);color:#fff;font-size:22px;font-weight:1000;pointer-events:auto;box-shadow:0 5px 0 rgba(8,31,52,.7),0 10px 18px rgba(0,0,0,.22)}#j{background:rgba(19,132,72,.84)}
+@media(max-width:800px){.top{height:65px;padding:6px}.brand{font-size:10px;padding:6px 8px}.box{min-width:68px;font-size:9px;padding:4px}.box b{font-size:13px}#question{top:142px;font-size:14px;padding:9px 12px 10px;width:88%;border-width:3px}#question small{font-size:9px;padding:3px 8px;margin-bottom:5px}#progress{left:12px;bottom:10px;width:min(260px,52%)}#heartsRow{top:72px;left:10px;padding:5px 8px;gap:3px}.heart{font-size:14px}.pauseBtn{min-width:64px;padding:4px 8px;font-size:10px}.card{padding:18px}.input{font-size:14px}#mobile{right:12px;bottom:12px;gap:6px}.mb,#fireBtn{width:48px;height:48px;font-size:20px}.fireHint{top:-15px;font-size:9px;padding:2px 6px}}
+
+@media(max-width:480px){.finishBtns{gap:8px}.finishBtns .btn{font-size:14px;padding:12px 8px}}
+.backBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:6px 12px;color:#fff;background:linear-gradient(180deg,#647d91,#29485f);font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244} .lockedMsg{color:#b63737;font-weight:900;margin:8px 0} </style>
+</head>
+<body>
+<div id="shell">
+<canvas id="cv" width="1280" height="720"></canvas>
+
+<div class="top">
+<div class="brand">🛡️ FOOD SAFETY FINAL QUEST</div>
+<div class="hud"><button class="backBtn" id="backBtn">← กลับเกมหลัก</button>
+  <div class="box">Checkpoint<b id="cp">0 / 20</b></div>
+  <div class="box">Score<b id="score">0</b></div>
+  <div class="box">Stars<b id="stars">0 / 30</b></div>
+  <div class="box">Hearts<b id="hearts">5 / 5</b></div>
+  <div class="box">Time<b id="time">02:00</b></div>
+  <button class="pauseBtn" id="pauseBtn">⏸ PAUSE</button>
+</div>
+</div>
+
+<div id="heartsRow"></div>
+<div id="question"><small id="stage">CHECKPOINT 01</small><span id="qt"></span></div>
+<div id="notice"></div>
+<div id="progress"><div id="bar"></div></div>
+<div id="mobile"><button class="mb" id="l">◀</button><button class="mb" id="r">▶</button><button class="mb" id="j">↑</button><div class="fireWrap"><div class="fireHint">KEY 0</div><button class="fireBtn" id="fireBtn" title="กดเลข 0 เพื่อยิงลูกไฟ">🔥</button></div></div>
+
+<div id="intro">
+<div class="card">
+<div class="icon">🏃‍♀️🛒🏭🧠🏆</div>
+<h1>Continuous Final Quest</h1>
+<div class="sub">Season 4 • 20 Checkpoints • One Continuous Map</div>
+<p style="color:#48697e;font-weight:700;line-height:1.72;margin:0 0 12px">
+วิ่งในแผนที่เดียวต่อเนื่อง ไม่ตัดฉาก<br>
+เจอ Question Gate → โหม่งคำตอบ → Gate เปิด → วิ่งต่อ<br>
+เวลารวม 2 นาทีสำหรับ 20 ข้อ
+</p>
+<div style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"><div id="seasonStatus" class="mini"></div></div>
+<div class="mini" style="margin:0 0 10px">กดหยุดเกมเพื่อพักและบันทึกคะแนนได้ • เมื่อ Time Out / Game Over / เล่นจบ ระบบจะบันทึกคะแนนอัตโนมัติ</div>
+<div style="margin:0 0 16px;padding:12px 14px;border-radius:14px;background:#eaf7ff;border:2px solid #9bdcff;color:#174d6a;font-weight:800;line-height:1.7;text-align:left">
+  <div style="font-size:14px;color:#0b6c9c;margin-bottom:4px">⌨ การควบคุมด้วยแป้นคีย์บอร์ด</div>
+  <div style="font-size:13px">← → หรือ A / D = เดินซ้าย–ขวา</div>
+  <div style="font-size:13px">Space / ↑ / W = Jump</div>
+  <div style="font-size:13px"><b>เลข 0 บนแป้นพิมพ์</b> = ยิงลูกไฟ 🔥</div>
+  <div style="font-size:13px">P หรือ Esc = Pause / Resume</div>
+</div>
+<button class="btn" id="start">▶ START RUN</button>
+</div>
+</div>
+
+<div id="finish">
+<div class="card">
+<div class="icon">🏆✨</div>
+<h1 id="ft">FOOD SAFETY CHAMPION!</h1>
+<div class="sub" id="fs">Final Quest Complete</div>
+<p id="fr" style="color:#48697e;font-weight:700;line-height:1.75;margin:0 0 18px"></p>
+<div class="row finishBtns">
+  <button class="btn endBtn" id="endGame">⏹ จบเกม</button>
+  <button class="btn playAgainBtn" id="again">▶ เล่นอีกครั้ง</button>
+</div>
+</div>
+</div>
+<div id="pauseModal">
+  <div class="card" style="max-width:560px">
+    <div class="icon">⏸️</div>
+    <h1>Game Paused</h1>
+    <div class="sub">หยุดเกมชั่วคราว</div>
+    <p id="pauseSummary" style="color:#48697e;font-weight:700;line-height:1.7;margin:0 0 14px"></p>
+    <div class="row" style="margin:0 0 10px">
+      <button class="btn" id="resumeBtn" style="margin:0">▶ RESUME</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="savePauseBtn" style="margin:0;background:linear-gradient(180deg,#53d2ff 0%,#2e9de0 45%,#126cb8 100%);box-shadow:0 8px 0 #0a4d7e,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)">💾 SAVE SCORE</button>
+    </div>
+    <div class="mini" id="saveStatus" style="margin-top:14px">หากยังไม่ได้ตั้งค่า Google Apps Script URL ระบบจะเก็บสำรองไว้ใน Local Storage ก่อน</div>
+  </div>
+</div>
+</div>
+
+<script>
+const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
+const ground=620, worldW=21500;
+const BACKEND_URL="https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec";
+const SAVE_URL=BACKEND_URL;
+const params=new URLSearchParams(location.search);
+let playerEmail=(params.get("email")||"").trim().toLowerCase();
+let returnUrl=params.get("return")||"index.html";
+let runId="";
+let correctAnswers=0,wrongAnswers=0,fireKills=0,stomps=0,playScoreBeforeBonus=0,lastTimeBonus=0;
+async function api(body){
+  const r=await fetch(BACKEND_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(body),mode:"cors"});
+  const d=await r.json();
+  if(!d?.ok) throw new Error(d?.error||"Backend error");
+  return d;
+}
+let qs=[];
+
+const checkpointXs=Array.from({length:20},(_,i)=>700+i*1000);
+const player={x:130,y:558,w:44,h:62,vx:0,vy:0,speed:5.6,jump:-15.4,onGround:false,dir:1};
+let cam=0,keys={},active=0,answered=0,score=0,seconds=120,timer=null,state="intro",locked=false;
+let blocks=[],gateClosed=false;
+const correctSlotPattern=[1,2,0,2,1,0,1,0,2,1,2,0,2,0,1,2,1,0,1,2];
+let stars=[],enemies=[],particles=[],fireballs=[],starCount=0,lives=10,invincible=0,fireCooldown=0,playerName="Player 1",saveLock=false,lastSaveKey="";
+
+const cp=document.getElementById("cp"),scoreEl=document.getElementById("score"),starEl=document.getElementById("stars"),heartEl=document.getElementById("hearts"),timeEl=document.getElementById("time"),heartsRow=document.getElementById("heartsRow"),qBox=document.getElementById("question"),qt=document.getElementById("qt"),stage=document.getElementById("stage"),note=document.getElementById("notice"),bar=document.getElementById("bar"),pauseBtn=document.getElementById("pauseBtn"),pauseModal=document.getElementById("pauseModal"),resumeBtn=document.getElementById("resumeBtn"),savePauseBtn=document.getElementById("savePauseBtn"),pauseSummary=document.getElementById("pauseSummary"),saveStatus=document.getElementById("saveStatus"),playerNameInput=document.getElementById("playerName"),fireBtn=document.getElementById("fireBtn");
+
+function fmt(s){return String(Math.floor(Math.max(0,s)/60)).padStart(2,"0")+":"+String(Math.max(0,s)%60).padStart(2,"0")}
+function renderHearts(){
+  heartEl.textContent=lives+" / 5";
+  heartsRow.innerHTML=Array.from({length:5},(_,i)=>`<span class="heart ${i<lives?'':'off'}">❤</span>`).join('');
+}
+function setHUD(){cp.textContent=answered+" / 20";scoreEl.textContent=score;starEl.textContent=starCount+" / 30";timeEl.textContent=fmt(seconds);renderHearts();bar.style.width=(answered/20*100)+"%"}
+function getSnapshot(reason="manual"){
+  return {playerName,email:playerEmail,runId,score,playScore:playScoreBeforeBonus||score,timeBonus:lastTimeBonus,correct:correctAnswers,wrong:wrongAnswers,stars:starCount,fireKills,stomps,hearts:lives,checkpoint:answered,timeLeft:seconds,status:reason,updatedAt:new Date().toISOString()};
+}
+async function saveScore(reason="manual"){
+  const snap=getSnapshot(reason);
+  const saveKey=`${snap.playerName}|${snap.status}|${snap.score}|${snap.checkpoint}|${snap.timeLeft}|${snap.hearts}`;
+  if(reason!=="pause" && saveKey===lastSaveKey) return {ok:true, skipped:true, mode:"dedup"};
+  if(saveLock) return {ok:false, mode:"busy"};
+  saveLock=true;
+  try{
+    const history=JSON.parse(localStorage.getItem("foodSafetySavedScores")||"[]");
+    history.unshift(snap);
+    localStorage.setItem("foodSafetySavedScores", JSON.stringify(history.slice(0,100)));
+    if(!SAVE_URL || SAVE_URL.includes("PUT_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
+      lastSaveKey=saveKey;
+      return {ok:true, mode:"local"};
+    }
+    const out=await api({action:"s4submit",...snap});
+    lastSaveKey=saveKey;
+    return {ok:true, mode:"sheet", backend:out};
+  }catch(err){
+    console.error(err);
+    return {ok:false, mode:"error", error:err};
+  }finally{ saveLock=false; }
+}
+function refreshPauseSummary(msg=""){
+  pauseSummary.innerHTML=`ผู้เล่น <b>${playerName}</b><br>คะแนน <b style="color:#168943">${score}</b> • ผ่าน ${answered}/20 • ⭐ ${starCount}/30 • ❤ ${lives}/5 • เวลา ${fmt(seconds)}`;
+  if(msg) saveStatus.textContent=msg;
+}
+function pauseGame(){
+  if(state!=="play") return;
+  state="pause";
+  pauseModal.style.display="flex";
+  refreshPauseSummary("กำลังบันทึกคะแนน...");
+  pauseBtn.textContent="▶ RESUME";
+  saveScore("pause").then(r=>refreshPauseSummary(r.mode==="sheet"?"บันทึกคะแนนไป Google Sheet แล้ว":r.mode==="local"?"ยังไม่ได้ตั้งค่า Google Apps Script URL — เก็บสำรองในเครื่องแล้ว":"บันทึกคะแนนไม่สำเร็จ"));
+}
+function resumeGame(){
+  if(state!=="pause") return;
+  state="play";
+  pauseModal.style.display="none";
+  pauseBtn.textContent="⏸ PAUSE";
+}
+async function autoSaveEnd(reason){
+  const r=await saveScore(reason);
+  const t=r.mode==="sheet"?"บันทึกคะแนนไป Google Sheet อัตโนมัติแล้ว":r.mode==="local"?"ยังไม่ได้ตั้งค่า Google Apps Script URL — เก็บสำรองคะแนนในเครื่องแล้ว":"บันทึกคะแนนอัตโนมัติไม่สำเร็จ";
+  document.getElementById("fr").innerHTML += `<br><span style="font-size:12px;color:#537286">${t}</span>`;
+}
+function setupGate(){
+  if(active>=20){gateClosed=false;qBox.style.display="none";return}
+  const gx=checkpointXs[active];
+  const q=qs[active], ans=q[2], correctIdx=q[3], bw=225,bh=74,gap=24,total=bw*3+gap*2,start=gx-total/2;
+  const correctSlot=correctSlotPattern[active%correctSlotPattern.length];
+  const wrongChoices=ans.map((txt,idx)=>({txt,idx})).filter(o=>o.idx!==correctIdx);
+  for(let i=wrongChoices.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [wrongChoices[i],wrongChoices[j]]=[wrongChoices[j],wrongChoices[i]];
+  }
+  const arranged=new Array(3);
+  arranged[correctSlot]={txt:ans[correctIdx],originalIndex:correctIdx,correct:true};
+  let wi=0;
+  for(let slot=0;slot<3;slot++){
+    if(arranged[slot]) continue;
+    const w=wrongChoices[wi++];
+    arranged[slot]={txt:w.txt,originalIndex:w.idx,correct:false};
+  }
+  blocks=arranged.map((item,slot)=>({x:start+slot*(bw+gap),y:375,w:bw,h:bh,i:slot,txt:item.txt,originalIndex:item.originalIndex,correct:item.correct,bounce:0,flash:0}));
+  gateClosed=true;
+}
+function showQuestion(){
+  const q=qs[active];stage.textContent="CHECKPOINT "+String(active+1).padStart(2,"0")+" • "+q[0].toUpperCase();qt.textContent=q[1];qBox.style.display="block";
+}
+function hideQuestion(){qBox.style.display="none"}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function nearGateZone(x,pad=420){return checkpointXs.some(cp=>Math.abs(x-cp)<pad)}
+function safeEnemySpawnAhead(seed=0){
+  const zoneBoost = active>=16 ? 1000 : active>=12 ? 550 : 0;
+  let x=player.x+1150+zoneBoost+(seed%4)*320+Math.random()*260;
+  let guard=0;
+  while(nearGateZone(x,470)&&guard<24){x+=320;guard++;}
+  return Math.min(worldW-180,x);
+}
+
+function initCollectibles(){
+  starCount=0; stars=[]; enemies=[]; particles=[]; fireballs=[];
+
+  // ⭐ 30 large stars, placed only in the clear running lanes BETWEEN question gates.
+  // Answer blocks extend roughly 360 px from each checkpoint center, so we keep a generous buffer.
+  const starPattern=[
+    {dx:445,dy:150},{dx:520,dy:215},{dx:555,dy:165}
+  ];
+  let sid=0;
+  for(let i=0;i<19 && stars.length<30;i++){
+    const base=checkpointXs[i];
+    const count=i<11?2:1;
+    for(let j=0;j<count && stars.length<30;j++){
+      const p=starPattern[(i+j)%starPattern.length];
+      const x=base+(j===0?445:555);
+      const y=ground-p.dy-(i%3)*8;
+      stars.push({x,y,r:22,collected:false,phase:sid*.7});
+      sid++;
+    }
+  }
+
+  // 👾 Endless-runner enemies: spaced across the world, always moving toward the player.
+  // They never stop at a lane edge. After passing behind the player they respawn far ahead.
+  for(let i=0;i<8;i++){
+    let x=1350+i*1850;
+    while(nearGateZone(x,470)) x+=520;
+    enemies.push({
+      x,y:ground-34,w:42,h:34,
+      speed:1.95+(i%4)*0.18,
+      alive:true,
+      phase:i*.83,
+      respawnDelay:0
+    });
+  }
+
+}
+function burst(x,y,kind='star'){
+  for(let i=0;i<10;i++) particles.push({x,y,vx:(Math.random()-.5)*5,vy:-2-Math.random()*4,life:36+Math.random()*16,kind});
+}
+function hit(a,b){return a.x+a.w>b.x&&a.x<b.x+b.w&&a.y+a.h>b.y&&a.y<b.y+b.h}
+function startGame(){
+ if(qs.length!==20){flash("ยังโหลดคำถาม Season 4 ไม่ครบ","bad");return;}
+ playerName=(playerNameInput.value||playerEmail||"Player 1").trim()||"Player 1";
+ runId="S4RUN-"+(crypto.randomUUID?crypto.randomUUID():(Date.now()+"-"+Math.random().toString(36).slice(2)));
+ correctAnswers=wrongAnswers=fireKills=stomps=0;playScoreBeforeBonus=0;lastTimeBonus=0;
+ state="play";active=answered=score=0;seconds=120;cam=0;locked=false;lives=5;invincible=0;fireCooldown=0;lastSaveKey="";pauseModal.style.display="none";pauseBtn.textContent="⏸ PAUSE";saveStatus.textContent="หากยังไม่ได้ตั้งค่า Google Apps Script URL ระบบจะเก็บสำรองไว้ใน Local Storage ก่อน";initCollectibles();player.x=130;player.y=ground-player.h;player.vx=player.vy=0;setupGate();hideQuestion();setHUD();
+ document.getElementById("intro").style.display="none";document.getElementById("finish").style.display="none";
+ clearInterval(timer);timer=setInterval(()=>{if(state!=="play")return;seconds--;setHUD();if(seconds<=0)finish(false)},1000)
+}
+document.getElementById("start").onclick=startGame;document.getElementById("again").onclick=startGame;document.getElementById("endGame").onclick=goToIntro;
+
+function goToIntro(){
+ clearInterval(timer);
+ state="intro";
+ document.getElementById("finish").style.display="none";
+ pauseModal.style.display="none";
+ document.getElementById("intro").style.display="flex";
+}
+function jump(){if(state==="play"&&player.onGround){player.vy=player.jump;player.onGround=false}}
+function shoot(){
+ if(state!=="play"||fireCooldown>0)return;
+ fireCooldown=22;
+ const dir=player.dir||1;
+ fireballs.push({x:player.x+player.w/2+dir*34,y:player.y+26,r:11,vx:dir*9.8,vy:-2.2,life:150,spin:0,bounces:0,bouncePower:4.9});
+ burst(player.x+player.w/2+dir*24,player.y+28,'fire');
+}
+addEventListener("keydown",e=>{if(["KeyP","Escape"].includes(e.code)){e.preventDefault();state==="play"?pauseGame():state==="pause"&&resumeGame();return;}if(["Digit0","Numpad0"].includes(e.code)){e.preventDefault();shoot();return;}keys[e.code]=true;if(["ArrowLeft","ArrowRight","ArrowUp","Space"].includes(e.code))e.preventDefault();if(["Space","ArrowUp","KeyW"].includes(e.code))jump()});
+addEventListener("keyup",e=>keys[e.code]=false);
+function touch(id,code,j=false){const el=document.getElementById(id),dn=e=>{e.preventDefault();keys[code]=true;if(j)jump()},up=e=>{e.preventDefault();keys[code]=false};el.addEventListener("pointerdown",dn);["pointerup","pointercancel","pointerleave"].forEach(x=>el.addEventListener(x,up))}
+touch("l","ArrowLeft");touch("r","ArrowRight");touch("j","Space",true);
+fireBtn.addEventListener("pointerdown",e=>{e.preventDefault();shoot()});
+
+function update(){
+ if(state!=="play")return;
+ let m=0;if(keys.ArrowLeft||keys.KeyA)m--;if(keys.ArrowRight||keys.KeyD)m++;
+ player.vx=m*player.speed;if(m)player.dir=m>0?1:-1;
+ let nx=player.x+player.vx;
+ if(gateClosed && active<20){
+   const gx=checkpointXs[active];
+   if(nx>gx+360) nx=gx+360;
+ }
+ player.x=Math.max(20,Math.min(worldW-80,nx));
+ player.vy+=.72;player.y+=player.vy;
+ if(player.y+player.h>=ground){player.y=ground-player.h;player.vy=0;player.onGround=true}
+ if(invincible>0) invincible--;
+ if(fireCooldown>0) fireCooldown--;
+
+ // 🟨 Answer blocks are solid platforms from ABOVE only.
+ // Landing/running on them does NOT answer the question; head-butting from below still does.
+ if(gateClosed && active<20 && player.vy>=0){
+   const prevBottom=player.y+player.h-player.vy;
+   const newBottom=player.y+player.h;
+   for(const b of blocks){
+     const top=b.y-b.bounce;
+     if(player.x+player.w>b.x+4 && player.x<b.x+b.w-4 && prevBottom<=top+4 && newBottom>=top){
+       player.y=top-player.h;player.vy=0;player.onGround=true;break;
+     }
+   }
+ }
+
+ // 🔥 Fireballs
+ for(const f of fireballs){
+   f.x+=f.vx;f.y+=f.vy;f.vy+=0.18;f.life--;f.spin+=0.28;
+   if(f.y+f.r>=ground){
+     f.y=ground-f.r;
+     f.vy=-f.bouncePower;
+     f.bouncePower=Math.max(3.4,f.bouncePower*0.93);
+     f.vx*=0.995;
+     f.bounces++;
+   }
+   for(let ei=0;ei<enemies.length;ei++){
+     const e=enemies[ei]; if(!e.alive)continue;
+     const fb={x:f.x-f.r,y:f.y-f.r,w:f.r*2,h:f.r*2};
+     if(hit(fb,e)){
+       e.alive=false;e.respawnDelay=80;f.life=0;score+=5;seconds+=5;fireKills++;
+       burst(e.x+e.w/2,e.y+e.h/2,'fire');flash('🔥 HIT +5 • +5 sec','ok');setHUD();break;
+     }
+   }
+ }
+ fireballs=fireballs.filter(f=>f.life>0 && f.x>player.x-900 && f.x<player.x+1600);
+
+ // ⭐ Star collection: touching a large star gives +20 points
+ for(const st of stars){
+   if(st.collected) continue;
+   const dx=(player.x+player.w/2)-st.x, dy=(player.y+player.h/2)-st.y;
+   if(Math.hypot(dx,dy)<44){
+     st.collected=true; starCount++; score+=5;
+     burst(st.x,st.y,'star'); flash('⭐ STAR +5','ok'); setHUD();
+   }
+ }
+
+ // 👾 Endless-runner enemies: continuous motion, never parked at a fixed point
+ for(let ei=0;ei<enemies.length;ei++){
+   const e=enemies[ei];
+   e.phase+=0.18;
+   if(!e.alive){
+     e.respawnDelay--;
+     if(e.respawnDelay<=0){e.alive=true;e.x=safeEnemySpawnAhead(ei);}
+     continue;
+   }
+
+   e.x-=e.speed;
+
+   // Once far behind the player, recycle invisibly to a safe position well ahead.
+   if(e.x<player.x-720){
+     e.x=safeEnemySpawnAhead(ei);
+     e.speed=1.95+(ei%4)*0.18+Math.random()*.12;
+   }
+
+   // Never let an enemy enter the active Question Gate/answer area.
+   // Recycle it ahead before it reaches that zone instead of stopping it there.
+   if(active<20 && gateClosed){
+     const gx=checkpointXs[active];
+     if(e.x>gx+400 && e.x-e.speed<=gx+400 && player.x>gx-520){
+       e.x=safeEnemySpawnAhead(ei+3);
+     }
+   }
+
+   if(hit(player,e)){
+     const playerBottom=player.y+player.h;
+     const stomp=player.vy>1 && playerBottom-e.y<24;
+     if(stomp){
+       e.alive=false;e.respawnDelay=100;player.vy=-10.5;score+=10;seconds+=5;lives=Math.min(5,lives+1);stomps++;
+       burst(e.x+e.w/2,e.y,'enemy');flash('👾 STOMP +10 • ❤ +1 • +5 sec','ok');setHUD();
+     }else if(invincible<=0){
+       lives=Math.max(0,lives-1);invincible=100;player.vy=-8.5;player.x+=(player.x<e.x?-70:70);
+       burst(player.x+player.w/2,player.y+player.h/2,'enemy');flash('💔 HIT! -1 HEART','bad');setHUD();
+       e.x=safeEnemySpawnAhead(ei+5);
+       if(lives<=0){gameOver();return;}
+     }
+   }
+ }
+
+ // particle animation
+ particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.life--});
+ particles=particles.filter(p=>p.life>0);
+
+ if(active<20){
+  const gx=checkpointXs[active];
+  if(Math.abs(player.x-gx)<470 && gateClosed) showQuestion();
+  if(player.x<gx-520) hideQuestion();
+  if(player.vy<0 && gateClosed && !locked){
+    for(const b of blocks){
+      const head=player.y, by=b.y+b.h;
+      if(player.x+player.w>b.x && player.x<b.x+b.w && head<=by && head>=by-18){
+        player.y=by;player.vy=4;b.bounce=14;answer(b);break
+      }
+    }
+  }
+ }
+ blocks.forEach(b=>{if(b.bounce>0)b.bounce*=.72;if(b.flash>0)b.flash--});
+ const target=Math.max(0,Math.min(worldW-W,player.x-330));cam+=(target-cam)*.11;
+
+ if(active>=20 && player.x>checkpointXs[19]+520) finish(true);
+}
+function answer(b){
+ locked=true;
+ const good=!!b.correct;b.flash=28;
+ if(good){score+=20;correctAnswers++;flash("✓ CORRECT! +20","ok")}
+ else{score=Math.max(0,score-10);wrongAnswers++;flash("✕ WRONG! -10 pts","bad")}
+ answered++;active++;setHUD();hideQuestion();gateClosed=false;
+ setTimeout(()=>{locked=false;setupGate()},520);
+}
+function flash(t,c){note.textContent=t;note.className="show "+c;setTimeout(()=>note.className="",470)}
+function gameOver(){
+ if(state==="end")return; state="end"; clearInterval(timer);
+ burst(player.x+player.w/2,player.y+player.h/2,'enemy');
+ const f=document.getElementById("finish");f.style.display="flex";
+ document.getElementById("ft").textContent="GAME OVER!";
+ document.getElementById("fs").textContent="หัวใจหมดแล้ว — ต้องเริ่มใหม่";
+ document.getElementById("fr").innerHTML=`คะแนน <b style="font-size:29px;color:#d63c3c">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5`;
+ autoSaveEnd("game_over");
+}
+function finish(ok){
+ if(state==="end")return;state="end";clearInterval(timer);
+ const f=document.getElementById("finish");f.style.display="flex";
+ document.getElementById("ft").textContent=ok?"FOOD SAFETY CHAMPION!":"TIME OUT";
+ document.getElementById("fs").textContent=ok?"คุณวิ่งผ่านครบ 20 Checkpoints":"หมดเวลาก่อนถึงเส้นชัย";
+ if(ok){
+   const playScore=score;
+   const timeBonus=Math.round((Math.max(0,seconds)*(20/60)+Number.EPSILON)*100)/100;
+   lastTimeBonus=timeBonus;score=Math.round((playScore+timeBonus+Number.EPSILON)*100)/100;
+   setHUD();
+   document.getElementById("fr").innerHTML=`คะแนนจากการเล่น <b>${playScore}</b><br>⏱ Time Bonus ${fmt(seconds)} = <b style="color:#d88400">+${timeBonus}</b> คะแนน<br>คะแนนรวม <b style="font-size:30px;color:#168943">${score}</b><br><span style="font-size:12px;color:#60798a">คิด Time Bonus นาทีละ 20 คะแนน (เศษวินาทีคิดตามสัดส่วน)</span><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5`;
+ }else{
+   document.getElementById("fr").innerHTML=`คะแนนรวม <b style="font-size:29px;color:#168943">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5 • เวลาเหลือ ${fmt(seconds)}`;
+ }
+ autoSaveEnd(ok?"completed":"time_out");
+}
+
+function zoneAt(x){ if(x<checkpointXs[5]-230)return 0;if(x<checkpointXs[10]-230)return 1;if(x<checkpointXs[15]-230)return 2;return 3}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+function drawWorld(){
+ const z=zoneAt(player.x),pal=[
+  ["#48bfff","#dff7ff","#7fd56c","#188c55","#4dad3f"],
+  ["#62b6ef","#e9f7ff","#d5e5ee","#5f7d91","#6b9f5d"],
+  ["#8f83ef","#f0ebff","#c5bdf8","#6f60c4","#7275b2"],
+  ["#ff9d4d","#fff2c8","#ffd49d","#d86b24","#7fa14d"]
+ ][z];
+ // sky gradient
+ let g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,pal[0]);g.addColorStop(.58,pal[1]);g.addColorStop(1,"#f7fbff");ctx.fillStyle=g;ctx.fillRect(0,0,W,H);
+ // soft sun glow
+ let rg=ctx.createRadialGradient(W*.78,115,10,W*.78,115,180);rg.addColorStop(0,"rgba(255,255,220,.88)");rg.addColorStop(.35,"rgba(255,237,154,.25)");rg.addColorStop(1,"rgba(255,255,255,0)");ctx.fillStyle=rg;ctx.fillRect(0,0,W,H);
+ // clouds - parallax
+ for(let i=0;i<10;i++){
+   const wx=i*420+90, x=wx-cam*.12; if(x<-180||x>W+180)continue;
+   const y=105+(i%3)*42;
+   ctx.save();ctx.globalAlpha=.78;ctx.fillStyle="#fff";ctx.shadowColor="rgba(45,116,154,.16)";ctx.shadowBlur=18;
+   ctx.beginPath();ctx.arc(x,y,30,0,7);ctx.arc(x+34,y-10,38,0,7);ctx.arc(x+75,y,28,0,7);ctx.arc(x+40,y+12,45,0,7);ctx.fill();ctx.restore();
+ }
+ // distant hills
+ for(let i=0;i<18;i++){
+   const wx=i*500, x=wx-cam*.18; if(x<-520||x>W+520)continue;
+   ctx.fillStyle=z===3?"rgba(224,121,57,.28)":"rgba(58,112,144,.20)";
+   ctx.beginPath();ctx.moveTo(x,555);ctx.quadraticCurveTo(x+150,310-(i%2)*45,x+330,555);ctx.closePath();ctx.fill();
+ }
+ // midground buildings / trees
+ for(let i=0;i<70;i++){
+   const wx=i*180, x=wx-cam*.35;if(x<-200||x>W+200)continue;
+   const h=175+(i%3)*25, y=555-h;
+   ctx.save();ctx.shadowColor="rgba(26,61,79,.18)";ctx.shadowBlur=12;ctx.shadowOffsetY=7;
+   let bg=ctx.createLinearGradient(x,y,x+145,y+h);bg.addColorStop(0,"#ffffff");bg.addColorStop(1,pal[2]);ctx.fillStyle=bg;rr(x,y,145,h,14);ctx.fill();ctx.shadowColor="transparent";
+   ctx.fillStyle=pal[3];for(let w=0;w<2;w++)for(let r=0;r<2;r++){rr(x+18+w*52,y+35+r*64,28,40,7);ctx.fill();}
+   ctx.fillStyle="rgba(255,255,255,.55)";ctx.fillRect(x+8,y+9,90,5);ctx.restore();
+ }
+ // 3D grass platform
+ let gg=ctx.createLinearGradient(0,548,0,620);gg.addColorStop(0,"#7ce35e");gg.addColorStop(.18,pal[4]);gg.addColorStop(1,"#2c7d31");ctx.fillStyle=gg;ctx.fillRect(0,548,W,72);
+ ctx.fillStyle="rgba(255,255,255,.5)";ctx.fillRect(0,549,W,5);
+ // grass tufts
+ ctx.strokeStyle="rgba(24,104,41,.55)";ctx.lineWidth=3;for(let x=(-cam%42);x<W;x+=42){ctx.beginPath();ctx.moveTo(x,566);ctx.lineTo(x+5,552);ctx.moveTo(x+6,566);ctx.lineTo(x+12,553);ctx.stroke();}
+ // soil depth with beveled edge
+ let sg=ctx.createLinearGradient(0,620,0,720);sg.addColorStop(0,"#a66b3d");sg.addColorStop(.18,"#82502e");sg.addColorStop(1,"#5f351f");ctx.fillStyle=sg;ctx.fillRect(0,620,W,100);
+ ctx.fillStyle="rgba(255,210,153,.30)";ctx.fillRect(0,622,W,6);
+ ctx.fillStyle="rgba(255,255,255,.08)";for(let x=(-cam%55);x<W;x+=55)ctx.fillRect(x,654+(Math.floor((x+cam)/55)%2)*12,28,8);
+ // zone transition signs - glossy
+ const signs=[[checkpointXs[0]-450,"🛒 MODERN TRADE"],[checkpointXs[5]-300,"🏭 FACTORY"],[checkpointXs[10]-300,"🧠 CULTURE"],[checkpointXs[15]-300,"🏆 FINAL MIX"]];
+ for(const [wx,label] of signs){const x=wx-cam;if(x>-260&&x<W+40){ctx.save();ctx.shadowColor="rgba(0,0,0,.22)";ctx.shadowBlur=12;ctx.shadowOffsetY=7;let sg2=ctx.createLinearGradient(x,485,x,537);sg2.addColorStop(0,"#1976ae");sg2.addColorStop(1,"#083f63");ctx.fillStyle=sg2;rr(x,482,230,54,14);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle="rgba(255,255,255,.55)";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#fff";ctx.font="bold 17px Tahoma";ctx.textAlign="center";ctx.fillText(label,x+115,516);ctx.restore();}}
+}
+function wrap(t,x,y,mw,lh){
+ const a=[...t];let lines=[],cur="";for(const c of a){if(ctx.measureText(cur+c).width>mw){lines.push(cur);cur=c}else cur+=c}if(cur)lines.push(cur);
+ const sy=y-(lines.length-1)*lh/2;lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,x,sy+i*lh))
+}
+function drawGate(){
+ if(active>=20)return;
+ const gx=checkpointXs[active]-cam;
+ // 3D pillars
+ for(const px of [gx-390,gx+360]){
+   ctx.save();ctx.shadowColor="rgba(0,0,0,.28)";ctx.shadowBlur=16;ctx.shadowOffsetY=9;
+   let pg=ctx.createLinearGradient(px,445,px+30,620);pg.addColorStop(0,"#29a6e5");pg.addColorStop(.45,"#0b6d9f");pg.addColorStop(1,"#064264");ctx.fillStyle=pg;rr(px,445,30,175,8);ctx.fill();ctx.shadowColor="transparent";ctx.fillStyle="rgba(255,255,255,.35)";ctx.fillRect(px+5,452,5,155);ctx.restore();
+ }
+ // floating gate title
+ ctx.save();ctx.shadowColor="rgba(0,0,0,.25)";ctx.shadowBlur=12;ctx.shadowOffsetY=5;let tg=ctx.createLinearGradient(gx-120,458,gx+120,505);tg.addColorStop(0,"#fff48b");tg.addColorStop(.5,"#ffd53d");tg.addColorStop(1,"#f2a515");ctx.fillStyle=tg;rr(gx-125,458,250,46,14);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle="#fff5b4";ctx.lineWidth=3;ctx.stroke();ctx.fillStyle="#754400";ctx.font="bold 18px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("QUESTION GATE",gx,481);ctx.restore();
+ // answer blocks - glossy 3D
+ for(const b of blocks){
+   const x=b.x-cam,y=b.y-b.bounce;if(x<-300||x>W+300)continue;
+   const ok=b.flash>0&&b.correct,bad=b.flash>0&&!b.correct;
+   ctx.save();ctx.shadowColor="rgba(0,0,0,.28)";ctx.shadowBlur=13;ctx.shadowOffsetY=9;
+   let bg=ctx.createLinearGradient(x,y,x,y+b.h);if(ok){bg.addColorStop(0,"#72ee8c");bg.addColorStop(1,"#1ba447")}else if(bad){bg.addColorStop(0,"#ff8d8d");bg.addColorStop(1,"#c72a2a")}else{bg.addColorStop(0,"#ffd85e");bg.addColorStop(.48,"#f5b62e");bg.addColorStop(1,"#cc7c09")};ctx.fillStyle=bg;rr(x,y,b.w,b.h,15);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle=ok?"#d9ffe2":bad?"#ffdcdc":"#fff0a0";ctx.lineWidth=3;ctx.stroke();
+   ctx.fillStyle="rgba(255,255,255,.32)";rr(x+7,y+7,b.w-14,12,6);ctx.fill();
+   ctx.fillStyle=ok?"#ffffff":bad?"#ffffff":"#4b2b00";ctx.font="bold 17px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.shadowColor="transparent";ctx.shadowBlur=0;wrap(b.txt,x+b.w/2,y+b.h/2+2,b.w-20,20);ctx.restore();
+ }
+}
+function drawCheckpoints(){
+ for(let i=0;i<20;i++){
+  const x=checkpointXs[i]-cam;if(x<-110||x>W+110)continue;
+  const done=i<answered, current=i===active&&gateClosed;
+  ctx.save();
+  // simple checkpoint pole
+  ctx.strokeStyle=done?"#2fbf55":"#2f6078";ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,500);ctx.lineTo(x,620);ctx.stroke();
+
+  if(current){
+    // clear compact badge below QUESTION GATE — no flag overlap
+    const bw=86,bh=34,bx=x-bw/2,by=516;
+    ctx.shadowColor="rgba(0,0,0,.22)";ctx.shadowBlur=10;ctx.shadowOffsetY=5;
+    let cg=ctx.createLinearGradient(bx,by,bx,by+bh);cg.addColorStop(0,"#ffffff");cg.addColorStop(1,"#dff3ff");
+    ctx.fillStyle=cg;rr(bx,by,bw,bh,12);ctx.fill();
+    ctx.shadowColor="transparent";ctx.strokeStyle="#ffbf2e";ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle="#0d4f87";ctx.font="bold 16px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("ข้อ "+String(i+1),x,by+bh/2+1);
+  }else{
+    // small subtle flag for non-current checkpoints
+    ctx.fillStyle=done?"#48df70":"#ffc83d";ctx.beginPath();ctx.moveTo(x+3,500);ctx.lineTo(x+48,514);ctx.lineTo(x+3,528);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#fff";ctx.font="bold 11px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(i+1),x+21,514);
+  }
+  ctx.restore();
+ }
+ // finish arch
+ const fx=checkpointXs[19]+600-cam;if(fx>-100&&fx<W+100){ctx.fillStyle="#145f89";ctx.fillRect(fx,410,25,210);ctx.fillRect(fx+140,410,25,210);ctx.fillRect(fx,410,165,28);ctx.fillStyle="#fff";ctx.font="bold 18px Arial";ctx.fillText("FINISH",fx+82,432)}
+}
+
+function drawCollectibles(){
+  // glossy 3D stars
+  for(const st of stars){
+    if(st.collected) continue;
+    const x=st.x-cam,y=st.y+Math.sin(performance.now()/260+st.phase)*7;if(x<-60||x>W+60)continue;
+    ctx.save();ctx.translate(x,y);ctx.rotate(performance.now()/1000+st.phase);ctx.shadowColor='rgba(255,196,34,.95)';ctx.shadowBlur=24;
+    let sg=ctx.createRadialGradient(-8,-10,2,0,0,28);sg.addColorStop(0,'#fffbd2');sg.addColorStop(.22,'#fff46c');sg.addColorStop(.58,'#ffd52e');sg.addColorStop(1,'#e79709');ctx.fillStyle=sg;ctx.strokeStyle='#fff7a8';ctx.lineWidth=4;
+    ctx.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,r=k%2?10:24;const px=Math.cos(a)*r,py=Math.sin(a)*r;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.78)';ctx.beginPath();ctx.ellipse(-8,-8,6,3,-.5,0,7);ctx.fill();ctx.restore();
+  }
+  // cute 3D enemies with a visible running cycle
+  for(const e of enemies){
+    const x=e.x-cam;if(x<-70||x>W+70||!e.alive)continue;
+    const bob=Math.sin(e.phase)*2.6, y=e.y+bob, dir=-1,step=Math.sin(e.phase*1.8)*5;
+    ctx.save();
+    ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(x+21,ground+2,24-Math.abs(bob),7,0,0,7);ctx.fill();
+    ctx.shadowColor='rgba(47,21,88,.34)';ctx.shadowBlur=12;ctx.shadowOffsetY=6;let eg=ctx.createRadialGradient(x+12,y+7,3,x+22,y+18,30);eg.addColorStop(0,'#d7a5ff');eg.addColorStop(.35,'#9f61ec');eg.addColorStop(1,'#6230b3');ctx.fillStyle=eg;rr(x,y,e.w,e.h,14);ctx.fill();ctx.shadowColor='transparent';ctx.strokeStyle='#5a279d';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.28)';ctx.beginPath();ctx.ellipse(x+13,y+7,9,4,-.3,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x+13,y+13,7,0,7);ctx.arc(x+29,y+13,7,0,7);ctx.fill();ctx.fillStyle='#18233a';ctx.beginPath();ctx.arc(x+13+dir*2,y+14,2.7,0,7);ctx.arc(x+29+dir*2,y+14,2.7,0,7);ctx.fill();
+    ctx.strokeStyle='#452171';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x+21,y+24,7,.15,Math.PI-.15);ctx.stroke();
+    ctx.fillStyle='#ffd85c';rr(x+4+step,y+29,12,6,3);ctx.fill();rr(x+26-step,y+29,12,6,3);ctx.fill();
+    ctx.restore();
+  }
+  for(const p of particles){const x=p.x-cam;ctx.globalAlpha=Math.max(0,p.life/50);ctx.shadowColor=p.kind==='star'?'rgba(255,220,70,.9)':p.kind==='fire'?'rgba(255,90,30,.9)':'rgba(255,255,255,.8)';ctx.shadowBlur=9;ctx.fillStyle=p.kind==='star'?'#ffe35e':p.kind==='fire'?'#ff7635':'#ffffff';ctx.beginPath();ctx.arc(x,p.y,2.5+Math.random()*2,0,7);ctx.fill()}ctx.globalAlpha=1;ctx.shadowBlur=0;
+}
+function drawFireballs(){
+ for(const f of fireballs){
+   const x=f.x-cam,y=f.y;if(x<-40||x>W+40)continue;
+   ctx.save();ctx.translate(x,y);ctx.rotate(f.spin);ctx.shadowColor='rgba(255,82,25,.9)';ctx.shadowBlur=18;
+   let g=ctx.createRadialGradient(-3,-4,1,0,0,f.r+5);g.addColorStop(0,'#fffbd0');g.addColorStop(.25,'#ffd74d');g.addColorStop(.58,'#ff6b27');g.addColorStop(1,'#bc1d15');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,f.r,0,7);ctx.fill();
+   ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.ellipse(-3,-4,4,2,-.5,0,7);ctx.fill();ctx.restore();
+ }
+}
+function drawPlayer(){
+ if(invincible>0 && Math.floor(invincible/6)%2===0) return;
+ const x=player.x-cam,y=player.y;ctx.save();if(player.dir<0){ctx.translate(x+22,0);ctx.scale(-1,1);ctx.translate(-(x+22),0)}
+ // shadow
+ ctx.fillStyle="rgba(0,0,0,.22)";ctx.beginPath();ctx.ellipse(x+22,ground+3,29,8,0,0,7);ctx.fill();
+ // shoes 3D
+ let shoe=ctx.createLinearGradient(x,y+56,x,y+66);shoe.addColorStop(0,"#4b6070");shoe.addColorStop(1,"#182833");ctx.fillStyle=shoe;rr(x+2,y+56,19,9,4);ctx.fill();rr(x+25,y+56,19,9,4);ctx.fill();ctx.fillStyle="rgba(255,255,255,.35)";ctx.fillRect(x+5,y+57,10,2);ctx.fillRect(x+28,y+57,10,2);
+ // legs
+ ctx.fillStyle="#f4f7fa";rr(x+7,y+46,12,14,5);ctx.fill();rr(x+27,y+46,12,14,5);ctx.fill();
+ // body glossy uniform
+ ctx.save();ctx.shadowColor="rgba(0,50,90,.3)";ctx.shadowBlur=10;ctx.shadowOffsetY=5;let bg=ctx.createLinearGradient(x+7,y+18,x+38,y+54);bg.addColorStop(0,"#4eb8ff");bg.addColorStop(.35,"#1789cf");bg.addColorStop(1,"#07518d");ctx.fillStyle=bg;rr(x+7,y+18,31,36,9);ctx.fill();ctx.shadowColor="transparent";ctx.fillStyle="rgba(255,255,255,.26)";rr(x+11,y+22,18,5,3);ctx.fill();ctx.restore();
+ ctx.fillStyle="#0d5f98";ctx.fillRect(x+21,y+22,3,28);
+ // arms
+ ctx.strokeStyle="#efb17c";ctx.lineWidth=7;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x+9,y+29);ctx.lineTo(x+1,y+41);ctx.stroke();ctx.beginPath();ctx.moveTo(x+36,y+29);ctx.lineTo(x+43,y+40);ctx.stroke();
+ // head 3D
+ let skin=ctx.createRadialGradient(x+17,y+5,2,x+22,y+11,18);skin.addColorStop(0,"#ffd3aa");skin.addColorStop(.55,"#f2b782");skin.addColorStop(1,"#cf8759");ctx.fillStyle=skin;ctx.beginPath();ctx.arc(x+22,y+11,14,0,7);ctx.fill();
+ // cap / hair rim
+ ctx.strokeStyle="#edf8ff";ctx.lineWidth=4;ctx.beginPath();ctx.arc(x+22,y+8,14,Math.PI,Math.PI*2);ctx.stroke();ctx.fillStyle="rgba(255,255,255,.7)";ctx.beginPath();ctx.ellipse(x+17,y+5,5,2,-.4,0,7);ctx.fill();
+ // face details
+ ctx.fillStyle="#2b241f";ctx.beginPath();ctx.arc(x+17,y+10,1.8,0,7);ctx.arc(x+27,y+10,1.8,0,7);ctx.fill();
+ ctx.strokeStyle="#6a432f";ctx.lineWidth=1.4;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x+14.5,y+6.5);ctx.lineTo(x+19,y+6);ctx.moveTo(x+25,y+6);ctx.lineTo(x+29.5,y+6.5);ctx.stroke();
+ ctx.strokeStyle="#b76f4f";ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x+22,y+11);ctx.lineTo(x+21,y+14);ctx.lineTo(x+23,y+14);ctx.stroke();
+ ctx.strokeStyle="#8d3f42";ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(x+22,y+16,4.2,.2,Math.PI-.2);ctx.stroke();
+ ctx.fillStyle="rgba(240,100,120,.28)";ctx.beginPath();ctx.arc(x+13,y+14,2.2,0,7);ctx.arc(x+31,y+14,2.2,0,7);ctx.fill();
+ ctx.fillStyle="#fff";ctx.font="bold 9px Arial";ctx.textAlign="left";ctx.fillText("FS",x+14,y+39);ctx.restore()
+}
+function draw(){drawWorld();drawCheckpoints();drawCollectibles();if(state!=="intro"&&gateClosed)drawGate();drawFireballs();drawPlayer()}
+function loop(){update();draw();requestAnimationFrame(loop)}
+pauseBtn.onclick=()=> state==="play"?pauseGame():state==="pause"&&resumeGame();
+resumeBtn.onclick=resumeGame;
+savePauseBtn.onclick=async()=>{
+  refreshPauseSummary("กำลังบันทึกคะแนน...");
+  const r=await saveScore("pause");
+  refreshPauseSummary(r.mode==="sheet"?"บันทึกคะแนนไป Google Sheet แล้ว":r.mode==="local"?"ยังไม่ได้ตั้งค่า Google Apps Script URL — เก็บสำรองในเครื่องแล้ว":"บันทึกคะแนนไม่สำเร็จ");
+};
+
+async function initSeason4Integration(){
+  const startBtn=document.getElementById("start");
+  startBtn.disabled=true;startBtn.textContent="กำลังโหลด Season 4...";
+  try{
+    if(!playerEmail){
+      try{const u=JSON.parse(localStorage.getItem("fs_hunting_user_v1")||"null");playerEmail=(u?.email||"").toLowerCase();}catch(_){ }
+    }
+    if(!playerEmail) throw new Error("ไม่พบผู้เล่น กรุณากลับไป Login จากเกมหลักก่อน");
+
+    const user=(()=>{try{return JSON.parse(localStorage.getItem("fs_hunting_user_v1")||"null")}catch(_){return null}})();
+    playerNameInput.value=user?.displayName||playerEmail;
+    document.getElementById("loginInfo").innerHTML=`👤 <b>${user?.displayName||playerEmail}</b><br><span style="font-size:12px">${playerEmail}</span>`;
+
+    const season=await api({action:"seasonstatus",email:playerEmail});
+    const s4=(season.seasons||[]).find(x=>Number(x.season)===4);
+    if(!s4 || String(s4.status).toUpperCase()!=="OPEN"){
+      document.getElementById("seasonStatus").innerHTML='<span class="lockedMsg">🔒 Season 4 ยัง LOCKED ใน SEASON_CONTROL</span>';
+      startBtn.textContent="SEASON 4 LOCKED";
+      return;
+    }
+
+    const d=await api({action:"s4questions",email:playerEmail});
+    qs=(d.questions||[]).map(q=>[q.zone,q.question,q.choices,Number(q.correctChoice||1)-1]);
+    if(qs.length!==20) throw new Error(`พบคำถาม ${qs.length}/20 ข้อ`);
+    document.getElementById("seasonStatus").textContent="🟢 Season 4 OPEN • โหลดคำถามจาก Google Sheet ครบ 20 ข้อ";
+    startBtn.disabled=false;startBtn.textContent="▶ START RUN";
+  }catch(err){
+    console.error(err);
+    document.getElementById("seasonStatus").innerHTML=`<span class="lockedMsg">${err.message||err}</span>`;
+    startBtn.textContent="เปิดเกมไม่สำเร็จ";
+  }
+}
+document.getElementById("backBtn").onclick=()=>{location.href=returnUrl;};
+
+initCollectibles();setupGate();setHUD();loop();
+initSeason4Integration();
+</script>
+</body>
+</html>

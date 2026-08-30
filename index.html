@@ -3352,6 +3352,15 @@ function switchSeason(season){
     return;
   }
 
+  // V18.14: Season 4 is a different game engine (Quiz & Run), so launch its dedicated page.
+  if(s===4){
+    const email=user?.email||localStorage.getItem(S_EMAIL)||"";
+    if(!email){toast("กรุณาเข้าสู่ระบบก่อนเล่น Season 4");return;}
+    const returnUrl=location.href;
+    location.href=`season4_final_quest_integrated.html?email=${encodeURIComponent(email)}&return=${encodeURIComponent(returnUrl)}`;
+    return;
+  }
+
   const qs=questionsForSeason(s);
   if(!qs.length){
     toast(`Season ${s} เปิดแล้ว แต่ยังไม่มีคำถามในเกม`);
