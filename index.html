@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.5-FAST-INDEX-RETRY-FLAG-20260830">
+<meta name="fs-build" content="V18.6-RETRY-FLAG-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3459,8 +3459,7 @@ async function submit(auto=false){
       if(/Backend ใช้เวลานาน|Network\/CORS|HTTP 5\d\d/i.test(msg)){
         action("การเชื่อมต่อสะดุด • กำลังลองบันทึกซ้ำ...");
         await new Promise(r=>setTimeout(r,700));
-        // V18.5: same attemptId + explicit retry flag.
-        // Backend skips duplicate lookup on normal Submit and checks it only here.
+        // V18.6: reuse the same attemptId only for retry.
         d=await api({...payload,isRetry:true});
       }else{
         throw firstErr;
