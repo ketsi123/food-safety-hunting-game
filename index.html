@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.12-BALANCED-RANDOM-FAST-START-20260830">
+<meta name="fs-build" content="V18.13-LOCK-AUTO-RETRY-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3657,18 +3657,29 @@ async function submit(auto=false){
     };
 
     let d;
+    const transientSubmitError=(err)=>{
+      const msg=String(err?.message||err||"");
+      return /Backend ใช้เวลานาน|Network\/CORS|HTTP 5\d\d|หมดเวลาการล็อก|ล็อกไว้นานเกินไป|Lock timed out|Could not acquire lock|Service invoked too many times/i.test(msg);
+    };
+
     try{
       d=await api(payload);
     }catch(firstErr){
-      // One quick retry only for transient failures. Same attemptId means safe.
-      const msg=String(firstErr?.message||firstErr||"");
-      if(/Backend ใช้เวลานาน|Network\/CORS|HTTP 5\d\d/i.test(msg)){
-        action("การเชื่อมต่อสะดุด • กำลังลองบันทึกซ้ำ...");
-        await new Promise(r=>setTimeout(r,700));
-        // V18.6: reuse the same attemptId only for retry.
+      if(!transientSubmitError(firstErr))throw firstErr;
+
+      // V18.13: transient lock/network errors are retried automatically.
+      // Reuse the SAME attemptId so the backend remains idempotent.
+      action("ระบบกำลังบันทึกซ้ำอัตโนมัติ • คำตอบไม่หาย...");
+      await new Promise(r=>setTimeout(r,700));
+
+      try{
         d=await api({...payload,isRetry:true});
-      }else{
-        throw firstErr;
+      }catch(secondErr){
+        if(!transientSubmitError(secondErr))throw secondErr;
+
+        action("ยังมีการใช้งานพร้อมกัน • กำลังลองอีกครั้ง...");
+        await new Promise(r=>setTimeout(r,1200));
+        d=await api({...payload,isRetry:true});
       }
     }
 
