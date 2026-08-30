@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.14-SEASON4-INTEGRATED-20260830">
+<meta name="fs-build" content="V18.14.1-SEASON4-FIX-LOADING-20260830">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
@@ -673,7 +673,10 @@ async function initSeason4Integration(){
 }
 document.getElementById("backBtn").onclick=()=>{location.href=returnUrl;};
 
-initCollectibles();setupGate();setHUD();loop();
+// V18.14.1 FIX:
+ // Do NOT call setupGate() here. qs[] is still empty until Google Sheet questions finish loading.
+ // startGame() already calls setupGate() after the player presses START.
+initCollectibles();setHUD();loop();
 initSeason4Integration();
 </script>
 </body>
