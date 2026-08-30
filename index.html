@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.13-LOCK-AUTO-RETRY-20260830">
+<meta name="fs-build" content="V18.13-S1Q01-Q20-S2Q01-Q05-20260830">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2850,7 +2850,7 @@ body:before{
 <script id="v15-inline-config">
 window.FS_CONFIG = {
   BACKEND_URL: "https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec",
-  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05", "S1Q06", "S1Q07", "S1Q08", "S1Q09", "S1Q10", "S1Q11", "S1Q12", "S1Q13", "S1Q14", "S1Q15", "S1Q16", "S1Q17", "S1Q18", "S1Q19", "S1Q20"],
+  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05", "S1Q06", "S1Q07", "S1Q08", "S1Q09", "S1Q10", "S1Q11", "S1Q12", "S1Q13", "S1Q14", "S1Q15", "S1Q16", "S1Q17", "S1Q18", "S1Q19", "S1Q20", "S2Q01", "S2Q02", "S2Q03", "S2Q04", "S2Q05"],
   LOCAL_QUESTIONS: [
     { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
     { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -2871,7 +2871,12 @@ window.FS_CONFIG = {
     { questionId:"S1Q17", season:1, imageFile:"S1_Q17.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
     { questionId:"S1Q18", season:1, imageFile:"S1_Q18.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
     { questionId:"S1Q19", season:1, imageFile:"S1_Q19.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-    { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
+    { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+    { questionId:"S2Q01", season:2, imageFile:"S2_Q01.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 },
+    { questionId:"S2Q02", season:2, imageFile:"S2_Q02.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S2Q03", season:2, imageFile:"S2_Q03.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 },
+    { questionId:"S2Q04", season:2, imageFile:"S2_Q04.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 },
+    { questionId:"S2Q05", season:2, imageFile:"S2_Q05.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 }
   ],
   QUESTION_IMAGE_DIR: "",
   ASSET_VERSION: "20260829-V16941-PREHINT-ONCE-PER-SEASON",
@@ -2883,7 +2888,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V16.9.22 • S1Q01-Q20 + user count in card");
+(()=>{"use strict";console.info("Food Safety Hunting Game V18.13 • S1Q01-Q20 + S2Q01-Q05");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
 let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
@@ -2911,7 +2916,12 @@ const MASTER_QUESTIONS=[
   { questionId:"S1Q17", season:1, imageFile:"S1_Q17.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
   { questionId:"S1Q18", season:1, imageFile:"S1_Q18.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
   { questionId:"S1Q19", season:1, imageFile:"S1_Q19.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
-  { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 }
+  { questionId:"S1Q20", season:1, imageFile:"S1_Q20.jpg", hotspotCount:5, fullScore:100, timeLimitSec:45 },
+  { questionId:"S2Q01", season:2, imageFile:"S2_Q01.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 },
+  { questionId:"S2Q02", season:2, imageFile:"S2_Q02.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+  { questionId:"S2Q03", season:2, imageFile:"S2_Q03.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 },
+  { questionId:"S2Q04", season:2, imageFile:"S2_Q04.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 },
+  { questionId:"S2Q05", season:2, imageFile:"S2_Q05.jpg", hotspotCount:2, fullScore:40, timeLimitSec:45 }
 ];
 function masterQuestionById(id){
   const key=String(id||"").trim().toUpperCase();
