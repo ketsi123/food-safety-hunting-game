@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.15.1-SEASON4-CONNECTION-FIX">
+<meta name="fs-build" content="V18.15.2-SEASON4-DOM-CONNECTION-FIX">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
@@ -180,6 +180,27 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   </div>
 </div>
 </div>
+
+
+<div class="exitConfirmOverlay" id="exitConfirmOverlay">
+  <div class="exitConfirmCard" role="dialog" aria-modal="true" aria-labelledby="exitConfirmTitle">
+    <div class="exitConfirmIcon">🏠</div>
+    <div class="exitConfirmTitle" id="exitConfirmTitle">ออกจาก Season 4?</div>
+    <div class="exitConfirmText">
+      ระบบจะพาคุณกลับไปหน้า Home ของ Food Safety Hunting Game<br>
+      คะแนนที่บันทึกแล้วจะยังคงอยู่
+    </div>
+    <div class="exitConfirmActions">
+      <button class="exitConfirmBtn exitConfirmCancel" id="exitConfirmCancel">▶ เล่นต่อ</button>
+      <button class="exitConfirmBtn exitConfirmHome" id="exitConfirmHome">🏠 กลับ Home</button>
+    </div>
+  </div>
+
+
+<div id="fsBuildBadge" style="
+ position:absolute;left:10px;bottom:8px;z-index:99998;
+ font:700 9px Arial;color:rgba(255,255,255,.58);
+ pointer-events:none">S4 V18.15.2</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
@@ -839,20 +860,6 @@ exitConfirmHome.onclick=async()=>{
 initCollectibles();setHUD();loop();
 initSeason4Integration();
 </script>
-
-<div class="exitConfirmOverlay" id="exitConfirmOverlay">
-  <div class="exitConfirmCard" role="dialog" aria-modal="true" aria-labelledby="exitConfirmTitle">
-    <div class="exitConfirmIcon">🏠</div>
-    <div class="exitConfirmTitle" id="exitConfirmTitle">ออกจาก Season 4?</div>
-    <div class="exitConfirmText">
-      ระบบจะพาคุณกลับไปหน้า Home ของ Food Safety Hunting Game<br>
-      คะแนนที่บันทึกแล้วจะยังคงอยู่
-    </div>
-    <div class="exitConfirmActions">
-      <button class="exitConfirmBtn exitConfirmCancel" id="exitConfirmCancel">▶ เล่นต่อ</button>
-      <button class="exitConfirmBtn exitConfirmHome" id="exitConfirmHome">🏠 กลับ Home</button>
-    </div>
-  </div>
 </div>
 
 </body>
