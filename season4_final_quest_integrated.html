@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.14.3-SEASON4-START-EXIT-HOME-20260831">
+<meta name="fs-build" content="V18.15-SEASON4-STOP-SAVE-CUMULATIVE">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
@@ -27,7 +27,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 #notice.bad{background:linear-gradient(#ff6868,#c52b2b);border:3px solid #ffd0d0}
 #progress{position:absolute;left:18px;bottom:18px;width:min(430px,44%);height:14px;border-radius:999px;background:rgba(3,36,61,.7);border:1px solid rgba(255,255,255,.35);overflow:hidden}
 #bar{height:100%;width:0;background:linear-gradient(90deg,#48d36d,#ffd847);transition:.25s}
-.pauseBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.38);border-radius:14px;padding:6px 14px;min-width:92px;text-align:center;color:#fff;background:linear-gradient(180deg,#ffca4e,#df8c12);font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 rgba(117,67,0,.9),0 9px 18px rgba(0,0,0,.2),inset 0 2px 0 rgba(255,255,255,.2)}
+.stopBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.4);border-radius:14px;padding:6px 12px;color:#fff;background:linear-gradient(180deg,#f36a61,#b92f29);font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #7c211d;white-space:nowrap}.pauseBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.38);border-radius:14px;padding:6px 14px;min-width:92px;text-align:center;color:#fff;background:linear-gradient(180deg,#ffca4e,#df8c12);font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 rgba(117,67,0,.9),0 9px 18px rgba(0,0,0,.2),inset 0 2px 0 rgba(255,255,255,.2)}
 .fireBtn{position:static;width:52px;height:52px;border-radius:50%;border:3px solid rgba(255,255,255,.75);background:radial-gradient(circle at 35% 28%,#fff7ad 0,#ffb52e 28%,#ff652d 58%,#c72518 100%);color:#fff;font-size:22px;font-weight:1000;cursor:pointer;z-index:12;box-shadow:0 5px 0 #8f2415,0 10px 18px rgba(0,0,0,.26),inset 0 4px 0 rgba(255,255,255,.5);text-shadow:0 2px 3px rgba(90,0,0,.5)}
 .fireBtn:active{transform:translateY(3px);box-shadow:0 2px 0 #8f2415,0 6px 12px rgba(0,0,0,.22)}
 .fireWrap{position:relative;display:flex;align-items:center;justify-content:center}.fireHint{position:absolute;top:-18px;left:50%;transform:translateX(-50%);padding:2px 8px;border-radius:999px;background:rgba(3,37,63,.92);border:1px solid rgba(255,255,255,.35);color:#fff8c6;font:900 11px Tahoma,"Noto Sans Thai",sans-serif;line-height:1;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.18)}
@@ -65,6 +65,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   <div class="box">Stars<b id="stars">0 / 30</b></div>
   <div class="box">Hearts<b id="hearts">5 / 5</b></div>
   <div class="box">Time<b id="time">02:00</b></div>
+  <button class="stopBtn" id="stopBtn">⏹ STOP & SAVE</button>
   <button class="pauseBtn" id="pauseBtn">⏸ PAUSE</button>
 </div>
 </div>
@@ -86,7 +87,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 เวลารวม 2 นาทีสำหรับ 20 ข้อ
 </p>
 <div style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"><div id="seasonStatus" class="mini"></div></div>
-<div class="mini" style="margin:0 0 10px">กดหยุดเกมเพื่อพักและบันทึกคะแนนได้ • เมื่อ Time Out / Game Over / เล่นจบ ระบบจะบันทึกคะแนนอัตโนมัติ</div>
+<div class="mini" style="margin:0 0 10px">PAUSE = หยุดชั่วคราว (ไม่บันทึกคะแนน) • STOP & SAVE = จบ Run และบันทึกคะแนนสะสมทันที • Time Out / Game Over / เล่นจบ = บันทึกอัตโนมัติ</div>
 <div style="margin:0 0 16px;padding:12px 14px;border-radius:14px;background:#eaf7ff;border:2px solid #9bdcff;color:#174d6a;font-weight:800;line-height:1.7;text-align:left">
   <div style="font-size:14px;color:#0b6c9c;margin-bottom:4px">⌨ การควบคุมด้วยแป้นคีย์บอร์ด</div>
   <div style="font-size:13px">← → หรือ A / D = เดินซ้าย–ขวา</div>
@@ -123,7 +124,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
       <button class="btn" id="resumeBtn" style="margin:0">▶ RESUME</button>
     </div>
     <div class="row">
-      <button class="btn" id="savePauseBtn" style="margin:0;background:linear-gradient(180deg,#53d2ff 0%,#2e9de0 45%,#126cb8 100%);box-shadow:0 8px 0 #0a4d7e,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)">💾 SAVE SCORE</button>
+      <button class="btn" id="savePauseBtn" style="margin:0;background:linear-gradient(180deg,#53d2ff 0%,#2e9de0 45%,#126cb8 100%);box-shadow:0 8px 0 #0a4d7e,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)">⏹ STOP & SAVE</button>
     </div>
     <div class="mini" id="saveStatus" style="margin-top:14px">หากยังไม่ได้ตั้งค่า Google Apps Script URL ระบบจะเก็บสำรองไว้ใน Local Storage ก่อน</div>
   </div>
@@ -155,7 +156,7 @@ let blocks=[],gateClosed=false;
 const correctSlotPattern=[1,2,0,2,1,0,1,0,2,1,2,0,2,0,1,2,1,0,1,2];
 let stars=[],enemies=[],particles=[],fireballs=[],starCount=0,lives=10,invincible=0,fireCooldown=0,playerName="Player 1",saveLock=false,lastSaveKey="";
 
-const cp=document.getElementById("cp"),scoreEl=document.getElementById("score"),starEl=document.getElementById("stars"),heartEl=document.getElementById("hearts"),timeEl=document.getElementById("time"),heartsRow=document.getElementById("heartsRow"),qBox=document.getElementById("question"),qt=document.getElementById("qt"),stage=document.getElementById("stage"),note=document.getElementById("notice"),bar=document.getElementById("bar"),pauseBtn=document.getElementById("pauseBtn"),pauseModal=document.getElementById("pauseModal"),resumeBtn=document.getElementById("resumeBtn"),savePauseBtn=document.getElementById("savePauseBtn"),pauseSummary=document.getElementById("pauseSummary"),saveStatus=document.getElementById("saveStatus"),playerNameInput=document.getElementById("playerName"),fireBtn=document.getElementById("fireBtn");
+const cp=document.getElementById("cp"),scoreEl=document.getElementById("score"),starEl=document.getElementById("stars"),heartEl=document.getElementById("hearts"),timeEl=document.getElementById("time"),heartsRow=document.getElementById("heartsRow"),qBox=document.getElementById("question"),qt=document.getElementById("qt"),stage=document.getElementById("stage"),note=document.getElementById("notice"),bar=document.getElementById("bar"),pauseBtn=document.getElementById("pauseBtn"),stopBtn=document.getElementById("stopBtn"),pauseModal=document.getElementById("pauseModal"),resumeBtn=document.getElementById("resumeBtn"),savePauseBtn=document.getElementById("savePauseBtn"),pauseSummary=document.getElementById("pauseSummary"),saveStatus=document.getElementById("saveStatus"),playerNameInput=document.getElementById("playerName"),fireBtn=document.getElementById("fireBtn");
 
 function fmt(s){return String(Math.floor(Math.max(0,s)/60)).padStart(2,"0")+":"+String(Math.max(0,s)%60).padStart(2,"0")}
 function renderHearts(){
@@ -164,7 +165,9 @@ function renderHearts(){
 }
 function setHUD(){cp.textContent=answered+" / 20";scoreEl.textContent=score;starEl.textContent=starCount+" / 30";timeEl.textContent=fmt(seconds);renderHearts();bar.style.width=(answered/20*100)+"%"}
 function getSnapshot(reason="manual"){
-  return {playerName,email:playerEmail,runId,score,playScore:playScoreBeforeBonus||score,timeBonus:lastTimeBonus,correct:correctAnswers,wrong:wrongAnswers,stars:starCount,fireKills,stomps,hearts:lives,checkpoint:answered,timeLeft:seconds,status:reason,updatedAt:new Date().toISOString()};
+  const computedPlayScore=Math.max(0,Math.round(((score-Number(lastTimeBonus||0))+Number.EPSILON)*100)/100);
+  const ps=(playScoreBeforeBonus!==0||lastTimeBonus>0)?playScoreBeforeBonus:computedPlayScore;
+  return {playerName,email:playerEmail,runId,score,playScore:ps,timeBonus:lastTimeBonus,correct:correctAnswers,wrong:wrongAnswers,stars:starCount,fireKills,stomps,hearts:lives,checkpoint:answered,timeLeft:seconds,status:reason,updatedAt:new Date().toISOString()};
 }
 async function saveScore(reason="manual"){
   const snap=getSnapshot(reason);
@@ -196,15 +199,21 @@ function pauseGame(){
   if(state!=="play") return;
   state="pause";
   pauseModal.style.display="flex";
-  refreshPauseSummary("กำลังบันทึกคะแนน...");
+  refreshPauseSummary("หยุดชั่วคราว — ยังไม่บันทึกคะแนน หากต้องการจบให้กด STOP & SAVE");
   pauseBtn.textContent="▶ RESUME";
-  saveScore("pause").then(r=>refreshPauseSummary(r.mode==="sheet"?"บันทึกคะแนนไป Google Sheet แล้ว":r.mode==="local"?"ยังไม่ได้ตั้งค่า Google Apps Script URL — เก็บสำรองในเครื่องแล้ว":"บันทึกคะแนนไม่สำเร็จ"));
 }
 function resumeGame(){
   if(state!=="pause") return;
   state="play";
   pauseModal.style.display="none";
   pauseBtn.textContent="⏸ PAUSE";
+}
+async function stopAndSave(){
+  if(!["play","question","pause"].includes(state)) return;
+  clearInterval(timer); state="end"; pauseModal.style.display="none"; pauseBtn.textContent="⏸ PAUSE"; playScoreBeforeBonus=score; lastTimeBonus=0;
+  const f=document.getElementById("finish");f.style.display="flex";document.getElementById("ft").textContent="RUN STOPPED";document.getElementById("fs").textContent="หยุดการเล่นและบันทึกคะแนนแล้ว";
+  document.getElementById("fr").innerHTML=`คะแนนสะสมจาก Run นี้ <b style="font-size:30px;color:#168943">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5 • เวลาเหลือ ${fmt(seconds)}<br><span id="stopSaveStatus" style="font-size:12px;color:#537286">กำลังบันทึก...</span>`;
+  const r=await saveScore("stopped"); const el=document.getElementById("stopSaveStatus"); if(el)el.textContent=r.mode==="sheet"?"✓ บันทึกคะแนนสะสมลง Google Sheet แล้ว":r.mode==="local"?"เก็บคะแนนสำรองในเครื่องแล้ว":"บันทึกคะแนนไม่สำเร็จ";
 }
 async function autoSaveEnd(reason){
   const r=await saveScore(reason);
@@ -457,7 +466,7 @@ function gameOver(){
  document.getElementById("ft").textContent="GAME OVER!";
  document.getElementById("fs").textContent="หัวใจหมดแล้ว — ต้องเริ่มใหม่";
  document.getElementById("fr").innerHTML=`คะแนน <b style="font-size:29px;color:#d63c3c">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5`;
- autoSaveEnd("game_over");
+ playScoreBeforeBonus=score;lastTimeBonus=0;autoSaveEnd("game_over");
 }
 function finish(ok){
  if(state==="end")return;state="end";clearInterval(timer);
@@ -466,11 +475,13 @@ function finish(ok){
  document.getElementById("fs").textContent=ok?"คุณวิ่งผ่านครบ 20 Checkpoints":"หมดเวลาก่อนถึงเส้นชัย";
  if(ok){
    const playScore=score;
+   playScoreBeforeBonus=playScore;
    const timeBonus=Math.round((Math.max(0,seconds)*(20/60)+Number.EPSILON)*100)/100;
    lastTimeBonus=timeBonus;score=Math.round((playScore+timeBonus+Number.EPSILON)*100)/100;
    setHUD();
    document.getElementById("fr").innerHTML=`คะแนนจากการเล่น <b>${playScore}</b><br>⏱ Time Bonus ${fmt(seconds)} = <b style="color:#d88400">+${timeBonus}</b> คะแนน<br>คะแนนรวม <b style="font-size:30px;color:#168943">${score}</b><br><span style="font-size:12px;color:#60798a">คิด Time Bonus นาทีละ 20 คะแนน (เศษวินาทีคิดตามสัดส่วน)</span><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5`;
  }else{
+   playScoreBeforeBonus=score;lastTimeBonus=0;
    document.getElementById("fr").innerHTML=`คะแนนรวม <b style="font-size:29px;color:#168943">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5 • เวลาเหลือ ${fmt(seconds)}`;
  }
  autoSaveEnd(ok?"completed":"time_out");
@@ -637,12 +648,9 @@ function drawPlayer(){
 function draw(){drawWorld();drawCheckpoints();drawCollectibles();if(state!=="intro"&&gateClosed)drawGate();drawFireballs();drawPlayer()}
 function loop(){update();draw();requestAnimationFrame(loop)}
 pauseBtn.onclick=()=> state==="play"?pauseGame():state==="pause"&&resumeGame();
+stopBtn.onclick=stopAndSave;
 resumeBtn.onclick=resumeGame;
-savePauseBtn.onclick=async()=>{
-  refreshPauseSummary("กำลังบันทึกคะแนน...");
-  const r=await saveScore("pause");
-  refreshPauseSummary(r.mode==="sheet"?"บันทึกคะแนนไป Google Sheet แล้ว":r.mode==="local"?"ยังไม่ได้ตั้งค่า Google Apps Script URL — เก็บสำรองในเครื่องแล้ว":"บันทึกคะแนนไม่สำเร็จ");
-};
+savePauseBtn.onclick=stopAndSave;
 
 async function initSeason4Integration(){
   const startBtn=document.getElementById("start");

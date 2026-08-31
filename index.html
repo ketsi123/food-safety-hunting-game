@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.14-S1Q01-Q20-S2Q01-Q20-S4-LAUNCH-FIXED-20260830">
+<meta name="fs-build" content="V18.15-CUMULATIVE-QUALIFIER-NEW-RULES">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2661,7 +2661,7 @@ body:before{
             <small>ภารกิจปัจจุบัน</small>
             <b id="headerMissionName">โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</b>
             <span id="headerMissionSeason">SEASON 1</span>
-            <em id="headerQualifierStatus" class="hud-qualifier-mini" title="Qualifier: ต้องครบ 4 Season และแต่ละ Season ≥ 5,000 คะแนน">QUALIFIER 0/4</em>
+            <em id="headerQualifierStatus" class="hud-qualifier-mini" title="Qualifier: S1≥1,500 • S2≥800 • S3≥150 • S4≥300">QUALIFIER 0/4</em>
           </div>
         </div>
       </div>
@@ -2704,7 +2704,7 @@ body:before{
         <button class="nav-item locked" data-season="4"><i>🏆</i><span><b>Season 4</b><small>Final Quest: Quiz &amp; Run</small></span><em>🔒</em></button>
         <hr>
         <button id="leaderboardBtn" class="nav-item"><i>🏆</i><span><b>Leaderboard</b><small>อันดับคะแนนรวม</small></span></button>
-        <button id="qualifierBtn" class="nav-item qualifier-nav"><i>🏅</i><span><b>Qualifier</b><small>ครบ 4 Season • ≥ 5,000/Season</small></span><em id="qualifierNavStatus">0/4</em></button>
+        <button id="qualifierBtn" class="nav-item qualifier-nav"><i>🏅</i><span><b>Qualifier</b><small>เกณฑ์คะแนนสะสมแยกตาม Season</small></span><em id="qualifierNavStatus">0/4</em></button>
         <button id="historyBtn" class="nav-item"><i>🕘</i><span><b>ประวัติการเล่น</b><small>ผลการเล่นของฉัน</small></span></button>
         <button id="howToBtn" class="nav-item"><i>ⓘ</i><span><b>วิธีการเล่น</b><small>กติกาและคะแนน</small></span></button>
         <button id="changeUserBtn" class="nav-item logout"><i>↪</i><span><b>ออกจากระบบ</b><small>เปลี่ยนผู้เล่น</small></span></button>
@@ -3392,9 +3392,9 @@ function updateHeaderMission(question,cur,total){
   if(missionName) missionName.textContent=meta.title;
   if(missionSeason) missionSeason.textContent=`SEASON ${season}`;
 }
-function normalizeQualifier(qf){const min=Number(qf?.minimumPerSeason||5000),scores=qf?.seasonScores||{},status=qf?.seasonStatus||{},n={qualified:false,minimumPerSeason:min,requiredSeasons:4,playedSeasons:0,qualifiedSeasons:0,seasonScores:{},seasonStatus:{}};[1,2,3,4].forEach(s=>{const score=Number(scores[String(s)]??scores[s]??0),st=status[String(s)]||status[s]||{},played=!!st.played||Number(st.attempts||0)>0||score>0,passed=played&&score>=min;n.seasonScores[String(s)]=score;n.seasonStatus[String(s)]={played,passed,score,remaining:Math.max(0,min-score)};if(played)n.playedSeasons++;if(passed)n.qualifiedSeasons++});n.qualified=n.playedSeasons===4&&n.qualifiedSeasons===4;return n}
-function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title=`ต้องครบ 4 Season และแต่ละ Season ≥ ${formatGameNumber(q.minimumPerSeason)} คะแนน`}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
-function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"จากฟาร์ม",2:"จากโรงงาน",3:"โลจิสติกส์ & ตลาด",4:"บ้าน / ครัวผู้บริโภค"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],pct=Math.max(0,Math.min(100,(st.score/q.minimumPerSeason)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(q.minimumPerSeason)} คะแนน</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เงื่อนไข: เล่นครบ Season 1–4 และคะแนนสะสมของแต่ละ Season ต้องไม่ต่ำกว่า ${formatGameNumber(q.minimumPerSeason)} คะแนน</div></div><div class="qualifier-grid">${cards}</div></div>`)}
+function normalizeQualifier(qf){const d={"1":1500,"2":800,"3":150,"4":300},mins=qf?.minimumBySeason||d,scores=qf?.seasonScores||{},status=qf?.seasonStatus||{},n={qualified:false,minimumBySeason:{},requiredSeasons:4,playedSeasons:0,qualifiedSeasons:0,seasonScores:{},seasonStatus:{}};[1,2,3,4].forEach(s=>{const k=String(s),minimum=Number(mins[k]??mins[s]??d[k]),score=Number(scores[k]??scores[s]??0),st=status[k]||status[s]||{},played=!!st.played||Number(st.attempts||0)>0||score>0,passed=played&&score>=minimum;n.minimumBySeason[k]=minimum;n.seasonScores[k]=score;n.seasonStatus[k]={played,passed,score,minimum,remaining:Math.max(0,minimum-score)};if(played)n.playedSeasons++;if(passed)n.qualifiedSeasons++});n.qualified=n.playedSeasons===4&&n.qualifiedSeasons===4;return n}
+function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title="คะแนนสะสม: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 300"}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
+function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"โลจิสติกส์ & ตลาดถึงมือผู้บริโภค",2:"การผลิตและแปรรูปอาหาร",3:"Food Safety & Quality Culture",4:"Final Quest: Quiz & Run"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],minimum=st.minimum,pct=Math.max(0,Math.min(100,(st.score/minimum)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(minimum)} คะแนนสะสม</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เกณฑ์คะแนนสะสม: Season 1 ≥ 1,500 • Season 2 ≥ 800 • Season 3 ≥ 150 • Season 4 ≥ 300</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
 function openGame(){
   renderUser();
@@ -3864,7 +3864,7 @@ async function history(){
     busy(false);
   }
 }
-function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>ต้องเล่นครบ Season 1–4 และคะแนนสะสมแต่ละ Season ≥ 5,000 คะแนน</div></div></div>`)}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 300</div></div></div>`)}
 function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
