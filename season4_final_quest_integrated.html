@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.15-SEASON4-STOP-SAVE-CUMULATIVE">
+<meta name="fs-build" content="V18.15-SEASON4-PAUSE-RESUME-ONLY">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
@@ -96,8 +96,8 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   <div style="font-size:13px">P หรือ Esc = Pause / Resume</div>
 </div>
 <div class="startActions">
-  <button class="btn" id="start">▶ START RUN</button>
   <button class="startExitBtn" id="startExitBtn">🚪 EXIT</button>
+  <button class="btn" id="start">▶ START RUN</button>
 </div>
 </div>
 </div>
@@ -124,8 +124,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
       <button class="btn" id="resumeBtn" style="margin:0">▶ RESUME</button>
     </div>
     <div class="row">
-      <button class="btn" id="savePauseBtn" style="margin:0;background:linear-gradient(180deg,#53d2ff 0%,#2e9de0 45%,#126cb8 100%);box-shadow:0 8px 0 #0a4d7e,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)">⏹ STOP & SAVE</button>
-    </div>
+</div>
     <div class="mini" id="saveStatus" style="margin-top:14px">หากยังไม่ได้ตั้งค่า Google Apps Script URL ระบบจะเก็บสำรองไว้ใน Local Storage ก่อน</div>
   </div>
 </div>
@@ -156,7 +155,7 @@ let blocks=[],gateClosed=false;
 const correctSlotPattern=[1,2,0,2,1,0,1,0,2,1,2,0,2,0,1,2,1,0,1,2];
 let stars=[],enemies=[],particles=[],fireballs=[],starCount=0,lives=10,invincible=0,fireCooldown=0,playerName="Player 1",saveLock=false,lastSaveKey="";
 
-const cp=document.getElementById("cp"),scoreEl=document.getElementById("score"),starEl=document.getElementById("stars"),heartEl=document.getElementById("hearts"),timeEl=document.getElementById("time"),heartsRow=document.getElementById("heartsRow"),qBox=document.getElementById("question"),qt=document.getElementById("qt"),stage=document.getElementById("stage"),note=document.getElementById("notice"),bar=document.getElementById("bar"),pauseBtn=document.getElementById("pauseBtn"),stopBtn=document.getElementById("stopBtn"),pauseModal=document.getElementById("pauseModal"),resumeBtn=document.getElementById("resumeBtn"),savePauseBtn=document.getElementById("savePauseBtn"),pauseSummary=document.getElementById("pauseSummary"),saveStatus=document.getElementById("saveStatus"),playerNameInput=document.getElementById("playerName"),fireBtn=document.getElementById("fireBtn");
+const cp=document.getElementById("cp"),scoreEl=document.getElementById("score"),starEl=document.getElementById("stars"),heartEl=document.getElementById("hearts"),timeEl=document.getElementById("time"),heartsRow=document.getElementById("heartsRow"),qBox=document.getElementById("question"),qt=document.getElementById("qt"),stage=document.getElementById("stage"),note=document.getElementById("notice"),bar=document.getElementById("bar"),pauseBtn=document.getElementById("pauseBtn"),stopBtn=document.getElementById("stopBtn"),pauseModal=document.getElementById("pauseModal"),resumeBtn=document.getElementById("resumeBtn"),pauseSummary=document.getElementById("pauseSummary"),saveStatus=document.getElementById("saveStatus"),playerNameInput=document.getElementById("playerName"),fireBtn=document.getElementById("fireBtn");
 
 function fmt(s){return String(Math.floor(Math.max(0,s)/60)).padStart(2,"0")+":"+String(Math.max(0,s)%60).padStart(2,"0")}
 function renderHearts(){
@@ -199,7 +198,7 @@ function pauseGame(){
   if(state!=="play") return;
   state="pause";
   pauseModal.style.display="flex";
-  refreshPauseSummary("หยุดชั่วคราว — ยังไม่บันทึกคะแนน หากต้องการจบให้กด STOP & SAVE");
+  refreshPauseSummary("หยุดชั่วคราว — ยังไม่บันทึกคะแนน • หากต้องการจบ Run ให้กด STOP & SAVE ที่แถบด้านบน");
   pauseBtn.textContent="▶ RESUME";
 }
 function resumeGame(){
@@ -650,7 +649,6 @@ function loop(){update();draw();requestAnimationFrame(loop)}
 pauseBtn.onclick=()=> state==="play"?pauseGame():state==="pause"&&resumeGame();
 stopBtn.onclick=stopAndSave;
 resumeBtn.onclick=resumeGame;
-savePauseBtn.onclick=stopAndSave;
 
 async function initSeason4Integration(){
   const startBtn=document.getElementById("start");
