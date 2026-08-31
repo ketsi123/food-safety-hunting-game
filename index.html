@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.15-CUMULATIVE-QUALIFIER-NEW-RULES">
+<meta name="fs-build" content="V18.15-HOME-RETURN-FIX">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3361,7 +3361,9 @@ function switchSeason(season){
   if(s===4){
     const email=user?.email||localStorage.getItem(S_EMAIL)||"";
     if(!email){toast("กรุณาเข้าสู่ระบบก่อนเล่น Season 4");return;}
-    const returnUrl=location.href;
+    const homeUrl=new URL(location.href);
+    homeUrl.searchParams.set("fsHome","1");
+    const returnUrl=homeUrl.href;
     location.href=`season4_final_quest_integrated.html?email=${encodeURIComponent(email)}&return=${encodeURIComponent(returnUrl)}`;
     return;
   }
@@ -3935,7 +3937,34 @@ e.questionImage.onerror=()=>{
 };
 localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
-const saved=localStorage.getItem(S_EMAIL);if(saved)e.emailInput.value=saved;try{const u=JSON.parse(localStorage.getItem(S_USER)||"null");if(u?.email)e.emailInput.value=u.email}catch{}e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";e.loginBackendDot.classList.remove("online","offline");})();
+const saved=localStorage.getItem(S_EMAIL);
+if(saved)e.emailInput.value=saved;
+
+let cachedReturnUser=null;
+try{
+  cachedReturnUser=JSON.parse(localStorage.getItem(S_USER)||"null");
+  if(cachedReturnUser?.email)e.emailInput.value=cachedReturnUser.email;
+}catch{}
+
+e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";
+e.loginBackendDot.classList.remove("online","offline");
+
+// V18.15 HOME RETURN:
+// Season 4 EXIT/HOME returns with ?fsHome=1.
+// Reuse the cached logged-in user and enter the main game Home immediately.
+const fsHomeReturn=new URLSearchParams(location.search).get("fsHome")==="1";
+if(fsHomeReturn && cachedReturnUser?.email){
+  // Remove the flag so refresh later does not force navigation behavior.
+  try{
+    const cleanUrl=new URL(location.href);
+    cleanUrl.searchParams.delete("fsHome");
+    history.replaceState(null,"",cleanUrl.pathname+cleanUrl.search+cleanUrl.hash);
+  }catch(_){}
+
+  e.emailInput.value=cachedReturnUser.email;
+  setTimeout(()=>login(),0);
+}
+})();
 </script>
 <div id="fsBuildMarker">V16.9.22 by Ketsirin</div>
 <script id="login-neon-breath-v1697">

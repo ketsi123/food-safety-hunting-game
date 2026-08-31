@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.15-SEASON4-PAUSE-RESUME-ONLY">
+<meta name="fs-build" content="V18.15-SEASON4-HOME-RETURN-FIX">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
@@ -684,9 +684,14 @@ async function initSeason4Integration(){
 }
 
 function goHome(){
-  // Launcher sends the original main-game URL in ?return=...
-  // Fallback is index.html when opened directly.
-  location.href = returnUrl || "index.html";
+  // Always return to the logged-in HOME screen, not the Login screen.
+  try{
+    const target=new URL(returnUrl || "index.html", location.href);
+    target.searchParams.set("fsHome","1");
+    location.href=target.href;
+  }catch(_){
+    location.href="index.html?fsHome=1";
+  }
 }
 
 document.getElementById("backBtn").onclick=()=>goHome();
