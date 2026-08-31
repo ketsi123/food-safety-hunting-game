@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.14.2-SEASON4-HOME-EXIT-20260830">
+<meta name="fs-build" content="V18.14.3-SEASON4-START-EXIT-HOME-20260831">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
@@ -49,7 +49,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 @media(max-width:800px){.top{height:65px;padding:6px}.brand{font-size:10px;padding:6px 8px}.box{min-width:68px;font-size:9px;padding:4px}.box b{font-size:13px}#question{top:142px;font-size:14px;padding:9px 12px 10px;width:88%;border-width:3px}#question small{font-size:9px;padding:3px 8px;margin-bottom:5px}#progress{left:12px;bottom:10px;width:min(260px,52%)}#heartsRow{top:72px;left:10px;padding:5px 8px;gap:3px}.heart{font-size:14px}.pauseBtn{min-width:64px;padding:4px 8px;font-size:10px}.card{padding:18px}.input{font-size:14px}#mobile{right:12px;bottom:12px;gap:6px}.mb,#fireBtn{width:48px;height:48px;font-size:20px}.fireHint{top:-15px;font-size:9px;padding:2px 6px}}
 
 @media(max-width:480px){.finishBtns{gap:8px}.finishBtns .btn{font-size:14px;padding:12px 8px}}
-.backBtn,.exitBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:7px 13px;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244;white-space:nowrap}.backBtn{background:linear-gradient(180deg,#4d86b1,#24577c)}.exitBtn{background:linear-gradient(180deg,#e95e55,#b3322c);box-shadow:0 5px 0 #7c211d} .lockedMsg{color:#b63737;font-weight:900;margin:8px 0} </style>
+.startActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.startExitBtn{border:0;border-radius:16px;padding:15px 18px;font-size:22px;font-weight:1000;color:#fff;background:linear-gradient(180deg,#ef655c,#b72f2a);box-shadow:0 8px 0 #7a211d;cursor:pointer}.startExitBtn:hover{filter:brightness(1.05)}.backBtn,.exitBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:7px 13px;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244;white-space:nowrap}.backBtn{background:linear-gradient(180deg,#4d86b1,#24577c)}.exitBtn{background:linear-gradient(180deg,#e95e55,#b3322c);box-shadow:0 5px 0 #7c211d} .lockedMsg{color:#b63737;font-weight:900;margin:8px 0} </style>
 </head>
 <body>
 <div id="shell">
@@ -94,7 +94,10 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   <div style="font-size:13px"><b>เลข 0 บนแป้นพิมพ์</b> = ยิงลูกไฟ 🔥</div>
   <div style="font-size:13px">P หรือ Esc = Pause / Resume</div>
 </div>
-<button class="btn" id="start">▶ START RUN</button>
+<div class="startActions">
+  <button class="btn" id="start">▶ START RUN</button>
+  <button class="startExitBtn" id="startExitBtn">🚪 EXIT</button>
+</div>
 </div>
 </div>
 
@@ -681,6 +684,7 @@ function goHome(){
 }
 
 document.getElementById("backBtn").onclick=()=>goHome();
+document.getElementById("startExitBtn").onclick=()=>goHome();
 
 document.getElementById("exitBtn").onclick=async()=>{
   const ok = confirm("ต้องการออกจาก Season 4 และกลับหน้า Home ใช่หรือไม่?");
