@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.15-SEASON4-HOME-RETURN-FIX">
+<meta name="fs-build" content="V18.15-SEASON4-CUSTOM-EXIT-MODAL">
 <style>
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
@@ -49,7 +49,58 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 @media(max-width:800px){.top{height:65px;padding:6px}.brand{font-size:10px;padding:6px 8px}.box{min-width:68px;font-size:9px;padding:4px}.box b{font-size:13px}#question{top:142px;font-size:14px;padding:9px 12px 10px;width:88%;border-width:3px}#question small{font-size:9px;padding:3px 8px;margin-bottom:5px}#progress{left:12px;bottom:10px;width:min(260px,52%)}#heartsRow{top:72px;left:10px;padding:5px 8px;gap:3px}.heart{font-size:14px}.pauseBtn{min-width:64px;padding:4px 8px;font-size:10px}.card{padding:18px}.input{font-size:14px}#mobile{right:12px;bottom:12px;gap:6px}.mb,#fireBtn{width:48px;height:48px;font-size:20px}.fireHint{top:-15px;font-size:9px;padding:2px 6px}}
 
 @media(max-width:480px){.finishBtns{gap:8px}.finishBtns .btn{font-size:14px;padding:12px 8px}}
-.startActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.startExitBtn{border:0;border-radius:16px;padding:15px 18px;font-size:22px;font-weight:1000;color:#fff;background:linear-gradient(180deg,#ef655c,#b72f2a);box-shadow:0 8px 0 #7a211d;cursor:pointer}.startExitBtn:hover{filter:brightness(1.05)}.backBtn,.exitBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:7px 13px;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244;white-space:nowrap}.backBtn{background:linear-gradient(180deg,#4d86b1,#24577c)}.exitBtn{background:linear-gradient(180deg,#e95e55,#b3322c);box-shadow:0 5px 0 #7c211d} .lockedMsg{color:#b63737;font-weight:900;margin:8px 0} </style>
+.startActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.startExitBtn{border:0;border-radius:16px;padding:15px 18px;font-size:22px;font-weight:1000;color:#fff;background:linear-gradient(180deg,#ef655c,#b72f2a);box-shadow:0 8px 0 #7a211d;cursor:pointer}.startExitBtn:hover{filter:brightness(1.05)}.backBtn,.exitBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:7px 13px;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244;white-space:nowrap}.backBtn{background:linear-gradient(180deg,#4d86b1,#24577c)}.exitBtn{background:linear-gradient(180deg,#e95e55,#b3322c);box-shadow:0 5px 0 #7c211d} .lockedMsg{color:#b63737;font-weight:900;margin:8px 0} 
+.exitConfirmOverlay{
+  position:fixed;inset:0;z-index:99999;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(8,34,52,.62);
+  backdrop-filter:blur(5px);
+}
+.exitConfirmCard{
+  width:min(520px,calc(100vw - 34px));
+  background:linear-gradient(180deg,#ffffff 0%,#eefaff 100%);
+  border:4px solid #72cfff;
+  border-radius:28px;
+  box-shadow:0 18px 0 rgba(5,76,111,.28),0 28px 55px rgba(0,0,0,.30);
+  padding:28px 30px 26px;
+  text-align:center;
+  color:#0d4f7a;
+}
+.exitConfirmIcon{
+  width:76px;height:76px;margin:0 auto 10px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:24px;
+  background:linear-gradient(180deg,#ffce58,#f49b18);
+  border:4px solid #fff1bb;
+  box-shadow:0 7px 0 #bc7010;
+  font-size:38px;
+}
+.exitConfirmTitle{
+  font-size:28px;font-weight:1000;line-height:1.15;margin:16px 0 8px;
+  color:#0c5787;
+}
+.exitConfirmText{
+  font-size:16px;font-weight:800;line-height:1.55;color:#537286;
+  margin-bottom:22px;
+}
+.exitConfirmActions{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+.exitConfirmBtn{
+  border:0;border-radius:17px;padding:15px 16px;
+  font-size:18px;font-weight:1000;cursor:pointer;color:#fff;
+}
+.exitConfirmHome{
+  background:linear-gradient(180deg,#ff645b,#d93630);
+  box-shadow:0 7px 0 #9c231f;
+}
+.exitConfirmCancel{
+  background:linear-gradient(180deg,#37c8ff,#1688d6);
+  box-shadow:0 7px 0 #0b5f9e;
+}
+.exitConfirmBtn:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.25)}
+
+</style>
 </head>
 <body>
 <div id="shell">
@@ -695,14 +746,30 @@ function goHome(){
 }
 
 document.getElementById("backBtn").onclick=()=>goHome();
-document.getElementById("startExitBtn").onclick=()=>goHome();
+document.getElementById("startExitBtn").onclick=()=>openExitConfirm();
 
-document.getElementById("exitBtn").onclick=async()=>{
-  const ok = confirm("ต้องการออกจาก Season 4 และกลับหน้า Home ใช่หรือไม่?");
-  if(!ok) return;
+const exitConfirmOverlay=document.getElementById("exitConfirmOverlay");
+const exitConfirmCancel=document.getElementById("exitConfirmCancel");
+const exitConfirmHome=document.getElementById("exitConfirmHome");
 
+function openExitConfirm(){
+  exitConfirmOverlay.style.display="flex";
+}
+function closeExitConfirm(){
+  exitConfirmOverlay.style.display="none";
+}
+
+document.getElementById("exitBtn").onclick=()=>openExitConfirm();
+exitConfirmCancel.onclick=()=>closeExitConfirm();
+
+exitConfirmOverlay.addEventListener("click",(ev)=>{
+  if(ev.target===exitConfirmOverlay) closeExitConfirm();
+});
+
+exitConfirmHome.onclick=async()=>{
+  exitConfirmHome.disabled=true;
+  exitConfirmHome.textContent="กำลังกลับ Home...";
   try{
-    // If a run has started, save the current checkpoint before leaving.
     if(state==="play" || state==="question" || state==="pause"){
       await saveScore("quit");
     }
@@ -719,5 +786,21 @@ document.getElementById("exitBtn").onclick=async()=>{
 initCollectibles();setHUD();loop();
 initSeason4Integration();
 </script>
+
+<div class="exitConfirmOverlay" id="exitConfirmOverlay">
+  <div class="exitConfirmCard" role="dialog" aria-modal="true" aria-labelledby="exitConfirmTitle">
+    <div class="exitConfirmIcon">🏠</div>
+    <div class="exitConfirmTitle" id="exitConfirmTitle">ออกจาก Season 4?</div>
+    <div class="exitConfirmText">
+      ระบบจะพาคุณกลับไปหน้า Home ของ Food Safety Hunting Game<br>
+      คะแนนที่บันทึกแล้วจะยังคงอยู่
+    </div>
+    <div class="exitConfirmActions">
+      <button class="exitConfirmBtn exitConfirmCancel" id="exitConfirmCancel">▶ เล่นต่อ</button>
+      <button class="exitConfirmBtn exitConfirmHome" id="exitConfirmHome">🏠 กลับ Home</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
