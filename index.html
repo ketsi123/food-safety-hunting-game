@@ -3855,10 +3855,10 @@ function renderReasons(){
     const c=choices.find(x=>String(x.id)===String(s.reasonChoiceId||""));
     return `<div class="match-row"><div class="match-no">ข้อ ${i+1}</div><div class="reason-drop-slot ${c?"filled":""}" data-slot="${i}">${c?`<span class="drop-value">${escapeReasonHtml_(c.text)}</span><button type="button" class="drop-clear" data-clear-slot="${i}" aria-label="ลบเหตุผล">×</button>`:`<span class="drop-placeholder">ลากเหตุผลมาวาง</span>`}</div></div>`;
   }).join(""):`<div class="match-empty">👆 คลิกจุดบนภาพก่อน • ข้อ 1, 2, 3... จะเรียงขึ้นตรงนี้</div>`;
-  const bank=choices.length?choices.map(c=>{
-    const assigned=usedBy.has(String(c.id))?usedBy.get(String(c.id)):null;
-    return `<div class="reason-choice-card ${assigned!==null?"assigned":""}" data-choice-id="${escapeReasonHtml_(c.id)}"><span class="drag-handle">⠿</span><span>${escapeReasonHtml_(c.text)}</span>${assigned!==null?`<em>ข้อ ${assigned+1}</em>`:""}</div>`;
-  }).join(""):`<div class="reason-bank-empty">ไม่พบชุดเหตุผลของคำถามนี้ • กรุณารีเฟรชหน้า</div>`;
+  const availableChoices=choices.filter(c=>!usedBy.has(String(c.id)));
+  const bank=availableChoices.length?availableChoices.map(c=>{
+    return `<div class="reason-choice-card" data-choice-id="${escapeReasonHtml_(c.id)}"><span class="drag-handle">⠿</span><span>${escapeReasonHtml_(c.text)}</span></div>`;
+  }).join(""):(choices.length?`<div class="reason-bank-empty">✓ ใช้เหตุผลที่มีครบแล้ว</div>`:`<div class="reason-bank-empty">ไม่พบชุดเหตุผลของคำถามนี้ • กรุณารีเฟรชหน้า</div>`);
   e.reasonList.innerHTML=`<div class="reason-mini-guide"><b>① คลิกจุดบนภาพ</b><span>② ลากเหตุผล → ช่องของข้อนั้น</span></div><div class="selected-match-list">${rows}</div><div class="reason-bank-title"><b>เหตุผล</b><small>ลากอย่างเดียว • ไม่บังคับ</small></div><div class="reason-choice-bank">${bank}</div>`;
   e.reasonList.querySelectorAll("[data-clear-slot]").forEach(btn=>{btn.onclick=ev=>{ev.stopPropagation();clearReasonChoice(Number(btn.dataset.clearSlot))}});
   wireReasonDrag();
