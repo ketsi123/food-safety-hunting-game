@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.16.2-S3-FAST-S4-QUAL800">
+<meta name="fs-build" content="V18.17.0-DRAG-REASON-ONE-PASS">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2588,6 +2588,30 @@ body:before{
   .total-user-value{padding-left:8px}
   .total-user-value b{font-size:13px!important}
 }
+
+/* ===== V18.17: ONE-PASS DRAG REASON ===== */
+.v12-reason-panel .side-reason-head{background:linear-gradient(135deg,#f7fcff,#f1fff9)!important;border-bottom:1px solid #dceaf2!important}
+.drag-reason-guide{display:flex;align-items:flex-start;gap:9px;margin:2px 0 9px;padding:10px 11px;border-radius:13px;background:linear-gradient(135deg,#eef8ff,#f0fff8);border:1px solid #cfe6ef;color:#315a70;font-size:11px;line-height:1.45;font-weight:800}
+.drag-reason-guide .drag-icon{font-size:22px;line-height:1;animation:dragNudge 1.4s ease-in-out infinite}
+.drag-reason-guide b{display:block;color:#16674f;font-size:12px;margin-bottom:2px}
+.drag-reason-guide small{display:block;color:#78909d;font-size:9px;margin-top:3px;font-weight:700}
+@keyframes dragNudge{50%{transform:translate(5px,-2px)}}
+.reason-bank{display:grid;gap:7px}
+.reason-bank-status{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:0 1px 2px;color:#6c8391;font-size:9px;font-weight:900}
+.reason-bank-status strong{color:#15785d;font-size:10px}
+.reason-choice-card{position:relative;display:flex;align-items:flex-start;gap:9px;width:100%;padding:9px 10px;border-radius:12px;border:1px solid #d8e7ee;background:linear-gradient(180deg,#fff,#f8fcfe);box-shadow:0 6px 14px rgba(61,105,137,.07);color:#294d60;font-size:11px;line-height:1.4;font-weight:800;cursor:grab;touch-action:none;user-select:none;transition:transform .14s,border-color .14s,box-shadow .14s,opacity .14s}
+.reason-choice-card:before{content:'⋮⋮';flex:0 0 auto;color:#7b9dad;font-size:15px;letter-spacing:-3px;line-height:1.1;padding-right:2px}
+.reason-choice-card:hover{transform:translateY(-1px);border-color:#78c8dd;box-shadow:0 9px 20px rgba(44,124,158,.12)}
+.reason-choice-card.dragging{opacity:.38;transform:scale(.98);cursor:grabbing}
+.reason-choice-card.used{border-color:#a9dfc9;background:linear-gradient(180deg,#f5fff9,#effbf5);box-shadow:none}.reason-choice-card.used:before{color:#25a878}.choice-used-tag{flex:0 0 auto;align-self:center;padding:3px 6px;border-radius:999px;background:#daf5e8;color:#16805f;font-size:8px;font-style:normal;font-weight:1000;white-space:nowrap}
+.reason-drag-ghost{position:fixed;z-index:9999;max-width:min(340px,72vw);padding:10px 12px;border-radius:13px;background:#fff;border:2px solid #35b991;box-shadow:0 18px 45px rgba(24,75,104,.24);color:#244c5e;font-size:11px;line-height:1.4;font-weight:900;pointer-events:none;transform:translate(-50%,-115%);opacity:.96}
+.marker.reason-filled:after{content:'✓';position:absolute;right:-7px;top:-8px;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;background:#12b67d;color:#fff;border:2px solid #fff;font-size:10px;font-weight:1000;box-shadow:0 4px 10px rgba(18,182,125,.3)}
+.marker.reason-drop-hover{transform:translate(-50%,-50%) scale(1.22)!important;box-shadow:0 0 0 7px rgba(255,205,73,.5),0 12px 28px rgba(45,132,234,.32)!important;background:linear-gradient(145deg,#ffc94b,#ff9f35)!important}
+.reason-empty-state{padding:12px;border:1px dashed #c9dfe9;border-radius:13px;background:#f8fcfe;color:#708894;font-size:10px;line-height:1.55;text-align:center}
+.reason-empty-state b{display:block;color:#315b70;font-size:11px;margin-bottom:3px}
+.reason-all-assigned{padding:12px;border-radius:13px;background:#effcf6;border:1px solid #c5ebd9;color:#217256;font-size:11px;font-weight:900;text-align:center}
+@media(max-width:900px){.reason-bank{grid-template-columns:repeat(2,minmax(0,1fr))}.drag-reason-guide,.reason-bank-status{grid-column:1/-1}.reason-choice-card{font-size:10px;padding:8px}.v12-reason-panel{max-height:none!important}}
+@media(max-width:560px){.reason-bank{grid-template-columns:1fr}.reason-choice-card{font-size:11px}.drag-reason-guide{font-size:10px}}
 </style>
 
 </head>
@@ -2784,7 +2808,7 @@ body:before{
           <aside class="right-game-panel v12-reason-column">
             <section class="reason-side-panel v12-reason-panel">
               <div class="reason-head side-reason-head">
-                <div><b>เหตุผลรายจุด</b><small>ระบุอย่างน้อย 2 คำสำคัญ: สิ่งที่พบ + ปัญหา/ความเสี่ยง</small></div>
+                <div><b>🧩 จับคู่เหตุผล (ไม่บังคับ)</b><small>ลากเหตุผลด้านล่างไปวางบนวงกลมหมายเลขที่เลือกไว้ในภาพ</small></div>
                 <b id="liveQuestionScore" class="logic-only-score" aria-hidden="true">--</b>
               </div>
 
@@ -2914,7 +2938,7 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V18.16.2 • S3 FAST + S4 QUALIFIER 800");
+(()=>{"use strict";console.info("Food Safety Hunting Game V18.17.0 • DRAG REASON ONE-PASS");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
 let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
@@ -2922,6 +2946,7 @@ let seasonControlLoaded=false;
 
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),progressSeasonLabel:$("progressSeasonLabel"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
+let reasonChoicesByQuestion={},reasonChoicesPromise=null,reasonChoiceOrderCache={},activeReasonDrag=null,suppressMarkerClickUntil=0;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
   { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -3037,6 +3062,38 @@ async function backendGet(query,timeoutMs=30000){
   return request(`${base}${sep}${query}`,{timeoutMs});
 }
 const api=p=>backendPost(p,30000);
+
+function shuffleReasonChoices(list){
+  const a=(list||[]).map(x=>({...x}));
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}
+  return a;
+}
+function ingestReasonChoiceCatalog(rows){
+  (rows||[]).forEach(item=>{
+    const key=String(item?.questionId||'').trim().toUpperCase();
+    const choices=Array.isArray(item?.reasonChoices)?item.reasonChoices:[];
+    if(key&&choices.length){reasonChoicesByQuestion[key]=choices.map(c=>({id:String(c.id||''),text:String(c.text||'')})).filter(c=>c.id&&c.text)}
+  });
+}
+function reasonChoicesFor(questionId){
+  const key=String(questionId||'').trim().toUpperCase();
+  const src=reasonChoicesByQuestion[key]||[];
+  if(src.length&&!reasonChoiceOrderCache[key])reasonChoiceOrderCache[key]=shuffleReasonChoices(src);
+  return reasonChoiceOrderCache[key]||[];
+}
+async function loadReasonChoiceCatalog(force=false){
+  if(reasonChoicesPromise&&!force)return reasonChoicesPromise;
+  reasonChoicesPromise=backendGet(`?action=questions&t=${Date.now()}`,30000)
+    .then(d=>{
+      ingestReasonChoiceCatalog(d?.questions||[]);
+      if(q)renderReasons();
+      return reasonChoicesByQuestion;
+    })
+    .catch(err=>{console.warn('Reason choice catalog load failed',err);return reasonChoicesByQuestion})
+    .finally(()=>{reasonChoicesPromise=null});
+  return reasonChoicesPromise;
+}
+
 
 // V18.16.1: warm lookup caches in the backend without blocking the game.
 function prewarmSeasonBackend(season){
@@ -3160,6 +3217,8 @@ async function login(){
   seasonControlLoaded=true;
   activeSeason=1;
   openGame();
+  // V18.17: โหลดคลัง Choice ครั้งเดียวแบบ background; ไม่บล็อกการเปิดเกม
+  loadReasonChoiceCatalog().catch(()=>{});
 
   e.loginBackendText.textContent="กำลังซิงก์ข้อมูลเบื้องหลัง...";
 
@@ -3613,11 +3672,11 @@ function startSession(){
 function loadQ(startImmediately=false){
   clearInterval(timer);clearInterval(preHintTimer);preHintTimer=null;document.getElementById("preStartHint")?.classList.add("hidden");selections=[];ended=false;started=false;currentAttemptId=null;
   e.markerLayer.innerHTML="";e.revealLayer.innerHTML="";e.clickLayer.style.pointerEvents="auto";if(e.resultIcon)e.resultIcon.textContent="🏆";const resultCard=e.resultOverlay.querySelector(".result-modal");if(resultCard)resultCard.classList.remove("timeout");
-  e.reasonList.innerHTML='<div class="empty-reason">กด START ก่อนเริ่มข้อ แล้วจึงเลือกจุดในภาพ</div>';
+  e.reasonList.innerHTML='<div class="reason-empty-state"><b>กด START เพื่อเริ่ม</b>เมื่อเลือกจุดแรก ตัวเลือกเหตุผลจะพร้อมให้ลากทันที</div>';
   e.resultOverlay.classList.add("hidden-layer");
   if(e.resultVisual)e.resultVisual.classList.add("hidden");
   e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.innerHTML='<span class="btn-game-icon">➤</span><span>บันทึกคำตอบ</span>';e.liveQuestionScore.textContent="--";
-  q=masterQuestionById(questions[order[idx]]?.questionId)||questions[order[idx]];seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
+  const publicQ=questions[order[idx]]||{};const masterQ=masterQuestionById(publicQ?.questionId);q={...(masterQ||publicQ),...publicQ};delete reasonChoiceOrderCache[String(q.questionId||"").toUpperCase()];seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
   const sm=seasonMeta(q.season||1);e.seasonText.textContent=`${sm.icon} SEASON ${q.season||1} : ${sm.title}`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;updateHeaderMission(q,cur,total);
   const hotspotCount=actualHotspotCount(q);
   e.questionIdTag.textContent=q.questionId;
@@ -3649,7 +3708,7 @@ function startQuestion(){
     if(!backendOnline){ping().catch(()=>{})}
     e.playCard.classList.remove("game-paused");
     e.submitBtn.disabled=false;
-    e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';
+    e.reasonList.innerHTML='<div class="reason-empty-state"><b>① เลือกจุดบนภาพก่อน</b>วงจุดแรกแล้ว ตัวเลือกเหตุผลจะปรากฏทันที</div>';
     action(`เริ่มแล้ว • เลือกได้สูงสุด ${actualHotspotCount(q)} จุด`,"ok");
     clearInterval(timer);
     timer=setInterval(()=>{
@@ -3671,10 +3730,106 @@ function startQuestion(){
   }
 }
 function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/60))).padStart(2,"0")}:${String(Math.max(0,seconds%60)).padStart(2,"0")}`;e.timerText.style.color=seconds<=10?"#ffd057":""}
-function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=actualHotspotCount(q);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reason:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
-function renderMarkers(){e.markerLayer.innerHTML="";selections.forEach((s,i)=>{const b=document.createElement("button");b.className="marker";b.dataset.index=String(i);b.style.left=s.x+"%";b.style.top=s.y+"%";b.textContent=i+1;b.onclick=ev=>{ev.stopPropagation();if(ended)return;selections.splice(i,1);renderMarkers();renderReasons()};e.markerLayer.appendChild(b)})}
-function markSelectionResults(results){const markers=[...e.markerLayer.querySelectorAll(".marker")];markers.forEach((m,i)=>{m.classList.remove("correct","wrong");const r=(results||[])[i];if(!r)return;m.classList.add(r.pointMatched?"correct":"wrong")})}
-function renderReasons(){if(!selections.length){e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';return}e.reasonList.innerHTML="";const positive=Number(q?.season||1)===3;selections.forEach((s,i)=>{const row=document.createElement("div");row.className="reason-row";row.innerHTML=`<div class="reason-number">${i+1}</div><div><textarea class="reason-input" placeholder="${positive?'เช่น พฤติกรรมที่พบ + เหตุผลที่ช่วย Food Safety':'เช่น สิ่งที่พบ + สภาพที่ไม่ถูกต้อง'}"></textarea><div class="reason-note">${positive?'อธิบายสั้น ๆ ว่าพฤติกรรมนี้สอดคล้องหรือช่วย Food Safety & Quality Culture อย่างไร':'อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร'}</div></div>`;const ta=row.querySelector("textarea");ta.value=s.reason||"";ta.oninput=()=>selections[i].reason=ta.value;e.reasonList.appendChild(row)})}
+function selectPoint(cx,cy){
+  if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}
+  const max=actualHotspotCount(q);
+  if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}
+  const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;
+  if(x<0||x>100||y<0||y>100)return;
+  if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}
+  selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reasonChoiceId:"",reason:""});
+  renderMarkers();renderReasons();
+  action(`เลือกแล้ว ${selections.length}/${max} จุด • ลากเหตุผลไปวางบนวงกลมได้เลย`,"ok")
+}
+function renderMarkers(){
+  e.markerLayer.innerHTML="";
+  selections.forEach((s,i)=>{
+    const b=document.createElement("button");
+    b.className=`marker ${s.reasonChoiceId?'reason-filled':''}`;
+    b.dataset.index=String(i);b.style.left=s.x+"%";b.style.top=s.y+"%";b.textContent=i+1;
+    b.title=s.reason?`จุด ${i+1} • เหตุผล: ${s.reason}`:`จุด ${i+1} • ลากเหตุผลมาวางได้`;
+    b.onclick=ev=>{
+      ev.stopPropagation();
+      if(ended||Date.now()<suppressMarkerClickUntil)return;
+      selections.splice(i,1);renderMarkers();renderReasons();
+    };
+    e.markerLayer.appendChild(b)
+  })
+}
+function choiceUsed(choiceId){return selections.some(s=>String(s.reasonChoiceId||'')===String(choiceId||''))}
+function assignReasonChoiceToMarker(choiceId,slotIndex){
+  const choices=reasonChoicesFor(q?.questionId);
+  const choice=choices.find(c=>String(c.id)===String(choiceId));
+  const slot=selections[slotIndex];
+  if(!choice||!slot)return false;
+  selections.forEach((s,i)=>{if(i!==slotIndex&&String(s.reasonChoiceId||'')===String(choice.id)){s.reasonChoiceId='';s.reason=''}});
+  slot.reasonChoiceId=choice.id;slot.reason=choice.text;
+  renderMarkers();renderReasons();
+  action(`ใส่เหตุผลให้จุด ${slotIndex+1} แล้ว • เหตุผลไม่บังคับ`,"ok");
+  return true;
+}
+function clearReasonDropHover(){document.querySelectorAll('.marker.reason-drop-hover').forEach(x=>x.classList.remove('reason-drop-hover'))}
+function markerAtPoint(x,y){
+  const el=document.elementFromPoint(x,y);
+  return el?.closest?.('.marker')||null;
+}
+function moveReasonDrag(ev){
+  if(!activeReasonDrag)return;
+  const x=ev.clientX,y=ev.clientY;
+  activeReasonDrag.ghost.style.left=x+'px';activeReasonDrag.ghost.style.top=y+'px';
+  clearReasonDropHover();
+  const marker=markerAtPoint(x,y);if(marker)marker.classList.add('reason-drop-hover');
+  if(ev.cancelable)ev.preventDefault();
+}
+function endReasonDrag(ev){
+  if(!activeReasonDrag)return;
+  const drag=activeReasonDrag;activeReasonDrag=null;
+  document.removeEventListener('pointermove',moveReasonDrag,true);
+  document.removeEventListener('pointerup',endReasonDrag,true);
+  document.removeEventListener('pointercancel',endReasonDrag,true);
+  clearReasonDropHover();drag.card?.classList.remove('dragging');drag.ghost?.remove();
+  const marker=markerAtPoint(ev.clientX,ev.clientY);
+  if(marker){
+    const slot=Number(marker.dataset.index);
+    suppressMarkerClickUntil=Date.now()+350;
+    if(Number.isInteger(slot)&&selections[slot])assignReasonChoiceToMarker(drag.choiceId,slot);
+  }else{
+    toast('ลากเหตุผลไปปล่อยบนวงกลมหมายเลขในภาพ',1800);
+  }
+  if(ev.cancelable)ev.preventDefault();
+}
+function startReasonDrag(ev,choiceId,card){
+  if(ended||!started||!selections.length)return;
+  if(ev.button!==undefined&&ev.button!==0)return;
+  const choice=reasonChoicesFor(q?.questionId).find(c=>String(c.id)===String(choiceId));if(!choice)return;
+  const ghost=document.createElement('div');ghost.className='reason-drag-ghost';ghost.textContent=choice.text;document.body.appendChild(ghost);
+  activeReasonDrag={choiceId:String(choiceId),card,ghost};card.classList.add('dragging');
+  ghost.style.left=ev.clientX+'px';ghost.style.top=ev.clientY+'px';
+  document.addEventListener('pointermove',moveReasonDrag,true);
+  document.addEventListener('pointerup',endReasonDrag,true);
+  document.addEventListener('pointercancel',endReasonDrag,true);
+  if(ev.cancelable)ev.preventDefault();
+}
+function renderReasons(){
+  if(!selections.length){
+    e.reasonList.innerHTML='<div class="reason-empty-state"><b>① เลือกจุดบนภาพก่อน</b>วงจุดแรกแล้ว ตัวเลือกเหตุผลจะปรากฏทันที</div>';
+    return;
+  }
+  const choices=reasonChoicesFor(q?.questionId);
+  if(!choices.length){
+    e.reasonList.innerHTML='<div class="reason-empty-state"><b>กำลังโหลดตัวเลือกเหตุผล…</b>คุณเลือกจุดต่อได้เลย เหตุผลเป็นตัวเลือกเสริม</div>';
+    loadReasonChoiceCatalog().catch(()=>{});
+    return;
+  }
+  const assigned=selections.filter(s=>s.reasonChoiceId).length;
+  const guide=`<div class="drag-reason-guide"><span class="drag-icon">☝️➡️🎯</span><div><b>ลากเหตุผล → ไปวางบนวงกลมหมายเลขในภาพ</b>จะลากทันทีหรือวงจุดให้ครบก่อนก็ได้<small>เหตุผลเป็นตัวเลือกเสริม • ไม่จำเป็นต้องใส่ทุกจุด</small></div></div>`;
+  const status=`<div class="reason-bank-status"><span>จับคู่แล้ว ${assigned}/${selections.length} จุด</span><strong>ลากอย่างเดียว</strong></div>`;
+  const bank=choices.map(c=>{const slot=selections.findIndex(s=>String(s.reasonChoiceId||'')===String(c.id));return `<div class="reason-choice-card ${slot>=0?'used':''}" data-choice-id="${esc(c.id)}"><span>${esc(c.text)}</span>${slot>=0?`<em class="choice-used-tag">✓ จุด ${slot+1}</em>`:''}</div>`}).join('');
+  e.reasonList.innerHTML=`<div class="reason-bank">${guide}${status}${bank}</div>`;
+  e.reasonList.querySelectorAll('.reason-choice-card').forEach(card=>{
+    card.addEventListener('pointerdown',ev=>startReasonDrag(ev,card.dataset.choiceId,card));
+  });
+}
 function reveal(list){e.revealLayer.innerHTML="";(list||[]).forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})}
 function renderResultVisual(revealList,results){
   if(!e.resultVisual||!e.resultVisualImage)return;
@@ -3697,7 +3852,7 @@ function renderResultVisual(revealList,results){
     e.resultVisualMarkers.appendChild(m);
   });
 }
-function startStatusCycle(){const msgs=["กำลังตรวจตำแหน่ง...","กำลังตรวจเหตุผล...","กำลังบันทึกคะแนน..."];let i=0;e.busyText.textContent=msgs[0];clearInterval(statusTimer);statusTimer=setInterval(()=>{i=(i+1)%msgs.length;e.busyText.textContent=msgs[i]},900)}
+function startStatusCycle(){const msgs=["กำลังตรวจตำแหน่ง...","กำลังตรวจการจับคู่เหตุผล...","กำลังบันทึกคะแนน..."];let i=0;e.busyText.textContent=msgs[0];clearInterval(statusTimer);statusTimer=setInterval(()=>{i=(i+1)%msgs.length;e.busyText.textContent=msgs[i]},900)}
 function timeoutQuestion(){
   if(ended)return;
   ended=true;started=false;seconds=0;tick();clearInterval(timer);
@@ -3746,7 +3901,7 @@ async function submit(auto=false){
       isRetry:false,
       email:user.email,
       questionId:q.questionId,
-      selections:selections.map(s=>({x:s.x,y:s.y,reason:s.reason||""})),
+      selections:selections.map(s=>({x:s.x,y:s.y,reasonChoiceId:s.reasonChoiceId||"",reason:s.reason||""})),
       elapsedSec:Math.max(0,Number(q.timeLimitSec||45)-seconds)
     };
 
@@ -3911,7 +4066,7 @@ async function history(){
     busy(false);
   }
 }
-function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800</div></div></div>`)}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ลากเหตุผล (ไม่บังคับ)</b><br>หลังเลือกจุดแรก ให้ลากการ์ดเหตุผลไปวางบนวงกลมหมายเลขที่เลือกไว้ในภาพ จะทำทันทีหรือกลับมาจับคู่ภายหลังก็ได้</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800</div></div></div>`)}
 function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
