@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.15-HOME-RETURN-FIX">
+<meta name="fs-build" content="V18.16.1-S3-FAST-S4-QUAL800">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2661,7 +2661,7 @@ body:before{
             <small>ภารกิจปัจจุบัน</small>
             <b id="headerMissionName">โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</b>
             <span id="headerMissionSeason">SEASON 1</span>
-            <em id="headerQualifierStatus" class="hud-qualifier-mini" title="Qualifier: S1≥1,500 • S2≥800 • S3≥150 • S4≥300">QUALIFIER 0/4</em>
+            <em id="headerQualifierStatus" class="hud-qualifier-mini" title="Qualifier: S1≥1,500 • S2≥800 • S3≥150 • S4≥800">QUALIFIER 0/4</em>
           </div>
         </div>
       </div>
@@ -3037,6 +3037,16 @@ async function backendGet(query,timeoutMs=30000){
   return request(`${base}${sep}${query}`,{timeoutMs});
 }
 const api=p=>backendPost(p,30000);
+
+// V18.16.1: warm lookup caches in the backend without blocking the game.
+function prewarmSeasonBackend(season){
+  const s=Number(season||0);
+  if(!user?.email || ![1,2,3].includes(s)) return Promise.resolve(null);
+  return api({action:"prewarmseason",email:user.email,season:s})
+    .then(d=>{console.log("Season prewarm",d);return d})
+    .catch(err=>{console.warn("Season prewarm failed",s,err);return null});
+}
+
 function setBackend(ok){
   backendOnline=!!ok;
   e.loginBackendDot.classList.toggle("online",ok);
@@ -3098,7 +3108,7 @@ function cachedQuestions(){
 function imagePath(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  return `./${file}?v=20260831V1816S3`;
+  return `./${file}?v=20260901V18161S3FAST`;
 }
 function preload(items){
   (items||masterQuestions()).forEach(x=>{
@@ -3170,6 +3180,9 @@ async function login(){
 
       renderTotalUsers(loginData?.totalUsers);
       setBackend(true);
+
+      // Warm S3 while the player is still on Home/S1, so S3 Submit is not cold.
+      prewarmSeasonBackend(3);
 
       // Re-check later without blocking gameplay.
       setTimeout(()=>{ refreshSeasonControl(); },5000);
@@ -3397,6 +3410,9 @@ function switchSeason(season){
   hideSeasonLockedScreen();
   activeSeason=s;
   questions=qs;
+
+  // Warm this Season before the player reaches Submit.
+  prewarmSeasonBackend(s);
   document.querySelectorAll(".nav-item[data-season]").forEach(b=>
     b.classList.toggle("active",Number(b.dataset.season||0)===s)
   );
@@ -3414,9 +3430,9 @@ function updateHeaderMission(question,cur,total){
   if(missionName) missionName.textContent=meta.title;
   if(missionSeason) missionSeason.textContent=`SEASON ${season}`;
 }
-function normalizeQualifier(qf){const d={"1":1500,"2":800,"3":150,"4":300},mins=qf?.minimumBySeason||d,scores=qf?.seasonScores||{},status=qf?.seasonStatus||{},n={qualified:false,minimumBySeason:{},requiredSeasons:4,playedSeasons:0,qualifiedSeasons:0,seasonScores:{},seasonStatus:{}};[1,2,3,4].forEach(s=>{const k=String(s),minimum=Number(mins[k]??mins[s]??d[k]),score=Number(scores[k]??scores[s]??0),st=status[k]||status[s]||{},played=!!st.played||Number(st.attempts||0)>0||score>0,passed=played&&score>=minimum;n.minimumBySeason[k]=minimum;n.seasonScores[k]=score;n.seasonStatus[k]={played,passed,score,minimum,remaining:Math.max(0,minimum-score)};if(played)n.playedSeasons++;if(passed)n.qualifiedSeasons++});n.qualified=n.playedSeasons===4&&n.qualifiedSeasons===4;return n}
-function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title="คะแนนสะสม: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 300"}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
-function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"โลจิสติกส์ & ตลาดถึงมือผู้บริโภค",2:"การผลิตและแปรรูปอาหาร",3:"Food Safety & Quality Culture",4:"Final Quest: Quiz & Run"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],minimum=st.minimum,pct=Math.max(0,Math.min(100,(st.score/minimum)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(minimum)} คะแนนสะสม</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เกณฑ์คะแนนสะสม: Season 1 ≥ 1,500 • Season 2 ≥ 800 • Season 3 ≥ 150 • Season 4 ≥ 300</div></div><div class="qualifier-grid">${cards}</div></div>`)}
+function normalizeQualifier(qf){const d={"1":1500,"2":800,"3":150,"4":800},mins={...d,...(qf?.minimumBySeason||{}),"4":800},scores=qf?.seasonScores||{},status=qf?.seasonStatus||{},n={qualified:false,minimumBySeason:{},requiredSeasons:4,playedSeasons:0,qualifiedSeasons:0,seasonScores:{},seasonStatus:{}};[1,2,3,4].forEach(s=>{const k=String(s),minimum=Number(mins[k]??mins[s]??d[k]),score=Number(scores[k]??scores[s]??0),st=status[k]||status[s]||{},played=!!st.played||Number(st.attempts||0)>0||score>0,passed=played&&score>=minimum;n.minimumBySeason[k]=minimum;n.seasonScores[k]=score;n.seasonStatus[k]={played,passed,score,minimum,remaining:Math.max(0,minimum-score)};if(played)n.playedSeasons++;if(passed)n.qualifiedSeasons++});n.qualified=n.playedSeasons===4&&n.qualifiedSeasons===4;return n}
+function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{});if(user)user.qualifier=q;const h=$("headerQualifierStatus");if(h){h.textContent=q.qualified?"🏆 QUALIFIED":`QUALIFIER ${q.qualifiedSeasons}/4`;h.classList.toggle("qualified",q.qualified);h.title="คะแนนสะสม: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800"}if(e.qualifierNavStatus)e.qualifierNavStatus.textContent=q.qualified?"✓":`${q.qualifiedSeasons}/4`;if(e.qualifierBtn)e.qualifierBtn.classList.toggle("qualified",q.qualified);return q}
+function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"โลจิสติกส์ & ตลาดถึงมือผู้บริโภค",2:"การผลิตและแปรรูปอาหาร",3:"Food Safety & Quality Culture",4:"Final Quest: Quiz & Run"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],minimum=st.minimum,pct=Math.max(0,Math.min(100,(st.score/minimum)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(minimum)} คะแนนสะสม</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เกณฑ์คะแนนสะสม: Season 1 ≥ 1,500 • Season 2 ≥ 800 • Season 3 ≥ 150 • Season 4 ≥ 800</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
 function openGame(){
   renderUser();
@@ -3895,7 +3911,7 @@ async function history(){
     busy(false);
   }
 }
-function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 300</div></div></div>`)}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800</div></div></div>`)}
 function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
