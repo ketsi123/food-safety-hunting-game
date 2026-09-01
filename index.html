@@ -2626,6 +2626,17 @@ body:before{
 .drag-handle{color:#8f6e00;font-size:14px}.reason-choice-card.dragging{opacity:.35}
 .reason-drag-ghost{position:fixed!important;z-index:9999!important;transform:translate(-50%,-50%);pointer-events:none!important;opacity:.96!important;box-shadow:0 14px 34px rgba(30,84,120,.25)!important}
 .reason-bank-empty{padding:10px;border:2px dashed #d0dce3;border-radius:10px;color:#81929d;font-size:10px;font-weight:900;background:#fafcfe}
+.answer-section{margin-top:12px;padding:12px;border:1px solid #d9e8f1;border-radius:14px;background:#f8fbfd}
+.answer-section-title{display:flex;align-items:center;gap:7px;margin-bottom:8px;color:#174f70;font-size:13px;font-weight:1000}
+.answer-user-row{margin-top:8px;padding:10px 11px;border:1px solid #cfe2ec;border-radius:11px;background:#fff}
+.answer-user-row.correct{border-color:#9edfc3;background:#f2fff8}.answer-user-row.wrong{border-color:#f3b6b8;background:#fff6f6}
+.answer-user-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:4px}
+.answer-user-no{display:inline-flex;align-items:center;gap:5px;color:#15537a;font-weight:1000}.answer-result-ok{color:#0b9966;font-weight:1000}.answer-result-wrong{color:#d94f55;font-weight:1000}
+.answer-label{color:#294f62;font-weight:1000;line-height:1.45}.answer-explain{margin-top:3px;color:#627a88;line-height:1.55}
+.answer-choice-note{margin-top:5px;padding:5px 7px;border-radius:8px;background:#fff4d4;color:#735700;font-size:10px;font-weight:900}
+.answer-missed-row{margin-top:7px;padding:9px 10px;border-left:4px solid #f1ad24;border-radius:8px;background:#fffaf0}
+.answer-missed-row b{display:block;color:#6c5100}.answer-missed-row span{display:block;margin-top:3px;color:#6b7d86;line-height:1.5}
+.answer-none{padding:9px 10px;border-radius:9px;background:#edfff6;color:#087c55;font-weight:1000}
 @media(max-width:720px){.match-row{grid-template-columns:54px minmax(0,1fr) 32px}.selection-delete{width:32px;height:32px}.reason-task-banner{font-size:10px}.drop-placeholder,.drop-value,.reason-choice-card{font-size:10px}}
 </style>
 
@@ -4015,8 +4026,31 @@ async function submit(auto=false){
     e.resultScore.textContent=`${sc.total||0} / ${questionMax}`;
     e.resultLine.innerHTML=`${positiveSeason?'พบพฤติกรรมที่สอดคล้อง':'พบจุดไม่สอดคล้อง'} <b>${sc.clickMatchedCount||0}</b> จาก <b>${hotspotTotal}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/${pointMax} • เหตุผล <b>${sc.reason||0}</b>/${reasonMax}<div class="latest-total-score"><span>⭐ คะแนนสะสมล่าสุด</span><strong>${cumulative} คะแนน</strong></div>`;
 
-    const ans=(d.reveal||[]).map((h,i)=>`<div style="margin-top:8px"><b>${i+1}) ${esc(h.label||"")}</b><br>${esc(h.whyNotFoodSafety||"")}</div>`).join("");
-    e.resultAnswers.innerHTML=`<b>เฉลย</b>${ans||"<div>-</div>"}`;
+    // Number the explanation by the player's marker order, never by the
+    // database Hotspot order. Unselected Hotspots are shown separately
+    // without numbers so the two sequences cannot be confused.
+    const revealList=Array.isArray(d.reveal)?d.reveal:[];
+    const resultList=Array.isArray(d.results)?d.results:[];
+    const revealById=new Map(revealList.map(h=>[String(h.hotspotId||""),h]));
+    const foundHotspotIds=new Set(resultList.filter(r=>r?.pointMatched&&r?.hotspotId).map(r=>String(r.hotspotId)));
+    const availableReasonChoices=reasonChoicesForCurrentQuestion();
+    const selectedRows=resultList.map((r,i)=>{
+      const playerNo=Number(r?.no||i+1);
+      if(!r?.pointMatched){
+        return `<div class="answer-user-row wrong"><div class="answer-user-head"><span class="answer-user-no">จุดที่เลือก ${playerNo}</span><span class="answer-result-wrong">✕ ไม่ตรงจุดเฉลย</span></div><div class="answer-explain">ตำแหน่งนี้ไม่อยู่ในบริเวณ Hotspot ที่กำหนด</div></div>`;
+      }
+      const h=revealById.get(String(r.hotspotId||""))||{};
+      const chosenId=String(selections[i]?.reasonChoiceId||r?.reasonChoiceId||"");
+      const chosen=availableReasonChoices.find(c=>String(c.id)===chosenId);
+      const reasonState=r.reasonMatched?"เหตุผลถูก":(chosen?"เหตุผลไม่ตรง":"ไม่ได้เลือกเหตุผล");
+      const reasonClass=r.reasonMatched?"answer-result-ok":"answer-result-wrong";
+      const choiceNote=chosen&&!r.reasonMatched?`<div class="answer-choice-note">เหตุผลที่เลือก: ${esc(chosen.text||"")}</div>`:"";
+      return `<div class="answer-user-row correct"><div class="answer-user-head"><span class="answer-user-no">จุดที่เลือก ${playerNo}</span><span class="answer-result-ok">✓ ตำแหน่งถูก</span></div><div class="answer-label">${esc(h.label||r.label||"")}</div><div class="answer-explain">${esc(h.whyNotFoodSafety||"")}</div><div class="${reasonClass}" style="margin-top:5px;font-size:10px">${r.reasonMatched?"✓":"•"} ${reasonState}</div>${choiceNote}</div>`;
+    }).join("");
+    const missed=revealList.filter(h=>!foundHotspotIds.has(String(h.hotspotId||"")));
+    const missedTitle=positiveSeason?"พฤติกรรมที่ยังไม่พบ":"จุดเฉลยที่ยังไม่พบ";
+    const missedRows=missed.length?missed.map(h=>`<div class="answer-missed-row"><b>• ${esc(h.label||"")}</b><span>${esc(h.whyNotFoodSafety||"")}</span></div>`).join(""):`<div class="answer-none">✓ พบครบทุกจุดแล้ว</div>`;
+    e.resultAnswers.innerHTML=`<div class="answer-section"><div class="answer-section-title">📍 ผลตามจุดที่คุณเลือก</div>${selectedRows||'<div class="answer-none">ไม่ได้เลือกจุด</div>'}</div><div class="answer-section"><div class="answer-section-title">🔎 ${missedTitle}</div>${missedRows}</div>`;
 
     const more=idx<order.length-1;
     e.resultTitle.textContent=more?"สรุปผลข้อนี้":"สรุปผลข้อสุดท้าย";
