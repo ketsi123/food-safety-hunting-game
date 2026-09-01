@@ -2690,7 +2690,7 @@ body:before{
     <aside class="sidebar">
       <section class="panel progress-card">
         <div class="panel-title">PROGRESS</div>
-        <b>Season 1 - โลจิสติกส์ & ตลาดถึงมือผู้บริโภค</b>
+        <b id="progressSeasonLabel">Season 1 - โลจิสติกส์ & ตลาดถึงมือผู้บริโภค</b>
         <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
         <div id="progressText" class="progress-text">0 / 0 ข้อ</div>
         <div class="score-total"><span>🏆</span><div><small>คะแนนสะสม</small><b id="sideTotalScore">0 คะแนน</b></div></div>
@@ -2739,7 +2739,7 @@ body:before{
             <div class="prehint-emblem">🛡️</div>
             <button id="preHintClose" class="prehint-close" type="button" title="เริ่มทันที">×</button>
             <div class="prehint-kicker">ก่อนเริ่มภารกิจ</div>
-            <div class="prehint-title">มองหาสิ่งที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety</div>
+            <div id="preHintTitle" class="prehint-title">มองหาสิ่งที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety</div>
             <div id="preHintList" class="prehint-list"></div>
             <div class="prehint-count-wrap">
               <div class="prehint-count-line">เริ่มใน <b id="preHintCount">5</b> วินาที</div>
@@ -2850,7 +2850,7 @@ body:before{
 <script id="v15-inline-config">
 window.FS_CONFIG = {
   BACKEND_URL: "https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec",
-  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05", "S1Q06", "S1Q07", "S1Q08", "S1Q09", "S1Q10", "S1Q11", "S1Q12", "S1Q13", "S1Q14", "S1Q15", "S1Q16", "S1Q17", "S1Q18", "S1Q19", "S1Q20", "S2Q01", "S2Q02", "S2Q03", "S2Q04", "S2Q05", "S2Q06", "S2Q07", "S2Q08", "S2Q09", "S2Q10", "S2Q11", "S2Q12", "S2Q13", "S2Q14", "S2Q15", "S2Q16", "S2Q17", "S2Q18", "S2Q19", "S2Q20"],
+  ENABLED_QUESTION_IDS: ["S1Q01", "S1Q02", "S1Q03", "S1Q04", "S1Q05", "S1Q06", "S1Q07", "S1Q08", "S1Q09", "S1Q10", "S1Q11", "S1Q12", "S1Q13", "S1Q14", "S1Q15", "S1Q16", "S1Q17", "S1Q18", "S1Q19", "S1Q20", "S2Q01", "S2Q02", "S2Q03", "S2Q04", "S2Q05", "S2Q06", "S2Q07", "S2Q08", "S2Q09", "S2Q10", "S2Q11", "S2Q12", "S2Q13", "S2Q14", "S2Q15", "S2Q16", "S2Q17", "S2Q18", "S2Q19", "S2Q20", "S3Q01", "S3Q02", "S3Q03", "S3Q04", "S3Q05", "S3Q06", "S3Q07", "S3Q08", "S3Q09", "S3Q10"],
   LOCAL_QUESTIONS: [
     { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
     { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -2891,11 +2891,21 @@ window.FS_CONFIG = {
     { questionId:"S2Q17", season:2, imageFile:"S2_Q17.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
     { questionId:"S2Q18", season:2, imageFile:"S2_Q18.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
     { questionId:"S2Q19", season:2, imageFile:"S2_Q19.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
-    { questionId:"S2Q20", season:2, imageFile:"S2_Q20.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 }
+    { questionId:"S2Q20", season:2, imageFile:"S2_Q20.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q01", season:3, imageFile:"S3_Q01.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q02", season:3, imageFile:"S3_Q02.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q03", season:3, imageFile:"S3_Q03.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q04", season:3, imageFile:"S3_Q04.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q05", season:3, imageFile:"S3_Q05.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q06", season:3, imageFile:"S3_Q06.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q07", season:3, imageFile:"S3_Q07.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q08", season:3, imageFile:"S3_Q08.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q09", season:3, imageFile:"S3_Q09.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q10", season:3, imageFile:"S3_Q10.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 }
   ],
 
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260829-V16941-PREHINT-ONCE-PER-SEASON",
+  ASSET_VERSION: "20260831-V1816-S3-Q01-Q10",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -2904,13 +2914,13 @@ window.FS_CONFIG = {
 
 </script>
 <script id="v15-inline-app">
-(()=>{"use strict";console.info("Food Safety Hunting Game V18.13 • S1Q01-Q20 + S2Q01-Q15");
+(()=>{"use strict";console.info("Food Safety Hunting Game V18.16 • S1Q01-Q20 + S2Q01-Q20 + S3Q01-Q10 + S4");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
 let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
 let seasonControlLoaded=false;
 
-const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),progressSeasonLabel:$("progressSeasonLabel"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -2952,7 +2962,17 @@ const MASTER_QUESTIONS=[
     { questionId:"S2Q17", season:2, imageFile:"S2_Q17.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
     { questionId:"S2Q18", season:2, imageFile:"S2_Q18.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
     { questionId:"S2Q19", season:2, imageFile:"S2_Q19.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
-    { questionId:"S2Q20", season:2, imageFile:"S2_Q20.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 }
+    { questionId:"S2Q20", season:2, imageFile:"S2_Q20.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q01", season:3, imageFile:"S3_Q01.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q02", season:3, imageFile:"S3_Q02.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q03", season:3, imageFile:"S3_Q03.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q04", season:3, imageFile:"S3_Q04.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q05", season:3, imageFile:"S3_Q05.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q06", season:3, imageFile:"S3_Q06.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q07", season:3, imageFile:"S3_Q07.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q08", season:3, imageFile:"S3_Q08.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q09", season:3, imageFile:"S3_Q09.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 },
+    { questionId:"S3Q10", season:3, imageFile:"S3_Q10.jpg", hotspotCount:3, fullScore:60, timeLimitSec:45 }
 ];
 function masterQuestionById(id){
   const key=String(id||"").trim().toUpperCase();
@@ -3078,7 +3098,7 @@ function cachedQuestions(){
 function imagePath(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  return `./${file}?v=20260829V16929`;
+  return `./${file}?v=20260831V1816S3`;
 }
 function preload(items){
   (items||masterQuestions()).forEach(x=>{
@@ -3539,12 +3559,17 @@ const PRESTART_HINT_SECONDS=5;
 const PRESTART_HINTS={
   1:[["🌡️","อุณหภูมิไม่เหมาะสม"],["🥩","ดิบ–สุกปะปน"],["🏷️","หมดอายุ / ฉลากผิด"],["📦","วางพื้น / สัมผัสสิ่งสกปรก"],["🧤","สุขลักษณะไม่เหมาะสม"]],
   2:[["🧼","การทำความสะอาดไม่เหมาะสม"],["↔️","ดิบ–สุก / โซนไม่แยก"],["🌡️","อุณหภูมิหรือเวลาผิดเกณฑ์"],["🧪","สารเคมี / สิ่งแปลกปลอม"],["🧤","สุขลักษณะพนักงาน"]],
-  3:[["👀","เห็นความเสี่ยงแล้วไม่หยุด"],["🗣️","ไม่ Speak Up"],["📝","บันทึกไม่ตรงความจริง"],["✅","ข้ามขั้นตอนสำคัญ"],["🤝","พฤติกรรมไม่หนุนความปลอดภัย"]],
+  3:[["🛡️","ให้ Food Safety มาก่อน"],["✅","ทำตามมาตรฐานทุกครั้ง"],["🗣️","Speak Up เมื่อพบความเสี่ยง"],["📝","ตรวจสอบและบันทึกอย่างถูกต้อง"],["🤝","ร่วมมือ เรียนรู้ และพัฒนา"]],
   4:[["🧠","อ่านคำถามให้ครบ"],["🎯","เลือกคำตอบที่ปลอดภัยที่สุด"],["⏱️","บริหารเวลา"],["⭐","เก็บดาวระหว่างทาง"],["❤️","รักษาหัวใจให้ถึงเส้นชัย"]]
 };
 let preHintTimer=null,preHintRemaining=0,preHintOnFinish=null,preHintShownSeasons=new Set();
 function renderPreStartHint(season){
-  const list=document.getElementById("preHintList"),items=PRESTART_HINTS[Number(season||1)]||PRESTART_HINTS[1];
+  const s=Number(season||1);
+  const list=document.getElementById("preHintList"),items=PRESTART_HINTS[s]||PRESTART_HINTS[1];
+  const title=document.getElementById("preHintTitle");
+  if(title)title.innerHTML=s===3
+    ? 'มองหาพฤติกรรมที่ <b>“สอดคล้อง”</b><br>กับ Food Safety &amp; Quality Culture'
+    : 'มองหาสิ่งที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety';
   if(list)list.innerHTML=items.map(([ic,tx])=>`<div class="prehint-item"><i>${ic}</i><span>${tx}</span></div>`).join("");
 }
 function hidePreStartHint(runFinish=true){
@@ -3583,7 +3608,8 @@ function loadQ(startImmediately=false){
   e.hotspotCountTag.textContent=`${hotspotCount} จุด`;
   if(e.positionMaxScore)e.positionMaxScore.textContent=hotspotCount*10;
   if(e.reasonMaxScore)e.reasonMaxScore.textContent=hotspotCount*10;
-  e.questionText.textContent='จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
+  e.questionText.textContent=Number(q.season||1)===3?'จากภาพนี้ จุดใดที่ “สอดคล้อง” กับ Food Safety & Quality Culture?':'จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
+  if(e.progressSeasonLabel)e.progressSeasonLabel.textContent=`Season ${q.season||1} - ${sm.title}`;
   e.progressFill.style.width=`${cur/total*100}%`;e.progressText.textContent=`ภาพที่ ${cur} / ${total}`;
   e.questionImage.classList.add("loading");e.questionImage.src=imagePath(q);tick();
   e.playCard.classList.add("game-paused");
@@ -3632,7 +3658,7 @@ function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/
 function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=actualHotspotCount(q);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reason:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
 function renderMarkers(){e.markerLayer.innerHTML="";selections.forEach((s,i)=>{const b=document.createElement("button");b.className="marker";b.dataset.index=String(i);b.style.left=s.x+"%";b.style.top=s.y+"%";b.textContent=i+1;b.onclick=ev=>{ev.stopPropagation();if(ended)return;selections.splice(i,1);renderMarkers();renderReasons()};e.markerLayer.appendChild(b)})}
 function markSelectionResults(results){const markers=[...e.markerLayer.querySelectorAll(".marker")];markers.forEach((m,i)=>{m.classList.remove("correct","wrong");const r=(results||[])[i];if(!r)return;m.classList.add(r.pointMatched?"correct":"wrong")})}
-function renderReasons(){if(!selections.length){e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';return}e.reasonList.innerHTML="";selections.forEach((s,i)=>{const row=document.createElement("div");row.className="reason-row";row.innerHTML=`<div class="reason-number">${i+1}</div><div><textarea class="reason-input" placeholder="เช่น สิ่งที่พบ + สภาพที่ไม่ถูกต้อง"></textarea><div class="reason-note">อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร</div></div>`;const ta=row.querySelector("textarea");ta.value=s.reason||"";ta.oninput=()=>selections[i].reason=ta.value;e.reasonList.appendChild(row)})}
+function renderReasons(){if(!selections.length){e.reasonList.innerHTML='<div class="empty-reason">ยังไม่ได้เลือกจุด • คลิก/แตะจุดในภาพเพื่อเพิ่มช่องเหตุผล</div>';return}e.reasonList.innerHTML="";const positive=Number(q?.season||1)===3;selections.forEach((s,i)=>{const row=document.createElement("div");row.className="reason-row";row.innerHTML=`<div class="reason-number">${i+1}</div><div><textarea class="reason-input" placeholder="${positive?'เช่น พฤติกรรมที่พบ + เหตุผลที่ช่วย Food Safety':'เช่น สิ่งที่พบ + สภาพที่ไม่ถูกต้อง'}"></textarea><div class="reason-note">${positive?'อธิบายสั้น ๆ ว่าพฤติกรรมนี้สอดคล้องหรือช่วย Food Safety & Quality Culture อย่างไร':'อธิบายสั้น ๆ ว่าจุดนี้เสี่ยงหรือไม่ถูกหลักอย่างไร'}</div></div>`;const ta=row.querySelector("textarea");ta.value=s.reason||"";ta.oninput=()=>selections[i].reason=ta.value;e.reasonList.appendChild(row)})}
 function reveal(list){e.revealLayer.innerHTML="";(list||[]).forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})}
 function renderResultVisual(revealList,results){
   if(!e.resultVisual||!e.resultVisualImage)return;
@@ -3759,8 +3785,11 @@ async function submit(auto=false){
     if(card)card.classList.remove("timeout");
 
     const sc=d.score||{};
-    e.resultScore.textContent=`${sc.total||0} / 100`;
-    e.resultLine.innerHTML=`พบจุดไม่สอดคล้อง <b>${sc.clickMatchedCount||0}</b> จาก <b>${sc.totalHotspots||actualHotspotCount(q)}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/50 • เหตุผล <b>${sc.reason||0}</b>/50<div class="latest-total-score"><span>⭐ คะแนนสะสมล่าสุด</span><strong>${cumulative} คะแนน</strong></div>`;
+    const hotspotTotal=Number(sc.totalHotspots||actualHotspotCount(q));
+    const pointMax=hotspotTotal*10,reasonMax=hotspotTotal*10,questionMax=pointMax+reasonMax;
+    const positiveSeason=Number(q?.season||1)===3;
+    e.resultScore.textContent=`${sc.total||0} / ${questionMax}`;
+    e.resultLine.innerHTML=`${positiveSeason?'พบพฤติกรรมที่สอดคล้อง':'พบจุดไม่สอดคล้อง'} <b>${sc.clickMatchedCount||0}</b> จาก <b>${hotspotTotal}</b> จุด<br>ตำแหน่ง <b>${sc.click||0}</b>/${pointMax} • เหตุผล <b>${sc.reason||0}</b>/${reasonMax}<div class="latest-total-score"><span>⭐ คะแนนสะสมล่าสุด</span><strong>${cumulative} คะแนน</strong></div>`;
 
     const ans=(d.reveal||[]).map((h,i)=>`<div style="margin-top:8px"><b>${i+1}) ${esc(h.label||"")}</b><br>${esc(h.whyNotFoodSafety||"")}</div>`).join("");
     e.resultAnswers.innerHTML=`<b>เฉลย</b>${ans||"<div>-</div>"}`;
@@ -3866,7 +3895,7 @@ async function history(){
     busy(false);
   }
 }
-function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>หาจุดที่ไม่สอดคล้องกับ Food Safety</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 300</div></div></div>`)}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>ใส่เหตุผล</b><br>ต้องมีอย่างน้อย 2 คำสำคัญที่เกี่ยวข้อง เช่น สิ่งที่พบ + ปัญหา/ความเสี่ยง</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 300</div></div></div>`)}
 function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
