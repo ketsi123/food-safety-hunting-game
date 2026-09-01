@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18-SHEET-DISTRACTORS">
+<meta name="fs-build" content="V18.18.2-LANDSCAPE-GATE">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -18,6 +18,15 @@
  --shadow:0 14px 38px rgba(56,103,139,.10);--shadow2:0 24px 70px rgba(50,100,140,.15)
 }
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Tahoma,"Noto Sans Thai","Leelawadee UI",system-ui,sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea{font:inherit}.hidden,.hidden-layer{display:none!important}button{cursor:pointer}
+.orientation-gate{position:fixed;inset:0;z-index:10000;display:none;align-items:center;justify-content:center;padding:24px;background:linear-gradient(145deg,#e8f8ff 0%,#f7fcff 48%,#eafaf4 100%);text-align:center}
+.orientation-gate.active{display:flex}
+.orientation-card{width:min(440px,100%);padding:32px 26px 28px;border:2px solid #b9dcf4;border-radius:28px;background:rgba(255,255,255,.97);box-shadow:0 26px 70px rgba(31,91,135,.20),inset 0 1px 0 #fff}
+.orientation-phone{font-size:70px;line-height:1;display:inline-block;animation:rotateDevice 1.8s ease-in-out infinite;filter:drop-shadow(0 10px 12px rgba(35,113,181,.18))}
+.orientation-card h2{margin:18px 0 8px;color:#155b9b;font-size:25px}
+.orientation-card p{margin:0;color:#57758a;font-size:14px;line-height:1.65}
+.orientation-card small{display:block;margin-top:14px;padding:8px 12px;border-radius:999px;background:#eef9f4;color:#16815f;font-weight:900}
+body.orientation-blocked{overflow:hidden!important}
+@keyframes rotateDevice{0%,20%{transform:rotate(0deg)}55%,80%{transform:rotate(90deg)}100%{transform:rotate(0deg)}}
 /* login */
 .login-screen{min-height:100vh;display:grid;place-items:center;padding:26px;background:radial-gradient(circle at 15% 10%,#d7f5ff,transparent 30%),linear-gradient(135deg,#f7fcff,#eff9ff 58%,#f2fbf5)}
 .login-shell{width:min(1220px,100%);min-height:680px;display:grid;grid-template-columns:1.35fr .82fr;overflow:hidden;border-radius:32px;background:#fff;box-shadow:0 28px 85px rgba(42,86,128,.18);border:1px solid #fff}
@@ -1491,7 +1500,8 @@ body:before{
 }
 .side-actions,
 .v12-reason-panel .side-actions{
-  grid-template-columns:.88fr 1fr 1.42fr!important;
+  width:100%!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
   gap:10px!important;
   align-items:stretch!important;
 }
@@ -1653,10 +1663,6 @@ body:before{
   .side-actions,
   .v12-reason-panel .side-actions{
     grid-template-columns:1fr 1fr!important;
-  }
-  .side-actions .game-submit,
-  .v12-reason-panel .side-actions .game-submit{
-    grid-column:1/-1!important;
   }
   .result-modal.timeout{
     padding:22px 16px 18px!important;
@@ -2643,6 +2649,15 @@ body:before{
 </head>
 <body>
 
+<div id="orientationGate" class="orientation-gate" role="dialog" aria-modal="true" aria-live="polite" aria-label="กรุณาหมุนหน้าจอ">
+  <div class="orientation-card">
+    <div class="orientation-phone" aria-hidden="true">📱</div>
+    <h2>กรุณาหมุนหน้าจอเป็นแนวนอน</h2>
+    <p>เกมนี้ออกแบบให้เล่นในแนวนอน เพื่อให้มองภาพและเลือกจุดได้ชัดเจน</p>
+    <small>⏸ เวลาของข้อนี้หยุดไว้แล้ว</small>
+  </div>
+</div>
+
 <section id="loginScreen" class="login-screen">
   <div class="login-shell">
     <section class="login-hero" aria-label="Food Safety Hunting Game">
@@ -2986,6 +3001,7 @@ let seasonControlLoaded=false;
 
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),progressSeasonLabel:$("progressSeasonLabel"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),pauseBtn:$("pauseBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,paused=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
+let orientationGateActive=false,orientationAutoStoppedTimer=false;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
   { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -3763,11 +3779,41 @@ function startQuestion(){
 }
 function startQuestionTimer(){
   clearInterval(timer);
+  timer=null;
+  if(orientationGateActive){
+    orientationAutoStoppedTimer=started&&!ended&&!paused;
+    return;
+  }
   timer=setInterval(()=>{
     if(paused||ended||!started)return;
     seconds--;tick();
     if(seconds<=0){clearInterval(timer);timeoutQuestion()}
   },1000);
+}
+function shouldBlockPortraitPlay(){
+  const touchDevice=(navigator.maxTouchPoints||0)>0||window.matchMedia("(pointer: coarse)").matches;
+  return touchDevice&&window.matchMedia("(orientation: portrait) and (max-width: 1024px)").matches;
+}
+function updateOrientationGate(){
+  const gate=document.getElementById("orientationGate");
+  if(!gate)return;
+  const mustBlock=shouldBlockPortraitPlay();
+  gate.classList.toggle("active",mustBlock);
+  gate.setAttribute("aria-hidden",mustBlock?"false":"true");
+  document.body.classList.toggle("orientation-blocked",mustBlock);
+
+  if(mustBlock&&!orientationGateActive){
+    orientationGateActive=true;
+    orientationAutoStoppedTimer=!!timer&&started&&!ended&&!paused;
+    clearInterval(timer);
+    timer=null;
+  }else if(!mustBlock&&orientationGateActive){
+    orientationGateActive=false;
+    const resume=orientationAutoStoppedTimer&&started&&!ended&&!paused;
+    orientationAutoStoppedTimer=false;
+    if(resume)startQuestionTimer();
+    setTimeout(syncAllOverlayGeometry,120);
+  }
 }
 function togglePause(){
   if(ended||!started){toast("เริ่มเล่นก่อนจึงจะ Pause ได้");return}
@@ -4209,9 +4255,14 @@ function showQuestionGateSafely(){
   requestAnimationFrame(()=>{syncAllOverlayGeometry();requestAnimationFrame(positionQuestionGateBelowHeader)});
 }
 syncAllOverlayGeometry();
+updateOrientationGate();
 window.addEventListener("resize",syncAllOverlayGeometry,{passive:true});
+window.addEventListener("resize",updateOrientationGate,{passive:true});
 window.addEventListener("scroll",syncAllOverlayGeometry,{passive:true});
 window.addEventListener("orientationchange",()=>setTimeout(syncAllOverlayGeometry,120),{passive:true});
+window.addEventListener("orientationchange",()=>setTimeout(updateOrientationGate,120),{passive:true});
+const fsPortraitQuery=window.matchMedia("(orientation: portrait) and (max-width: 1024px)");
+if(fsPortraitQuery.addEventListener)fsPortraitQuery.addEventListener("change",updateOrientationGate);
 if("ResizeObserver" in window){
   const fsHeaderObserver=new ResizeObserver(syncAllOverlayGeometry);
   const fsHeader=document.querySelector(".game-header");
