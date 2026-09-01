@@ -64,7 +64,7 @@
 .gate-start:hover{transform:translateY(-3px);filter:saturate(1.08)}
 .gate-start:active{transform:translateY(5px);box-shadow:0 3px 0 #c7dded}
 .gate-secondary{width:100%;min-height:45px;margin-top:10px;border-radius:13px;border:1px solid #d9e7ee;background:#fff;color:#5a7382;font-weight:900}
-.game-paused .click-layer{pointer-events:none!important}
+.game-paused .click-layer,.game-paused .marker,.game-paused .reason-choice-bank,.game-paused .reason-drop-slot,.game-paused .game-submit{pointer-events:none!important}
 .game-paused .reason-box{opacity:.58;filter:saturate(.75)}
 .result-actions-v6{display:grid;grid-template-columns:1fr 1.35fr;gap:10px;margin-top:17px}
 .result-actions-v6 .btn{min-height:49px}
@@ -2607,8 +2607,10 @@ body:before{
 .reason-mini-guide b{color:#0e77b0}
 .selected-match-list{display:grid;gap:8px}
 .match-empty{padding:11px 12px;border:2px dashed #bed7e5;border-radius:12px;background:#fbfdff;color:#5f7788;font-size:10px;font-weight:900;line-height:1.45}
-.match-row{display:grid;grid-template-columns:60px minmax(0,1fr);gap:8px}
+.match-row{display:grid;grid-template-columns:60px minmax(0,1fr) 34px;gap:8px;align-items:center}
 .match-no{min-height:46px;display:grid;place-items:center;border-radius:12px;color:#fff;font-size:12px;font-weight:1000;background:linear-gradient(145deg,#1589df,#315de0);box-shadow:0 4px 0 #214ea8}
+.selection-delete{width:34px;height:34px;display:grid;place-items:center;border:1.5px solid #f2aaa8;border-radius:10px;background:linear-gradient(180deg,#fff5f4,#ffe0dd);color:#d8423e;font-size:15px;font-weight:1000;box-shadow:0 3px 0 #f3c3c0;cursor:pointer}
+.selection-delete:hover{transform:translateY(-1px);background:#ffd8d4}.selection-delete:active{transform:translateY(2px);box-shadow:0 1px 0 #f3c3c0}
 .reason-drop-slot{min-height:46px;display:flex;align-items:center;justify-content:center;gap:6px;padding:7px 10px;border:2px dashed #ccad40;border-radius:12px;background:linear-gradient(180deg,#fffdf3 0%,#fff7d8 100%);transition:.12s;box-shadow:inset 0 1px 0 #fff}
 .reason-drop-slot.drag-over{border-color:#13b77a;background:#ecfff7;box-shadow:0 0 0 3px rgba(19,183,122,.10)}
 .reason-drop-slot.filled{justify-content:space-between;border-style:solid;border-color:#76cfaa;background:linear-gradient(180deg,#f3fff8 0%,#e5f9ee 100%)}
@@ -2624,7 +2626,7 @@ body:before{
 .drag-handle{color:#8f6e00;font-size:14px}.reason-choice-card.dragging{opacity:.35}
 .reason-drag-ghost{position:fixed!important;z-index:9999!important;transform:translate(-50%,-50%);pointer-events:none!important;opacity:.96!important;box-shadow:0 14px 34px rgba(30,84,120,.25)!important}
 .reason-bank-empty{padding:10px;border:2px dashed #d0dce3;border-radius:10px;color:#81929d;font-size:10px;font-weight:900;background:#fafcfe}
-@media(max-width:720px){.match-row{grid-template-columns:54px minmax(0,1fr)}.reason-task-banner{font-size:10px}.drop-placeholder,.drop-value,.reason-choice-card{font-size:10px}}
+@media(max-width:720px){.match-row{grid-template-columns:54px minmax(0,1fr) 32px}.selection-delete{width:32px;height:32px}.reason-task-banner{font-size:10px}.drop-placeholder,.drop-value,.reason-choice-card{font-size:10px}}
 </style>
 
 </head>
@@ -2845,8 +2847,7 @@ body:before{
               <div class="side-submit-area">
                 <div id="actionStatus" class="action-status"><i class="mini-dot"></i><span>พร้อมเลือกจุดในภาพ</span></div>
                 <div class="action-buttons side-actions">
-                  <button id="undoBtn" class="btn ghost game-undo"><span class="btn-game-icon">↶</span><span>ลบล่าสุด</span></button>
-                  <button id="clearBtn" class="btn ghost game-clear"><span class="btn-game-icon">🧹</span><span>ล้างทั้งหมด</span></button>
+                  <button id="pauseBtn" class="btn ghost game-pause" disabled><span class="btn-game-icon">⏸</span><span>Pause</span></button>
                   <button id="submitBtn" class="btn submit game-submit"><span class="btn-game-icon">➤</span><span>บันทึกคำตอบ</span></button>
                 </div>
               </div>
@@ -2972,8 +2973,8 @@ let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
 let seasonControlLoaded=false;
 
-const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),progressSeasonLabel:$("progressSeasonLabel"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),undoBtn:$("undoBtn"),clearBtn:$("clearBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
-let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
+const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),progressSeasonLabel:$("progressSeasonLabel"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),pauseBtn:$("pauseBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
+let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,paused=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
   { questionId:"S1Q02", season:1, imageFile:"S1_Q02.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -3694,12 +3695,12 @@ function startSession(){
   idx=0;loadQ(false)
 }
 function loadQ(startImmediately=false){
-  clearInterval(timer);clearInterval(preMissionTimer);clearInterval(preHintTimer);preMissionTimer=null;preHintTimer=null;document.getElementById("preStartMission")?.classList.add("hidden");document.getElementById("preStartHint")?.classList.add("hidden");selections=[];ended=false;started=false;currentAttemptId=null;
+  clearInterval(timer);clearInterval(preMissionTimer);clearInterval(preHintTimer);preMissionTimer=null;preHintTimer=null;document.getElementById("preStartMission")?.classList.add("hidden");document.getElementById("preStartHint")?.classList.add("hidden");selections=[];ended=false;started=false;paused=false;currentAttemptId=null;
   e.markerLayer.innerHTML="";e.revealLayer.innerHTML="";e.clickLayer.style.pointerEvents="auto";if(e.resultIcon)e.resultIcon.textContent="🏆";const resultCard=e.resultOverlay.querySelector(".result-modal");if(resultCard)resultCard.classList.remove("timeout");
   e.reasonList.innerHTML='<div class="empty-reason">กด START เพื่อเริ่มจับคู่เหตุผล</div>';
   e.resultOverlay.classList.add("hidden-layer");
   if(e.resultVisual)e.resultVisual.classList.add("hidden");
-  e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.innerHTML='<span class="btn-game-icon">➤</span><span>บันทึกคำตอบ</span>';e.liveQuestionScore.textContent="--";
+  e.submitBtn.disabled=true;e.submitBtn.classList.remove("loading");e.submitBtn.innerHTML='<span class="btn-game-icon">➤</span><span>บันทึกคำตอบ</span>';e.pauseBtn.disabled=true;e.pauseBtn.innerHTML='<span class="btn-game-icon">⏸</span><span>Pause</span>';e.liveQuestionScore.textContent="--";
   const backendQ=questions[order[idx]]||{};q={...(masterQuestionById(backendQ.questionId)||{}),...backendQ};seconds=Number(q.timeLimitSec||45);const cur=idx+1,total=questions.length;
   const sm=seasonMeta(q.season||1);e.seasonText.textContent=`${sm.icon} SEASON ${q.season||1} : ${sm.title}`;e.stepText.textContent=`ภาพที่ ${cur} / ${total}`;e.questionCounter.textContent=`${cur}/${total}`;updateHeaderMission(q,cur,total);
   const hotspotCount=actualHotspotCount(q);
@@ -3728,17 +3729,13 @@ function startQuestion(){
 
   const beginActualQuestion=()=>{
     if(started||ended)return;
-    started=true;
+    started=true;paused=false;
     if(!backendOnline){ping().catch(()=>{})}
     e.playCard.classList.remove("game-paused");
-    e.submitBtn.disabled=false;
+    e.submitBtn.disabled=false;e.pauseBtn.disabled=false;
     renderReasons();
     action(`เริ่มแล้ว • เลือกได้สูงสุด ${actualHotspotCount(q)} จุด`,"ok");
-    clearInterval(timer);
-    timer=setInterval(()=>{
-      seconds--;tick();
-      if(seconds<=0){clearInterval(timer);timeoutQuestion()}
-    },1000);
+    startQuestionTimer();
   };
 
   const currentSeason=Number(q?.season||1);
@@ -3753,9 +3750,39 @@ function startQuestion(){
     beginActualQuestion();
   }
 }
+function startQuestionTimer(){
+  clearInterval(timer);
+  timer=setInterval(()=>{
+    if(paused||ended||!started)return;
+    seconds--;tick();
+    if(seconds<=0){clearInterval(timer);timeoutQuestion()}
+  },1000);
+}
+function togglePause(){
+  if(ended||!started){toast("เริ่มเล่นก่อนจึงจะ Pause ได้");return}
+  paused=!paused;
+  if(paused){
+    clearInterval(timer);
+    e.playCard.classList.add("game-paused");
+    e.pauseBtn.innerHTML='<span class="btn-game-icon">▶</span><span>เล่นต่อ</span>';
+    action("Pause แล้ว • เวลาหยุดนับ");
+  }else{
+    e.playCard.classList.remove("game-paused");
+    e.pauseBtn.innerHTML='<span class="btn-game-icon">⏸</span><span>Pause</span>';
+    action(`เล่นต่อ • เหลือ ${seconds} วินาที`,"ok");
+    startQuestionTimer();
+  }
+}
 function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/60))).padStart(2,"0")}:${String(Math.max(0,seconds%60)).padStart(2,"0")}`;e.timerText.style.color=seconds<=10?"#ffd057":""}
 function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=actualHotspotCount(q);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reasonChoiceId:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
-function renderMarkers(){e.markerLayer.innerHTML="";selections.forEach((s,i)=>{const b=document.createElement("button");b.className="marker";b.dataset.index=String(i);b.style.left=s.x+"%";b.style.top=s.y+"%";b.textContent=i+1;b.onclick=ev=>{ev.stopPropagation();if(ended)return;selections.splice(i,1);renderMarkers();renderReasons()};e.markerLayer.appendChild(b)})}
+function removeSelectionAt(index){
+  const i=Number(index);
+  if(ended||paused||!Number.isInteger(i)||i<0||i>=selections.length)return;
+  selections.splice(i,1);
+  renderMarkers();renderReasons();
+  action(`ลบจุดแล้ว • เหลือ ${selections.length}/${actualHotspotCount(q)} จุด`);
+}
+function renderMarkers(){e.markerLayer.innerHTML="";selections.forEach((s,i)=>{const b=document.createElement("button");b.className="marker";b.dataset.index=String(i);b.style.left=s.x+"%";b.style.top=s.y+"%";b.textContent=i+1;b.onclick=ev=>{ev.stopPropagation();removeSelectionAt(i)};e.markerLayer.appendChild(b)})}
 function markSelectionResults(results){const markers=[...e.markerLayer.querySelectorAll(".marker")];markers.forEach((m,i)=>{m.classList.remove("correct","wrong");const r=(results||[])[i];if(!r)return;m.classList.add(r.pointMatched?"correct":"wrong")})}
 function escapeReasonHtml_(value){
   return String(value??"").replace(/[&<>"']/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
@@ -3853,7 +3880,7 @@ function renderReasons(){
   selections.forEach((s,i)=>{if(s.reasonChoiceId)usedBy.set(String(s.reasonChoiceId),i)});
   const rows=selections.length?selections.map((s,i)=>{
     const c=choices.find(x=>String(x.id)===String(s.reasonChoiceId||""));
-    return `<div class="match-row"><div class="match-no">ข้อ ${i+1}</div><div class="reason-drop-slot ${c?"filled":""}" data-slot="${i}">${c?`<span class="drop-value">${escapeReasonHtml_(c.text)}</span><button type="button" class="drop-clear" data-clear-slot="${i}" aria-label="ลบเหตุผล">×</button>`:`<span class="drop-placeholder">ลากเหตุผลมาวาง</span>`}</div></div>`;
+    return `<div class="match-row"><div class="match-no">ข้อ ${i+1}</div><div class="reason-drop-slot ${c?"filled":""}" data-slot="${i}">${c?`<span class="drop-value">${escapeReasonHtml_(c.text)}</span><button type="button" class="drop-clear" data-clear-slot="${i}" aria-label="ลบเฉพาะเหตุผล">×</button>`:`<span class="drop-placeholder">ลากเหตุผลมาวาง</span>`}</div><button type="button" class="selection-delete" data-delete-selection="${i}" aria-label="ลบจุดที่เลือกข้อ ${i+1}" title="ลบจุดที่เลือกข้อ ${i+1}">🗑</button></div>`;
   }).join(""):`<div class="match-empty">👆 คลิกจุดบนภาพก่อน • ข้อ 1, 2, 3... จะเรียงขึ้นตรงนี้</div>`;
   const availableChoices=choices.filter(c=>!usedBy.has(String(c.id)));
   const bank=availableChoices.length?availableChoices.map(c=>{
@@ -3861,6 +3888,7 @@ function renderReasons(){
   }).join(""):(choices.length?`<div class="reason-bank-empty">✓ ใช้เหตุผลที่มีครบแล้ว</div>`:`<div class="reason-bank-empty">ไม่พบชุดเหตุผลของคำถามนี้ • กรุณารีเฟรชหน้า</div>`);
   e.reasonList.innerHTML=`<div class="reason-mini-guide"><b>① คลิกจุดบนภาพ</b><span>② ลากเหตุผล → ช่องของข้อนั้น</span></div><div class="selected-match-list">${rows}</div><div class="reason-bank-title"><b>เหตุผล</b><small>ลากอย่างเดียว • ไม่บังคับ</small></div><div class="reason-choice-bank">${bank}</div>`;
   e.reasonList.querySelectorAll("[data-clear-slot]").forEach(btn=>{btn.onclick=ev=>{ev.stopPropagation();clearReasonChoice(Number(btn.dataset.clearSlot))}});
+  e.reasonList.querySelectorAll("[data-delete-selection]").forEach(btn=>{btn.onclick=ev=>{ev.stopPropagation();removeSelectionAt(Number(btn.dataset.deleteSelection))}});
   wireReasonDrag();
 }
 function reveal(list){e.revealLayer.innerHTML="";(list||[]).forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})}
@@ -3888,8 +3916,8 @@ function renderResultVisual(revealList,results){
 function startStatusCycle(){const msgs=["กำลังตรวจตำแหน่ง...","กำลังตรวจเหตุผล...","กำลังบันทึกคะแนน..."];let i=0;e.busyText.textContent=msgs[0];clearInterval(statusTimer);statusTimer=setInterval(()=>{i=(i+1)%msgs.length;e.busyText.textContent=msgs[i]},900)}
 function timeoutQuestion(){
   if(ended)return;
-  ended=true;started=false;seconds=0;tick();clearInterval(timer);
-  e.submitBtn.disabled=true;e.clickLayer.style.pointerEvents="none";
+  ended=true;started=false;paused=false;seconds=0;tick();clearInterval(timer);
+  e.submitBtn.disabled=true;e.pauseBtn.disabled=true;e.clickLayer.style.pointerEvents="none";
   action("หมดเวลา • ข้อนี้ไม่ได้บันทึกคะแนน");
   e.liveQuestionScore.textContent="--";
   if(e.resultIcon)e.resultIcon.textContent="⏰";
@@ -3908,6 +3936,7 @@ async function submit(auto=false){
   if(ended)return;
   if(seconds<=0){timeoutQuestion();return}
   if(!started){toast("กด START ก่อน");return}
+  if(paused){toast("กดเล่นต่อก่อนบันทึกคำตอบ");return}
   if(!selections.length){toast("กรุณาเลือกจุดในภาพก่อน");return}
 
   // Create once and reuse on retry. Backend V11 makes it impossible to add
@@ -3920,7 +3949,7 @@ async function submit(auto=false){
 
   ended=true;
   clearInterval(timer);
-  e.submitBtn.disabled=true;
+  e.submitBtn.disabled=true;e.pauseBtn.disabled=true;
   e.submitBtn.classList.add("loading");
   e.submitBtn.innerHTML='<span class="btn-game-icon">⏳</span><span>กำลังตรวจ...</span>';
   action("กำลังบันทึกและตรวจคำตอบ...");
@@ -4154,7 +4183,7 @@ if("ResizeObserver" in window){
   if(fsHeader)fsHeaderObserver.observe(fsHeader);
 }
 
-e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.undoBtn.onclick=()=>{if(ended||!selections.length)return;selections.pop();renderMarkers();renderReasons()};e.clearBtn.onclick=()=>{if(ended)return;selections=[];renderMarkers();renderReasons();action("ล้างจุดที่เลือกแล้ว")};e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
+e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.pauseBtn.onclick=togglePause;e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
   e.questionImage.classList.remove("loading");
   e.questionImage.dataset.retry="";
 };
