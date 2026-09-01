@@ -3805,9 +3805,16 @@ function reasonChoicesForCurrentQuestion(){
   const embeddedRaw=EMBEDDED_REASON_CHOICES[String(q?.questionId||"")]||[];
   const distractorRaw=EMBEDDED_REASON_DISTRACTORS[String(q?.questionId||"")]||[];
   const correctRaw=backendRaw.length?backendRaw:embeddedRaw;
-  const raw=[...correctRaw,...distractorRaw];
+  const normalizeChoice=c=>({id:String(c?.id||""),text:String(c?.text||"")});
+  const raw=[...correctRaw,...distractorRaw].map(normalizeChoice).filter(c=>c.id&&c.text);
   if(!q._reasonChoiceOrder){
-    q._reasonChoiceOrder=shuffle(raw.map(c=>({id:String(c.id||""),text:String(c.text||"")})).filter(c=>c.id&&c.text));
+    q._reasonChoiceOrder=shuffle(raw);
+  }else{
+    // Defensive merge: an earlier render/cache may have created the order
+    // from only Hxx choices. Always restore any missing Dxx choices.
+    const existingIds=new Set(q._reasonChoiceOrder.map(c=>String(c?.id||"")));
+    const missing=raw.filter(c=>!existingIds.has(c.id));
+    if(missing.length)q._reasonChoiceOrder=shuffle([...q._reasonChoiceOrder,...missing]);
   }
   return q._reasonChoiceOrder;
 }
