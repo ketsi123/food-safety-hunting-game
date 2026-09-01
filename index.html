@@ -2771,13 +2771,13 @@ body:before{
           <div class="prehint-card" role="dialog" aria-modal="true" aria-label="Food Safety Hint">
             <div class="prehint-emblem">🛡️</div>
             <button id="preHintClose" class="prehint-close" type="button" title="เริ่มทันที">×</button>
-            <div class="prehint-kicker">ก่อนเริ่มภารกิจ</div>
+            <div class="prehint-kicker">วิธีเล่นก่อนเริ่มเกม</div>
             <div id="preHintTitle" class="prehint-title">มองหาสิ่งที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety</div>
             <div id="preHintList" class="prehint-list"></div>
             <div class="prehint-count-wrap">
               <div class="prehint-count-line">เริ่มใน <b id="preHintCount">5</b> วินาที</div>
               <div class="prehint-progress"><span id="preHintProgress"></span></div>
-              <div class="prehint-foot">💡 รู้ภารกิจและวิธีเล่นก่อนเริ่มเกม</div>
+              <div class="prehint-foot">💡 อ่านวิธีเล่นสั้น ๆ แล้วเริ่มค้นหาจุดเสี่ยงได้เลย</div>
             </div>
           </div>
         </div>
@@ -3606,8 +3606,8 @@ function smartRandomOrder(){
 
 const PRESTART_HINT_SECONDS=5;
 const PRESTART_HINTS={
-  1:[["🎯","เลือกจุดที่ไม่สอดคล้องกับ Food Safety"],["🧩","ลากเหตุผลไปวางให้ตรงกับข้อที่เลือก"],["🌡️","สังเกตอุณหภูมิผิดเกณฑ์"],["🥩","มองหาดิบ–สุกปะปน"],["📦","มองหาการวางพื้น / สัมผัสสิ่งสกปรก"]],
-  2:[["🎯","เลือกจุดที่ไม่สอดคล้องกับ Food Safety"],["🧩","ลากเหตุผลไปวางให้ตรงกับข้อที่เลือก"],["🧼","สังเกตการทำความสะอาดไม่เหมาะสม"],["↔️","มองหาโซนดิบ–สุกไม่แยก"],["🧪","มองหาสารเคมี / สิ่งแปลกปลอม"]],
+  1:[["1️⃣","เลือกจุดที่ไม่สอดคล้องกับ Food Safety บนภาพ"],["2️⃣","แต่ละจุดจะเรียงเป็นข้อ 1, 2, 3..."],["3️⃣","ลากเหตุผลสั้น ๆ ไปวางในช่องของข้อนั้น"],["⭐","เหตุผลเป็นตัวเลือกเสริม ไม่บังคับ"],["🎯","เป้าหมายคือหาจุดเสี่ยงให้ครบและให้ถูกต้อง"]],
+  2:[["1️⃣","เลือกจุดที่ไม่สอดคล้องกับ Food Safety บนภาพ"],["2️⃣","แต่ละจุดจะเรียงเป็นข้อ 1, 2, 3..."],["3️⃣","ลากเหตุผลสั้น ๆ ไปวางในช่องของข้อนั้น"],["⭐","เหตุผลเป็นตัวเลือกเสริม ไม่บังคับ"],["🎯","เป้าหมายคือหาจุดเสี่ยงให้ครบและให้ถูกต้อง"]],
   3:[["🎯","เลือกพฤติกรรมที่สอดคล้องกับ Food Safety & Quality Culture"],["✅","เลือกสิ่งที่ถูกต้องและควรทำ"],["🗣️","Speak Up เมื่อพบความเสี่ยง"],["📝","ตรวจสอบและบันทึกอย่างถูกต้อง"],["🤝","ร่วมมือ เรียนรู้ และพัฒนา"]],
   4:[["🎯","ตอบคำถามให้ถูกต้องและเก็บคะแนน"],["🧠","อ่านคำถามให้ครบ"],["⏱️","บริหารเวลา"],["⭐","เก็บดาวระหว่างทาง"],["❤️","รักษาหัวใจให้ถึงเส้นชัย"]]
 };
@@ -3618,7 +3618,7 @@ function renderPreStartHint(season){
   const title=document.getElementById("preHintTitle");
   if(title)title.innerHTML=s===3
     ? 'มองหาพฤติกรรมที่ <b>“สอดคล้อง”</b><br>กับ Food Safety &amp; Quality Culture'
-    : 'ภารกิจนี้: เลือกจุดที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety และเลือกเหตุผล';
+    : 'วิธีเล่น: หาและเลือกจุดที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety';
   if(list)list.innerHTML=items.map(([ic,tx])=>`<div class="prehint-item"><i>${ic}</i><span>${tx}</span></div>`).join("");
 }
 function hidePreStartHint(runFinish=true){
@@ -3800,7 +3800,7 @@ function renderReasons(){
     const assigned=usedBy.has(String(c.id))?usedBy.get(String(c.id)):null;
     return `<div class="reason-choice-card ${assigned!==null?"assigned":""}" data-choice-id="${escapeReasonHtml_(c.id)}"><span class="drag-handle">⠿</span><span>${escapeReasonHtml_(c.text)}</span>${assigned!==null?`<em>ข้อ ${assigned+1}</em>`:""}</div>`;
   }).join(""):`<div class="reason-bank-empty">ไม่พบชุดเหตุผลของคำถามนี้ • กรุณารีเฟรชหน้า</div>`;
-  e.reasonList.innerHTML=`<div class="reason-task-banner"><b>กำลังเล่นเกมอะไร?</b>เลือกจุดที่ไม่สอดคล้องกับ Food Safety บนภาพ แล้วลากเหตุผลสั้น ๆ ไปวางให้ตรงกับข้อที่เลือก</div><div class="reason-mini-guide"><b>① คลิกจุดบนภาพ</b><span>② รายการข้อ 1, 2, 3... จะขึ้นด้านล่าง</span><span>③ ลากเหตุผลไปวางในช่องของข้อนั้น</span></div><div class="selected-match-list">${rows}</div><div class="reason-bank-title"><b>เหตุผล</b><small>ลากอย่างเดียว • ไม่บังคับ</small></div><div class="reason-choice-bank">${bank}</div>`;
+  e.reasonList.innerHTML=`<div class="reason-mini-guide"><b>① คลิกจุดบนภาพ</b><span>② ลากเหตุผล → ช่องของข้อนั้น</span></div><div class="selected-match-list">${rows}</div><div class="reason-bank-title"><b>เหตุผล</b><small>ลากอย่างเดียว • ไม่บังคับ</small></div><div class="reason-choice-bank">${bank}</div>`;
   e.reasonList.querySelectorAll("[data-clear-slot]").forEach(btn=>{btn.onclick=ev=>{ev.stopPropagation();clearReasonChoice(Number(btn.dataset.clearSlot))}});
   wireReasonDrag();
 }
