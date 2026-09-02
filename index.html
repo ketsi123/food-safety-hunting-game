@@ -2689,6 +2689,60 @@ body.mobile-landscape #gameScreen:not(.hidden) .side-actions .btn{min-height:42p
   body.mobile-landscape #gameScreen:not(.hidden) .right-game-panel,
   body.mobile-landscape #gameScreen:not(.hidden) .v12-reason-column{height:calc(100dvh - 42px)!important;max-height:calc(100dvh - 42px)!important}
 }
+
+/* V18.18.5: reserve useful space for matching answers on short landscape phones. */
+body.mobile-landscape #gameScreen:not(.hidden) .play-grid,
+body.mobile-landscape #gameScreen:not(.hidden) .side-reason-layout,
+body.mobile-landscape #gameScreen:not(.hidden) .v12-layout{
+  grid-template-columns:minmax(0,1.28fr) minmax(330px,1fr)!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .reason-side-panel{
+  display:flex!important;flex-direction:column!important;min-height:0!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .v12-reason-list{
+  flex:1 1 auto!important;height:auto!important;min-height:0!important;
+  padding:5px!important;gap:5px!important;overflow-y:auto!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .side-reason-head{
+  flex:0 0 auto!important;min-height:42px!important;padding:5px 8px!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .side-reason-head>div:first-child{gap:0!important}
+body.mobile-landscape #gameScreen:not(.hidden) .side-reason-head>div:first-child small{
+  max-width:100%!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .reason-task-banner{
+  padding:5px 7px!important;margin-bottom:4px!important;border-width:1px!important;
+  border-radius:7px!important;font-size:8px!important;line-height:1.2!important;box-shadow:none!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .reason-task-banner b{display:inline!important;margin:0 4px 0 0!important;font-size:8px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .match-row{grid-template-columns:42px minmax(0,1fr) 28px!important;gap:4px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .match-no,
+body.mobile-landscape #gameScreen:not(.hidden) .reason-drop-slot{min-height:34px!important;border-radius:8px!important;font-size:9px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .selection-delete{width:28px!important;height:28px!important;border-radius:8px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .reason-bank-title{margin:5px 1px 3px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .reason-bank-title b,
+body.mobile-landscape #gameScreen:not(.hidden) .reason-bank-title small{font-size:8px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .side-submit-area{
+  flex:0 0 auto!important;padding:4px!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .side-submit-area:before,
+body.mobile-landscape #gameScreen:not(.hidden) .side-submit-area .action-status{display:none!important}
+body.mobile-landscape #gameScreen:not(.hidden) .side-actions,
+body.mobile-landscape #gameScreen:not(.hidden) .v12-reason-panel .side-actions{
+  grid-template-columns:minmax(0,.72fr) minmax(0,1.28fr)!important;
+  gap:5px!important;margin:0!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .side-actions .btn,
+body.mobile-landscape #gameScreen:not(.hidden) .v12-reason-panel .side-actions .btn{
+  min-height:42px!important;height:42px!important;padding:3px 6px!important;
+  flex-direction:row!important;gap:4px!important;border-radius:9px!important;
+  box-shadow:0 3px 0 var(--btn-shadow,#9db8cf)!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .side-actions .btn span:last-child,
+body.mobile-landscape #gameScreen:not(.hidden) .v12-reason-panel .side-actions .btn span:last-child{
+  width:auto!important;font-size:9px!important;white-space:nowrap!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .btn-game-icon{font-size:14px!important}
 </style>
 
 </head>
