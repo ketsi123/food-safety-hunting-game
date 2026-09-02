@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18.3-DISTRACTOR-FALLBACK">
+<meta name="fs-build" content="V18.18.9-MOBILE-STAGE-SELECT">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2804,61 +2804,43 @@ body.mobile-landscape #gameScreen:not(.hidden) .click-layer{touch-action:none!im
   100%{opacity:0;transform:translate(-50%,-50%) scale(2.65)}
 }
 
-/* V18.18.8: fit the complete login form in one landscape phone/tablet viewport. */
-body.mobile-landscape #loginScreen:not(.hidden){
-  width:100%!important;height:100dvh!important;min-height:0!important;
-  padding:6px!important;overflow:hidden!important;place-items:center!important;
-}
-body.mobile-landscape #loginScreen:not(.hidden) .login-shell{
-  width:100%!important;height:calc(100dvh - 12px)!important;min-height:0!important;
-  grid-template-columns:minmax(0,1.28fr) minmax(300px,.82fr)!important;
-  border-radius:16px!important;overflow:hidden!important;
-}
-body.mobile-landscape #loginScreen:not(.hidden) .login-hero{
-  width:100%!important;height:100%!important;min-height:0!important;
-  background-size:cover!important;background-position:center center!important;
-}
-body.mobile-landscape #loginScreen:not(.hidden) .login-hero:after{display:none!important}
+/* V18.18.8: complete login fits inside one landscape viewport. */
+body.mobile-landscape #loginScreen:not(.hidden){width:100%!important;height:100dvh!important;min-height:0!important;padding:6px!important;overflow:hidden!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-shell{width:100%!important;height:calc(100dvh - 12px)!important;min-height:0!important;grid-template-columns:minmax(0,1.28fr) minmax(300px,.82fr)!important;border-radius:16px!important;overflow:hidden!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-hero{height:100%!important;min-height:0!important;background-size:cover!important;background-position:center!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-hero:after,
 body.mobile-landscape #loginScreen:not(.hidden) .hero-chips{display:none!important}
-body.mobile-landscape #loginScreen:not(.hidden) .login-panel{
-  min-width:0!important;min-height:0!important;height:100%!important;
-  padding:8px!important;overflow:hidden!important;
-}
-body.mobile-landscape #loginScreen:not(.hidden) .login-card{
-  width:min(360px,100%)!important;max-height:100%!important;
-  padding:12px 15px!important;border-radius:16px!important;
-  overflow:auto!important;
-}
-body.mobile-landscape #loginScreen:not(.hidden) .login-card::before{inset:-2px!important;border-radius:18px!important;padding:2px!important}
-body.mobile-landscape #loginScreen:not(.hidden) .login-card::after{inset:-5px!important;border-radius:20px!important;filter:blur(8px)!important}
-body.mobile-landscape #loginScreen:not(.hidden) .login-icon{
-  width:42px!important;height:42px!important;margin:0 auto 5px!important;
-  border-radius:13px!important;font-size:21px!important;box-shadow:0 5px 14px rgba(47,125,244,.2)!important;
-}
+body.mobile-landscape #loginScreen:not(.hidden) .login-panel{height:100%!important;min-height:0!important;padding:8px!important;overflow:hidden!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-card{width:min(360px,100%)!important;max-height:100%!important;padding:12px 15px!important;border-radius:16px!important;overflow:auto!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-icon{width:42px!important;height:42px!important;margin:0 auto 5px!important;border-radius:13px!important;font-size:21px!important}
 body.mobile-landscape #loginScreen:not(.hidden) .login-card h1{font-size:24px!important;line-height:1.05!important}
 body.mobile-landscape #loginScreen:not(.hidden) .login-card p{margin:4px 0 8px!important;font-size:9px!important;line-height:1.3!important}
 body.mobile-landscape #loginScreen:not(.hidden) .login-card label{margin-bottom:4px!important;font-size:9px!important}
-body.mobile-landscape #loginScreen:not(.hidden) .email-box{
-  height:40px!important;padding:0 9px!important;border-radius:10px!important;
-}
-body.mobile-landscape #loginScreen:not(.hidden) .email-box input{font-size:11px!important}
-body.mobile-landscape #loginScreen:not(.hidden) .login-btn{
-  height:40px!important;min-height:40px!important;margin-top:8px!important;
-  border-radius:10px!important;font-size:11px!important;
-  box-shadow:0 4px 0 #d1dbff,0 8px 15px rgba(73,86,230,.16)!important;
-}
-body.mobile-landscape #loginScreen:not(.hidden) .login-status{
-  margin-top:8px!important;font-size:8px!important;line-height:1.2!important;
-}
+body.mobile-landscape #loginScreen:not(.hidden) .email-box{height:40px!important;padding:0 9px!important;border-radius:10px!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-btn{height:40px!important;min-height:40px!important;margin-top:8px!important;border-radius:10px!important;font-size:11px!important;box-shadow:0 4px 0 #d1dbff!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-status{margin-top:8px!important;font-size:8px!important}
 
+/* V18.18.9: mandatory Season selection after mobile login. */
+.mobile-stage-picker{display:none;position:fixed;inset:0;z-index:1400;align-items:center;justify-content:center;padding:8px;background:linear-gradient(135deg,rgba(218,245,255,.96),rgba(229,255,232,.96));backdrop-filter:blur(8px)}
+body.mobile-landscape .mobile-stage-picker.active{display:flex}
+.mobile-stage-card{width:min(680px,88vw);max-height:calc(100dvh - 16px);padding:12px 16px;border:3px solid #78bff0;border-radius:20px;background:linear-gradient(180deg,#fff,#edf8ff);box-shadow:inset 0 2px #fff,0 7px 0 #c1dceb,0 20px 50px rgba(29,88,139,.22);overflow:auto;text-align:center}
+.mobile-stage-card h2{margin:0;color:#15528b;font-size:20px}.mobile-stage-card>p{margin:3px 0 9px;color:#668296;font-size:10px}
+.mobile-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.mobile-stage-btn{min-height:67px;padding:7px 10px;border:2px solid #fff;border-radius:14px;color:#fff;text-align:left;box-shadow:0 5px 0 rgba(5,67,132,.38),0 9px 18px rgba(32,83,141,.16)}
+.mobile-stage-btn:nth-child(1){background:linear-gradient(135deg,#69d923,#20a80f)}
+.mobile-stage-btn:nth-child(2){background:linear-gradient(135deg,#36a7ef,#2365ce)}
+.mobile-stage-btn:nth-child(3){background:linear-gradient(135deg,#20c8ba,#1681bd)}
+.mobile-stage-btn:nth-child(4){background:linear-gradient(135deg,#9e64ed,#6940c7)}
+.mobile-stage-btn b,.mobile-stage-btn small{display:block}.mobile-stage-btn b{font-size:14px}.mobile-stage-btn small{margin-top:2px;font-size:9px;color:rgba(255,255,255,.9)}
+.mobile-stage-logout{margin-top:8px;border:0;background:transparent;color:#55758a;font-size:9px;font-weight:900;text-decoration:underline}
 @media (orientation:landscape) and (max-height:380px){
+  .mobile-stage-card{padding:8px 12px}.mobile-stage-card h2{font-size:16px}.mobile-stage-card>p{margin:2px 0 5px}
+  .mobile-stage-grid{gap:5px}.mobile-stage-btn{min-height:52px;padding:5px 8px}.mobile-stage-btn b{font-size:11px}.mobile-stage-btn small{font-size:8px}
   body.mobile-landscape #loginScreen:not(.hidden) .login-card{padding:8px 13px!important}
   body.mobile-landscape #loginScreen:not(.hidden) .login-icon{width:34px!important;height:34px!important;font-size:17px!important;margin-bottom:3px!important}
   body.mobile-landscape #loginScreen:not(.hidden) .login-card h1{font-size:19px!important}
   body.mobile-landscape #loginScreen:not(.hidden) .login-card p{margin:2px 0 5px!important}
-  body.mobile-landscape #loginScreen:not(.hidden) .email-box,
-  body.mobile-landscape #loginScreen:not(.hidden) .login-btn{height:34px!important;min-height:34px!important}
-  body.mobile-landscape #loginScreen:not(.hidden) .login-status{margin-top:5px!important}
+  body.mobile-landscape #loginScreen:not(.hidden) .email-box,body.mobile-landscape #loginScreen:not(.hidden) .login-btn{height:34px!important;min-height:34px!important}
 }
 </style>
 
@@ -2871,6 +2853,20 @@ body.mobile-landscape #loginScreen:not(.hidden) .login-status{
     <h2>กรุณาหมุนหน้าจอเป็นแนวนอน</h2>
     <p>เกมนี้ออกแบบให้เล่นในแนวนอน เพื่อให้มองภาพและเลือกจุดได้ชัดเจน</p>
     <small>⏸ เวลาของข้อนี้หยุดไว้แล้ว</small>
+  </div>
+</div>
+
+<div id="mobileStagePicker" class="mobile-stage-picker" role="dialog" aria-modal="true" aria-labelledby="mobileStageTitle">
+  <div class="mobile-stage-card">
+    <h2 id="mobileStageTitle">🎮 เลือกด่านที่ต้องการเล่น</h2>
+    <p>เลือก Season ก่อนเริ่มเกม</p>
+    <div class="mobile-stage-grid">
+      <button class="mobile-stage-btn" type="button" data-mobile-season="1"><b>🌿 Season 1</b><small>โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</small></button>
+      <button class="mobile-stage-btn" type="button" data-mobile-season="2"><b>🏭 Season 2</b><small>การผลิตและแปรรูปอาหาร</small></button>
+      <button class="mobile-stage-btn" type="button" data-mobile-season="3"><b>🛡️ Season 3</b><small>Food Safety &amp; Quality Culture</small></button>
+      <button class="mobile-stage-btn" type="button" data-mobile-season="4"><b>🏆 Season 4</b><small>Final Quest: Quiz &amp; Run</small></button>
+    </div>
+    <button id="mobileStageLogout" class="mobile-stage-logout" type="button">เปลี่ยนผู้เล่น</button>
   </div>
 </div>
 
@@ -4494,6 +4490,25 @@ if("ResizeObserver" in window){
 }
 
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.pauseBtn.onclick=togglePause;e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;
+const mobileStagePicker=document.getElementById("mobileStagePicker");
+let mobileStageChosen=false;
+function syncMobileStagePicker(){
+  if(!mobileStagePicker)return;
+  const loggedIn=e.loginScreen.classList.contains("hidden")&&!e.gameScreen.classList.contains("hidden");
+  if(!loggedIn){mobileStageChosen=false;mobileStagePicker.classList.remove("active");return}
+  const shouldShow=document.body.classList.contains("mobile-landscape")&&!mobileStageChosen;
+  mobileStagePicker.classList.toggle("active",shouldShow);
+}
+document.querySelectorAll("[data-mobile-season]").forEach(btn=>btn.addEventListener("click",()=>{
+  mobileStageChosen=true;
+  mobileStagePicker.classList.remove("active");
+  switchSeason(Number(btn.dataset.mobileSeason||1));
+}));
+document.getElementById("mobileStageLogout")?.addEventListener("click",()=>{mobileStageChosen=false;mobileStagePicker.classList.remove("active");logout()});
+new MutationObserver(()=>setTimeout(syncMobileStagePicker,60)).observe(e.loginScreen,{attributes:true,attributeFilter:["class"]});
+new MutationObserver(()=>setTimeout(syncMobileStagePicker,60)).observe(e.gameScreen,{attributes:true,attributeFilter:["class"]});
+window.addEventListener("resize",()=>setTimeout(syncMobileStagePicker,80),{passive:true});
+window.addEventListener("orientationchange",()=>setTimeout(syncMobileStagePicker,180),{passive:true});
 let imagePointStart=null;
 function showImageTouchFeedback(clientX,clientY){
   const r=e.clickLayer.getBoundingClientRect();
