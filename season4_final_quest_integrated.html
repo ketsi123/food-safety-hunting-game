@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.18.11-SEASON4-MOBILE-QUESTION-FIX">
+<meta name="fs-build" content="V18.18.12-SEASON4-MOBILE-PLAYABLE">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -115,7 +115,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   padding:10px 0 8px;
   background:linear-gradient(180deg,rgba(224,244,255,0),#d6efff 28%);
 }
-@media (orientation:landscape) and (max-height:700px){
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
   #shell{
     width:min(100vw,calc(100vh * 16 / 9),1280px);
     height:min(100vh,calc(100vw * 9 / 16),720px);
@@ -155,27 +155,44 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   .exitConfirmText{font-size:12px;line-height:1.35;margin-bottom:10px}
   .exitConfirmBtn{padding:10px;font-size:14px}
   #question{
-    top:76px;
-    width:min(760px,72%);
-    max-height:118px;
+    top:72px;
+    width:min(720px,66%);
+    max-height:104px;
     overflow:auto;
-    padding:7px 12px 8px;
-    font-size:13px;
-    line-height:1.3;
+    padding:5px 10px 6px;
+    font-size:12px;
+    line-height:1.22;
     border-width:2px;
     border-radius:14px;
   }
-  #question small{font-size:9px;margin:0 0 3px;padding:2px 7px}
+  #question small{font-size:8px;margin:0 0 2px;padding:1px 7px}
   #question:after{
     content:"แตะกล่องคำตอบสีเหลือง หรือกระโดดชนจากด้านล่าง";
     display:block;
-    margin-top:3px;
+    margin-top:2px;
     color:#1577ad;
-    font-size:9px;
+    font-size:8px;
   }
-  #mobile{right:10px;bottom:12px;z-index:14}
+  #mobile{
+    left:10px;right:10px;bottom:12px;width:auto;
+    justify-content:flex-start;z-index:14;pointer-events:none;
+  }
+  #mobile .mb{pointer-events:auto}
+  #mobile .fireWrap{position:absolute;right:0;pointer-events:auto}
   #mobile .mb,#mobile #fireBtn{width:46px;height:46px;font-size:18px}
   #progress{bottom:12px}
+  #seasonStatus{
+    display:block;
+    margin:4px 0 7px;
+    padding:6px 10px;
+    border:1px solid #8fd7f7;
+    border-radius:10px;
+    background:#e9f8ff;
+    color:#165f84;
+    font-size:10px;
+    line-height:1.25;
+  }
+  #start:disabled{opacity:.62;filter:grayscale(.25);cursor:wait;box-shadow:0 5px 0 #789b71}
 }
 
 </style>
@@ -210,12 +227,13 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div class="icon">🏃‍♀️🛒🏭🧠🏆</div>
 <h1>Continuous Final Quest</h1>
 <div class="sub">Season 4 • 20 Checkpoints • One Continuous Map</div>
+<div id="seasonStatus" class="mini">⏳ กำลังโหลดคำถาม Season 4...</div>
 <p class="intro-summary" style="color:#48697e;font-weight:700;line-height:1.72;margin:0 0 12px">
 วิ่งในแผนที่เดียวต่อเนื่อง ไม่ตัดฉาก<br>
 เจอ Question Gate → โหม่งคำตอบ → Gate เปิด → วิ่งต่อ<br>
 เวลารวม 2 นาทีสำหรับ 20 ข้อ
 </p>
-<div class="player-block" style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"><div id="seasonStatus" class="mini"></div></div>
+<div class="player-block" style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"></div>
 <div class="mini" style="margin:0 0 10px">PAUSE = หยุดชั่วคราว (ไม่บันทึกคะแนน) • STOP & SAVE = จบ Run และบันทึกคะแนนสะสมทันที • Time Out / Game Over / เล่นจบ = บันทึกอัตโนมัติ</div>
 <div class="control-help" style="margin:0 0 16px;padding:12px 14px;border-radius:14px;background:#eaf7ff;border:2px solid #9bdcff;color:#174d6a;font-weight:800;line-height:1.7;text-align:left">
   <div style="font-size:14px;color:#0b6c9c;margin-bottom:4px">⌨ การควบคุมด้วยแป้นคีย์บอร์ด</div>
@@ -278,7 +296,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.18.11</div>
+ pointer-events:none">S4 V18.18.12</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
