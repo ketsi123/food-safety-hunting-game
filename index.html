@@ -2803,6 +2803,63 @@ body.mobile-landscape #gameScreen:not(.hidden) .click-layer{touch-action:none!im
   75%{opacity:.78;transform:translate(-50%,-50%) scale(2.15)}
   100%{opacity:0;transform:translate(-50%,-50%) scale(2.65)}
 }
+
+/* V18.18.8: fit the complete login form in one landscape phone/tablet viewport. */
+body.mobile-landscape #loginScreen:not(.hidden){
+  width:100%!important;height:100dvh!important;min-height:0!important;
+  padding:6px!important;overflow:hidden!important;place-items:center!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .login-shell{
+  width:100%!important;height:calc(100dvh - 12px)!important;min-height:0!important;
+  grid-template-columns:minmax(0,1.28fr) minmax(300px,.82fr)!important;
+  border-radius:16px!important;overflow:hidden!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .login-hero{
+  width:100%!important;height:100%!important;min-height:0!important;
+  background-size:cover!important;background-position:center center!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .login-hero:after{display:none!important}
+body.mobile-landscape #loginScreen:not(.hidden) .hero-chips{display:none!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-panel{
+  min-width:0!important;min-height:0!important;height:100%!important;
+  padding:8px!important;overflow:hidden!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .login-card{
+  width:min(360px,100%)!important;max-height:100%!important;
+  padding:12px 15px!important;border-radius:16px!important;
+  overflow:auto!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .login-card::before{inset:-2px!important;border-radius:18px!important;padding:2px!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-card::after{inset:-5px!important;border-radius:20px!important;filter:blur(8px)!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-icon{
+  width:42px!important;height:42px!important;margin:0 auto 5px!important;
+  border-radius:13px!important;font-size:21px!important;box-shadow:0 5px 14px rgba(47,125,244,.2)!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .login-card h1{font-size:24px!important;line-height:1.05!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-card p{margin:4px 0 8px!important;font-size:9px!important;line-height:1.3!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-card label{margin-bottom:4px!important;font-size:9px!important}
+body.mobile-landscape #loginScreen:not(.hidden) .email-box{
+  height:40px!important;padding:0 9px!important;border-radius:10px!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .email-box input{font-size:11px!important}
+body.mobile-landscape #loginScreen:not(.hidden) .login-btn{
+  height:40px!important;min-height:40px!important;margin-top:8px!important;
+  border-radius:10px!important;font-size:11px!important;
+  box-shadow:0 4px 0 #d1dbff,0 8px 15px rgba(73,86,230,.16)!important;
+}
+body.mobile-landscape #loginScreen:not(.hidden) .login-status{
+  margin-top:8px!important;font-size:8px!important;line-height:1.2!important;
+}
+
+@media (orientation:landscape) and (max-height:380px){
+  body.mobile-landscape #loginScreen:not(.hidden) .login-card{padding:8px 13px!important}
+  body.mobile-landscape #loginScreen:not(.hidden) .login-icon{width:34px!important;height:34px!important;font-size:17px!important;margin-bottom:3px!important}
+  body.mobile-landscape #loginScreen:not(.hidden) .login-card h1{font-size:19px!important}
+  body.mobile-landscape #loginScreen:not(.hidden) .login-card p{margin:2px 0 5px!important}
+  body.mobile-landscape #loginScreen:not(.hidden) .email-box,
+  body.mobile-landscape #loginScreen:not(.hidden) .login-btn{height:34px!important;min-height:34px!important}
+  body.mobile-landscape #loginScreen:not(.hidden) .login-status{margin-top:5px!important}
+}
 </style>
 
 </head>
