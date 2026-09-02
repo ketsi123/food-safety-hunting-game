@@ -4,9 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.15.2-SEASON4-DOM-CONNECTION-FIX">
+<meta name="fs-build" content="V18.18.11-SEASON4-MOBILE-QUESTION-FIX">
 <style>
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
 body{display:grid;place-items:center}
 #shell{position:relative;width:min(100vw,1280px);aspect-ratio:16/9;max-height:100vh;overflow:hidden;border-radius:24px;background:#9fdcff;
@@ -45,7 +46,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 .btn{width:100%;padding:15px;border:0;border-radius:18px;background:linear-gradient(180deg,#81ef5b 0%,#42cf27 45%,#1ea50a 100%);color:white;font-size:20px;font-weight:1000;cursor:pointer;text-shadow:0 2px 2px rgba(0,0,0,.28);box-shadow:0 8px 0 #128007,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)}
 .finishBtns .btn.endBtn{background:linear-gradient(180deg,#ff8e80 0%,#e9584f 48%,#b93430 100%);box-shadow:0 8px 0 #8c2724,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.4)}
 .finishBtns .btn.playAgainBtn{background:linear-gradient(180deg,#7df35a 0%,#42cf27 48%,#1ea50a 100%);box-shadow:0 8px 0 #128007,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)}
-#mobile{position:absolute;right:18px;bottom:16px;display:flex;gap:8px;pointer-events:auto;align-items:center}.mb{position:static;width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(3,51,87,.78);color:#fff;font-size:22px;font-weight:1000;pointer-events:auto;box-shadow:0 5px 0 rgba(8,31,52,.7),0 10px 18px rgba(0,0,0,.22)}#j{background:rgba(19,132,72,.84)}
+#mobile{position:absolute;right:18px;bottom:16px;z-index:14;display:flex;gap:8px;pointer-events:auto;align-items:center}.mb{position:static;width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(3,51,87,.78);color:#fff;font-size:22px;font-weight:1000;pointer-events:auto;box-shadow:0 5px 0 rgba(8,31,52,.7),0 10px 18px rgba(0,0,0,.22)}#j{background:rgba(19,132,72,.84)}
 @media(max-width:800px){.top{height:65px;padding:6px}.brand{font-size:10px;padding:6px 8px}.box{min-width:68px;font-size:9px;padding:4px}.box b{font-size:13px}#question{top:142px;font-size:14px;padding:9px 12px 10px;width:88%;border-width:3px}#question small{font-size:9px;padding:3px 8px;margin-bottom:5px}#progress{left:12px;bottom:10px;width:min(260px,52%)}#heartsRow{top:72px;left:10px;padding:5px 8px;gap:3px}.heart{font-size:14px}.pauseBtn{min-width:64px;padding:4px 8px;font-size:10px}.card{padding:18px}.input{font-size:14px}#mobile{right:12px;bottom:12px;gap:6px}.mb,#fireBtn{width:48px;height:48px;font-size:20px}.fireHint{top:-15px;font-size:9px;padding:2px 6px}}
 
 @media(max-width:480px){.finishBtns{gap:8px}.finishBtns .btn{font-size:14px;padding:12px 8px}}
@@ -100,6 +101,83 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 }
 .exitConfirmBtn:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.25)}
 
+/* V18.18.10 — keep every Season 4 dialog usable in a short landscape viewport */
+#intro>.card,#finish>.card,#pauseModal>.card{
+  max-height:calc(100% - 24px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.startActions{
+  position:sticky;
+  bottom:0;
+  z-index:2;
+  padding:10px 0 8px;
+  background:linear-gradient(180deg,rgba(224,244,255,0),#d6efff 28%);
+}
+@media (orientation:landscape) and (max-height:700px){
+  #shell{
+    width:min(100vw,calc(100vh * 16 / 9),1280px);
+    height:min(100vh,calc(100vw * 9 / 16),720px);
+    max-height:none;
+    border-radius:18px;
+  }
+  #intro,#finish,#pauseModal{padding:8px}
+  #intro>.card{
+    width:min(940px,96%);
+    max-height:calc(100% - 12px);
+    padding:12px 20px 10px;
+    border-width:3px;
+    border-radius:20px;
+  }
+  #intro .icon{font-size:30px;line-height:1}
+  #intro h1{font-size:22px;margin:2px 0}
+  #intro .sub{font-size:12px;margin-bottom:5px}
+  #intro .intro-summary{font-size:12px!important;line-height:1.35!important;margin-bottom:6px!important}
+  #intro .player-block{margin-bottom:5px!important}
+  #intro .input{padding:7px 10px;font-size:12px;border-radius:10px}
+  #intro .mini{font-size:10px;line-height:1.3}
+  #intro .control-help{
+    margin:5px 0 6px!important;
+    padding:6px 10px!important;
+    line-height:1.25!important;
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2px 16px;
+  }
+  #intro .control-help>div{font-size:10px!important}
+  #intro .control-help>div:first-child{grid-column:1/-1;margin-bottom:1px!important;font-size:11px!important}
+  #intro .startActions{gap:10px;margin-top:2px;padding:6px 0 7px}
+  #intro .startExitBtn,#intro .btn{padding:9px 12px;font-size:15px;border-radius:13px}
+  .exitConfirmCard{max-height:calc(100vh - 24px);overflow:auto;padding:16px 20px;border-radius:20px}
+  .exitConfirmIcon{width:52px;height:52px;font-size:27px;border-radius:16px;margin-bottom:4px}
+  .exitConfirmTitle{font-size:21px;margin:9px 0 5px}
+  .exitConfirmText{font-size:12px;line-height:1.35;margin-bottom:10px}
+  .exitConfirmBtn{padding:10px;font-size:14px}
+  #question{
+    top:76px;
+    width:min(760px,72%);
+    max-height:118px;
+    overflow:auto;
+    padding:7px 12px 8px;
+    font-size:13px;
+    line-height:1.3;
+    border-width:2px;
+    border-radius:14px;
+  }
+  #question small{font-size:9px;margin:0 0 3px;padding:2px 7px}
+  #question:after{
+    content:"แตะกล่องคำตอบสีเหลือง หรือกระโดดชนจากด้านล่าง";
+    display:block;
+    margin-top:3px;
+    color:#1577ad;
+    font-size:9px;
+  }
+  #mobile{right:10px;bottom:12px;z-index:14}
+  #mobile .mb,#mobile #fireBtn{width:46px;height:46px;font-size:18px}
+  #progress{bottom:12px}
+}
+
 </style>
 </head>
 <body>
@@ -132,14 +210,14 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div class="icon">🏃‍♀️🛒🏭🧠🏆</div>
 <h1>Continuous Final Quest</h1>
 <div class="sub">Season 4 • 20 Checkpoints • One Continuous Map</div>
-<p style="color:#48697e;font-weight:700;line-height:1.72;margin:0 0 12px">
+<p class="intro-summary" style="color:#48697e;font-weight:700;line-height:1.72;margin:0 0 12px">
 วิ่งในแผนที่เดียวต่อเนื่อง ไม่ตัดฉาก<br>
 เจอ Question Gate → โหม่งคำตอบ → Gate เปิด → วิ่งต่อ<br>
 เวลารวม 2 นาทีสำหรับ 20 ข้อ
 </p>
-<div style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"><div id="seasonStatus" class="mini"></div></div>
+<div class="player-block" style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"><div id="seasonStatus" class="mini"></div></div>
 <div class="mini" style="margin:0 0 10px">PAUSE = หยุดชั่วคราว (ไม่บันทึกคะแนน) • STOP & SAVE = จบ Run และบันทึกคะแนนสะสมทันที • Time Out / Game Over / เล่นจบ = บันทึกอัตโนมัติ</div>
-<div style="margin:0 0 16px;padding:12px 14px;border-radius:14px;background:#eaf7ff;border:2px solid #9bdcff;color:#174d6a;font-weight:800;line-height:1.7;text-align:left">
+<div class="control-help" style="margin:0 0 16px;padding:12px 14px;border-radius:14px;background:#eaf7ff;border:2px solid #9bdcff;color:#174d6a;font-weight:800;line-height:1.7;text-align:left">
   <div style="font-size:14px;color:#0b6c9c;margin-bottom:4px">⌨ การควบคุมด้วยแป้นคีย์บอร์ด</div>
   <div style="font-size:13px">← → หรือ A / D = เดินซ้าย–ขวา</div>
   <div style="font-size:13px">Space / ↑ / W = Jump</div>
@@ -200,7 +278,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.15.2</div>
+ pointer-events:none">S4 V18.18.11</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
@@ -422,6 +500,22 @@ addEventListener("keyup",e=>keys[e.code]=false);
 function touch(id,code,j=false){const el=document.getElementById(id),dn=e=>{e.preventDefault();keys[code]=true;if(j)jump()},up=e=>{e.preventDefault();keys[code]=false};el.addEventListener("pointerdown",dn);["pointerup","pointercancel","pointerleave"].forEach(x=>el.addEventListener(x,up))}
 touch("l","ArrowLeft");touch("r","ArrowRight");touch("j","Space",true);
 fireBtn.addEventListener("pointerdown",e=>{e.preventDefault();shoot()});
+
+// Mobile fallback: answer by tapping a visible yellow choice.
+// Desktop players can still jump and hit the block from below as before.
+cv.addEventListener("pointerdown",e=>{
+  if(state!=="play"||!gateClosed||locked||qBox.style.display==="none") return;
+  const rect=cv.getBoundingClientRect();
+  const px=(e.clientX-rect.left)*W/rect.width;
+  const py=(e.clientY-rect.top)*H/rect.height;
+  const picked=blocks.find(b=>{
+    const bx=b.x-cam,by=b.y-b.bounce;
+    return px>=bx&&px<=bx+b.w&&py>=by&&py<=by+b.h;
+  });
+  if(!picked)return;
+  e.preventDefault();
+  answer(picked);
+},{passive:false});
 
 function update(){
  if(state!=="play")return;
