@@ -2743,6 +2743,53 @@ body.mobile-landscape #gameScreen:not(.hidden) .v12-reason-panel .side-actions .
   width:auto!important;font-size:9px!important;white-space:nowrap!important;
 }
 body.mobile-landscape #gameScreen:not(.hidden) .btn-game-icon{font-size:14px!important}
+
+/* V18.18.6: compact all pre-play popups for short landscape touch screens. */
+body.mobile-landscape #gameScreen:not(.hidden) .question-gate,
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-overlay{
+  position:fixed!important;inset:0!important;z-index:1000!important;
+  padding:6px!important;border-radius:0!important;overflow:auto!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .gate-card{
+  width:min(430px,72vw)!important;max-height:calc(100dvh - 12px)!important;
+  padding:10px 16px 12px!important;border-radius:15px!important;overflow:auto!important;
+  box-shadow:inset 0 1px #fff,0 4px 0 #c1daeb,0 12px 28px rgba(29,88,139,.18)!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .gate-icon{font-size:25px!important;line-height:1!important}
+body.mobile-landscape #gameScreen:not(.hidden) .gate-kicker{margin-top:3px!important;font-size:8px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .gate-card h2{margin:3px 0!important;font-size:16px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .gate-card p{margin:0 auto 7px!important;font-size:9px!important;line-height:1.3!important}
+body.mobile-landscape #gameScreen:not(.hidden) .gate-start{min-height:38px!important;border-radius:10px!important;font-size:12px!important;box-shadow:0 4px 0 #198112!important}
+body.mobile-landscape #gameScreen:not(.hidden) .gate-secondary{min-height:32px!important;margin-top:5px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-card{
+  width:min(560px,76vw)!important;max-height:calc(100dvh - 20px)!important;
+  padding:22px 15px 9px!important;border-radius:15px!important;overflow:auto!important;
+  box-shadow:0 0 0 2px rgba(116,93,255,.35),0 10px 28px rgba(0,38,82,.3),inset 0 2px #fff!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-emblem{
+  top:-17px!important;width:38px!important;height:38px!important;border-radius:12px!important;
+  border-width:2px!important;font-size:20px!important;box-shadow:0 3px 0 #164d9a!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-close{
+  right:7px!important;top:6px!important;width:28px!important;height:28px!important;font-size:15px!important;box-shadow:0 2px 0 #0a62ad!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-kicker{padding:3px 10px!important;font-size:8px!important;box-shadow:0 2px 0 #0b4e99!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-title{margin:5px 0!important;font-size:14px!important;line-height:1.15!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-list{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:4px!important;
+  max-width:none!important;margin:0 auto 5px!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-item{
+  min-height:29px!important;padding:4px 8px!important;gap:5px!important;border-radius:9px!important;
+  font-size:8px!important;line-height:1.15!important;box-shadow:none!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-item i{width:20px!important;height:20px!important;font-size:12px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-count-wrap{margin-top:2px!important;padding-top:4px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-count-line{gap:4px!important;font-size:9px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-count-line b{font-size:15px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-progress{height:4px!important;margin-top:3px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .prehint-foot{margin-top:3px!important;font-size:7px!important}
+body.mobile-landscape #gameScreen:not(.hidden) .click-layer{touch-action:none!important}
 </style>
 
 </head>
@@ -4376,7 +4423,23 @@ if("ResizeObserver" in window){
   if(fsHeader)fsHeaderObserver.observe(fsHeader);
 }
 
-e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.pauseBtn.onclick=togglePause;e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;e.clickLayer.onclick=x=>selectPoint(x.clientX,x.clientY);e.clickLayer.addEventListener("touchend",x=>{const t=x.changedTouches?.[0];if(t){selectPoint(t.clientX,t.clientY);x.preventDefault()}},{passive:false});e.questionImage.onload=()=>{
+e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.pauseBtn.onclick=togglePause;e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;
+let imagePointStart=null;
+e.clickLayer.addEventListener("pointerdown",ev=>{
+  if(!ev.isPrimary)return;
+  imagePointStart={id:ev.pointerId,x:ev.clientX,y:ev.clientY};
+  try{e.clickLayer.setPointerCapture(ev.pointerId)}catch(_){ }
+  ev.preventDefault();
+},{passive:false});
+e.clickLayer.addEventListener("pointerup",ev=>{
+  const start=imagePointStart;
+  imagePointStart=null;
+  if(!start||start.id!==ev.pointerId||!ev.isPrimary)return;
+  if(Math.hypot(ev.clientX-start.x,ev.clientY-start.y)<=14)selectPoint(ev.clientX,ev.clientY);
+  ev.preventDefault();
+},{passive:false});
+e.clickLayer.addEventListener("pointercancel",()=>{imagePointStart=null});
+e.questionImage.onload=()=>{
   e.questionImage.classList.remove("loading");
   e.questionImage.dataset.retry="";
 };
