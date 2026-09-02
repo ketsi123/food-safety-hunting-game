@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.18.12-SEASON4-MOBILE-PLAYABLE">
+<meta name="fs-build" content="V18.18.13-SEASON4-MOBILE-POPUP-COMPACT">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -124,31 +124,23 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   }
   #intro,#finish,#pauseModal{padding:8px}
   #intro>.card{
-    width:min(940px,96%);
-    max-height:calc(100% - 12px);
-    padding:12px 20px 10px;
+    width:min(720px,88%);
+    max-height:calc(100% - 20px);
+    padding:14px 18px 12px;
     border-width:3px;
     border-radius:20px;
+    overflow:hidden;
   }
-  #intro .icon{font-size:30px;line-height:1}
-  #intro h1{font-size:22px;margin:2px 0}
-  #intro .sub{font-size:12px;margin-bottom:5px}
-  #intro .intro-summary{font-size:12px!important;line-height:1.35!important;margin-bottom:6px!important}
-  #intro .player-block{margin-bottom:5px!important}
+  #intro .icon{display:none}
+  #intro h1{font-size:20px;margin:0 0 2px;line-height:1.15}
+  #intro .sub{font-size:11px;margin-bottom:5px}
+  #intro .intro-summary,#intro .control-help,#intro .save-rule-note{display:none!important}
+  #intro .mobile-intro-note{display:block!important;margin:3px 0 6px;font-size:10px;color:#466b80;font-weight:800}
+  #intro .player-block{margin-bottom:4px!important}
   #intro .input{padding:7px 10px;font-size:12px;border-radius:10px}
   #intro .mini{font-size:10px;line-height:1.3}
-  #intro .control-help{
-    margin:5px 0 6px!important;
-    padding:6px 10px!important;
-    line-height:1.25!important;
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:2px 16px;
-  }
-  #intro .control-help>div{font-size:10px!important}
-  #intro .control-help>div:first-child{grid-column:1/-1;margin-bottom:1px!important;font-size:11px!important}
-  #intro .startActions{gap:10px;margin-top:2px;padding:6px 0 7px}
-  #intro .startExitBtn,#intro .btn{padding:9px 12px;font-size:15px;border-radius:13px}
+  #intro .startActions{position:static;gap:10px;margin-top:5px;padding:2px 0 6px;background:none}
+  #intro .startExitBtn,#intro .btn{padding:10px 12px;font-size:15px;border-radius:13px}
   .exitConfirmCard{max-height:calc(100vh - 24px);overflow:auto;padding:16px 20px;border-radius:20px}
   .exitConfirmIcon{width:52px;height:52px;font-size:27px;border-radius:16px;margin-bottom:4px}
   .exitConfirmTitle{font-size:21px;margin:9px 0 5px}
@@ -228,13 +220,14 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <h1>Continuous Final Quest</h1>
 <div class="sub">Season 4 • 20 Checkpoints • One Continuous Map</div>
 <div id="seasonStatus" class="mini">⏳ กำลังโหลดคำถาม Season 4...</div>
+<div class="mobile-intro-note" style="display:none">ใช้ปุ่มด้านซ้ายเพื่อเดินและกระโดด • ใช้ปุ่มลูกไฟด้านขวา</div>
 <p class="intro-summary" style="color:#48697e;font-weight:700;line-height:1.72;margin:0 0 12px">
 วิ่งในแผนที่เดียวต่อเนื่อง ไม่ตัดฉาก<br>
 เจอ Question Gate → โหม่งคำตอบ → Gate เปิด → วิ่งต่อ<br>
 เวลารวม 2 นาทีสำหรับ 20 ข้อ
 </p>
 <div class="player-block" style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"></div>
-<div class="mini" style="margin:0 0 10px">PAUSE = หยุดชั่วคราว (ไม่บันทึกคะแนน) • STOP & SAVE = จบ Run และบันทึกคะแนนสะสมทันที • Time Out / Game Over / เล่นจบ = บันทึกอัตโนมัติ</div>
+<div class="mini save-rule-note" style="margin:0 0 10px">PAUSE = หยุดชั่วคราว (ไม่บันทึกคะแนน) • STOP & SAVE = จบ Run และบันทึกคะแนนสะสมทันที • Time Out / Game Over / เล่นจบ = บันทึกอัตโนมัติ</div>
 <div class="control-help" style="margin:0 0 16px;padding:12px 14px;border-radius:14px;background:#eaf7ff;border:2px solid #9bdcff;color:#174d6a;font-weight:800;line-height:1.7;text-align:left">
   <div style="font-size:14px;color:#0b6c9c;margin-bottom:4px">⌨ การควบคุมด้วยแป้นคีย์บอร์ด</div>
   <div style="font-size:13px">← → หรือ A / D = เดินซ้าย–ขวา</div>
@@ -296,7 +289,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.18.12</div>
+ pointer-events:none">S4 V18.18.13</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
