@@ -2790,6 +2790,19 @@ body.mobile-landscape #gameScreen:not(.hidden) .prehint-count-line b{font-size:1
 body.mobile-landscape #gameScreen:not(.hidden) .prehint-progress{height:4px!important;margin-top:3px!important}
 body.mobile-landscape #gameScreen:not(.hidden) .prehint-foot{margin-top:3px!important;font-size:7px!important}
 body.mobile-landscape #gameScreen:not(.hidden) .click-layer{touch-action:none!important}
+.touch-ripple{
+  position:absolute;z-index:9;width:22px;height:22px;border-radius:50%;
+  transform:translate(-50%,-50%) scale(.25);pointer-events:none;
+  border:3px solid rgba(255,255,255,.98);
+  background:rgba(34,180,255,.30);
+  box-shadow:0 0 0 3px rgba(33,148,246,.72),0 0 18px rgba(33,148,246,.72);
+  animation:touchRippleConfirm .42s ease-out forwards;
+}
+@keyframes touchRippleConfirm{
+  0%{opacity:1;transform:translate(-50%,-50%) scale(.25)}
+  75%{opacity:.78;transform:translate(-50%,-50%) scale(2.15)}
+  100%{opacity:0;transform:translate(-50%,-50%) scale(2.65)}
+}
 </style>
 
 </head>
@@ -4425,9 +4438,21 @@ if("ResizeObserver" in window){
 
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.pauseBtn.onclick=togglePause;e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;
 let imagePointStart=null;
+function showImageTouchFeedback(clientX,clientY){
+  const r=e.clickLayer.getBoundingClientRect();
+  if(!r.width||!r.height)return;
+  const ripple=document.createElement("span");
+  ripple.className="touch-ripple";
+  ripple.style.left=((clientX-r.left)/r.width*100)+"%";
+  ripple.style.top=((clientY-r.top)/r.height*100)+"%";
+  e.clickLayer.appendChild(ripple);
+  ripple.addEventListener("animationend",()=>ripple.remove(),{once:true});
+  setTimeout(()=>ripple.remove(),650);
+}
 e.clickLayer.addEventListener("pointerdown",ev=>{
   if(!ev.isPrimary)return;
   imagePointStart={id:ev.pointerId,x:ev.clientX,y:ev.clientY};
+  showImageTouchFeedback(ev.clientX,ev.clientY);
   try{e.clickLayer.setPointerCapture(ev.pointerId)}catch(_){ }
   ev.preventDefault();
 },{passive:false});
