@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.18.15-SEASON4-MOBILE-CONTROLS">
+<meta name="fs-build" content="V18.18.17-MOBILE-FINISH-FIT">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -141,6 +141,21 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
   #intro .mini{font-size:10px;line-height:1.3}
   #intro .startActions{position:static;gap:10px;margin-top:5px;padding:2px 0 6px;background:none}
   #intro .startExitBtn,#intro .btn{padding:10px 12px;font-size:15px;border-radius:13px}
+  #finish>.card{
+    width:min(760px,86%);
+    max-height:calc(100% - 16px);
+    padding:10px 18px 12px;
+    border-width:3px;
+    border-radius:20px;
+    overflow:hidden;
+  }
+  #finish .icon{display:none}
+  #finish h1{margin:0 0 2px;font-size:22px;line-height:1.08}
+  #finish .sub{margin:0 0 4px;font-size:12px;line-height:1.2}
+  #finish #fr{margin:0 0 6px!important;font-size:12px!important;line-height:1.32!important}
+  #finish #fr b{font-size:20px!important}
+  #finish .finishBtns{gap:10px;margin-top:3px}
+  #finish .finishBtns .btn{height:42px;padding:7px 10px;font-size:14px;border-radius:12px;box-shadow:0 5px 0 rgba(16,72,61,.55),0 8px 15px rgba(0,0,0,.16)}
   .exitConfirmCard{max-height:calc(100vh - 24px);overflow:auto;padding:16px 20px;border-radius:20px}
   .exitConfirmIcon{width:52px;height:52px;font-size:27px;border-radius:16px;margin-bottom:4px}
   .exitConfirmTitle{font-size:21px;margin:9px 0 5px}
@@ -298,7 +313,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.18.16</div>
+ pointer-events:none">S4 V18.18.17</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
