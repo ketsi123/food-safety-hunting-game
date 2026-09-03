@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18.10-MOBILE-STAGE-LOADING">
+<meta name="fs-build" content="V18.18.11-MOBILE-REAL-LOAD-STATUS">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2825,7 +2825,9 @@ body.mobile-landscape #loginScreen:not(.hidden) .login-status{margin-top:8px!imp
 body.mobile-landscape .mobile-stage-picker.active{display:flex}
 .mobile-stage-card{width:min(680px,88vw);max-height:calc(100dvh - 16px);padding:12px 16px;border:3px solid #78bff0;border-radius:20px;background:linear-gradient(180deg,#fff,#edf8ff);box-shadow:inset 0 2px #fff,0 7px 0 #c1dceb,0 20px 50px rgba(29,88,139,.22);overflow:auto;text-align:center}
 .mobile-stage-card h2{margin:0;color:#15528b;font-size:20px}.mobile-stage-card>p{margin:3px 0 9px;color:#668296;font-size:10px}
-.mobile-stage-status{display:flex;align-items:center;justify-content:center;min-height:28px;margin:0 0 8px;padding:5px 10px;border:1px solid #a6d9f2;border-radius:10px;background:#edf9ff;color:#356b87;font-size:10px;font-weight:900}
+.mobile-stage-status{display:flex;width:100%;align-items:center;justify-content:center;min-height:28px;margin:0 0 8px;padding:5px 10px;border:1px solid #a6d9f2;border-radius:10px;background:#edf9ff;color:#356b87;font-size:10px;font-weight:900}
+.mobile-stage-status.retry{cursor:pointer;border-color:#f0b66d;background:#fff6e8;color:#9a5b11}
+.mobile-stage-status.success{border-color:#81d9ab;background:#eafff3;color:#087346}
 .mobile-stage-status.loading:before{content:"";width:12px;height:12px;margin-right:7px;border:2px solid #b8dff2;border-top-color:#258bd1;border-radius:50%;animation:mobileStageSpin .7s linear infinite}
 @keyframes mobileStageSpin{to{transform:rotate(360deg)}}
 .mobile-stage-picker.loading .mobile-stage-btn,.mobile-stage-picker.loading .mobile-stage-logout{pointer-events:none;opacity:.58}
@@ -2864,7 +2866,7 @@ body.mobile-landscape .mobile-stage-picker.active{display:flex}
   <div class="mobile-stage-card">
     <h2 id="mobileStageTitle">🎮 เลือกด่านที่ต้องการเล่น</h2>
     <p>เลือก Season ก่อนเริ่มเกม</p>
-    <div id="mobileStageStatus" class="mobile-stage-status" role="status" aria-live="polite">พร้อมเลือกด่าน</div>
+    <button id="mobileStageStatus" class="mobile-stage-status" type="button" role="status" aria-live="polite">⏳ กำลังโหลดข้อมูลเกม...</button>
     <div class="mobile-stage-grid">
       <button class="mobile-stage-btn" type="button" data-mobile-season="1"><b>🌿 Season 1</b><small>โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</small></button>
       <button class="mobile-stage-btn" type="button" data-mobile-season="2"><b>🏭 Season 2</b><small>การผลิตและแปรรูปอาหาร</small></button>
@@ -3456,6 +3458,7 @@ async function login(){
   seasonControl[1]='OPEN';
   seasonControlLoaded=true;
   activeSeason=1;
+  setMobileStageStatus("กำลังโหลดข้อมูลเกม...",true);
   openGame();
 
   e.loginBackendText.textContent="กำลังซิงก์ข้อมูลเบื้องหลัง...";
@@ -3477,6 +3480,7 @@ async function login(){
 
       renderTotalUsers(loginData?.totalUsers);
       setBackend(true);
+      setMobileStageStatus("✓ โหลดข้อมูลสำเร็จ • พร้อมเลือกด่าน",false,"success");
 
       // Warm S3 while the player is still on Home/S1, so S3 Submit is not cold.
       prewarmSeasonBackend(3);
@@ -3485,6 +3489,7 @@ async function login(){
       setTimeout(()=>{ refreshSeasonControl(); },5000);
     }catch(err){
       setBackend(false);
+      setMobileStageStatus("โหลดข้อมูลไม่สำเร็จ • แตะเพื่อลองใหม่",false,"retry");
       console.warn("Background login sync failed",err);
       // Season 1 remains playable; backend will still protect Season 2-4.
     }finally{
@@ -4498,10 +4503,22 @@ e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};
 const mobileStagePicker=document.getElementById("mobileStagePicker");
 const mobileStageStatus=document.getElementById("mobileStageStatus");
 let mobileStageChosen=false;
-function setMobileStageStatus(message,isLoading=false){
-  if(mobileStageStatus){mobileStageStatus.textContent=message;mobileStageStatus.classList.toggle("loading",isLoading)}
+function setMobileStageStatus(message,isLoading=false,state=""){
+  if(mobileStageStatus){
+    mobileStageStatus.textContent=message;
+    mobileStageStatus.classList.toggle("loading",isLoading);
+    mobileStageStatus.classList.toggle("success",state==="success");
+    mobileStageStatus.classList.toggle("retry",state==="retry");
+  }
   mobileStagePicker?.classList.toggle("loading",isLoading);
 }
+mobileStageStatus?.addEventListener("click",async()=>{
+  if(!mobileStageStatus.classList.contains("retry"))return;
+  setMobileStageStatus("กำลังโหลดข้อมูลเกมอีกครั้ง...",true);
+  const result=await refreshSeasonControl();
+  if(result)setMobileStageStatus("✓ โหลดข้อมูลสำเร็จ • พร้อมเลือกด่าน",false,"success");
+  else setMobileStageStatus("โหลดข้อมูลไม่สำเร็จ • แตะเพื่อลองใหม่",false,"retry");
+});
 function syncMobileStagePicker(){
   if(!mobileStagePicker)return;
   const loggedIn=e.loginScreen.classList.contains("hidden")&&!e.gameScreen.classList.contains("hidden");
