@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.18.14-SEASON4-VISUAL-VIEWPORT">
+<meta name="fs-build" content="V18.18.15-SEASON4-MOBILE-CONTROLS">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -170,9 +170,17 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
     justify-content:flex-start;z-index:14;pointer-events:none;
   }
   #mobile .mb{pointer-events:auto}
+  #mobile #j{position:absolute;right:54px;pointer-events:auto}
   #mobile .fireWrap{position:absolute;right:0;pointer-events:auto}
   #mobile .mb,#mobile #fireBtn{width:46px;height:46px;font-size:18px}
   #progress{bottom:12px}
+  .top{padding:6px 8px;gap:6px}
+  .brand{
+    width:112px;min-width:112px;height:42px;padding:5px 7px;
+    display:grid;place-items:center;border-radius:11px;font-size:0;
+    line-height:1;white-space:nowrap;box-shadow:0 4px 0 #04395f,0 7px 12px rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.3)
+  }
+  .brand:after{content:"🛡️ FINAL QUEST";font-size:10px;letter-spacing:.15px}
   #seasonStatus{
     display:block;
     margin:4px 0 7px;
@@ -289,7 +297,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.18.14</div>
+ pointer-events:none">S4 V18.18.15</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
