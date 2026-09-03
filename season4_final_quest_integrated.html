@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.18.13-SEASON4-MOBILE-POPUP-COMPACT">
+<meta name="fs-build" content="V18.18.14-SEASON4-VISUAL-VIEWPORT">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -289,11 +289,43 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.18.13</div>
+ pointer-events:none">S4 V18.18.14</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
 const ground=620, worldW=21500;
+const shell=document.getElementById("shell");
+const mobileLandscapeQuery=window.matchMedia("(hover:none) and (pointer:coarse) and (orientation:landscape)");
+
+// Chrome mobile's 100vh can include space hidden behind its URL/navigation bars.
+// Fit the complete 16:9 game to the actually visible viewport instead.
+function fitShellToVisibleViewport(){
+  if(!mobileLandscapeQuery.matches){
+    shell.style.removeProperty("position");shell.style.removeProperty("left");shell.style.removeProperty("top");
+    shell.style.removeProperty("width");shell.style.removeProperty("height");
+    return;
+  }
+  const vv=window.visualViewport;
+  const vw=Math.max(1,vv?.width||window.innerWidth);
+  const vh=Math.max(1,vv?.height||window.innerHeight);
+  const w=Math.min(vw,vh*16/9,1280);
+  const h=w*9/16;
+  shell.style.position="fixed";
+  shell.style.width=`${w}px`;shell.style.height=`${h}px`;
+  shell.style.left=`${(vv?.offsetLeft||0)+(vw-w)/2}px`;
+  shell.style.top=`${(vv?.offsetTop||0)+(vh-h)/2}px`;
+}
+fitShellToVisibleViewport();
+requestAnimationFrame(fitShellToVisibleViewport);
+setTimeout(fitShellToVisibleViewport,250);
+setTimeout(fitShellToVisibleViewport,900);
+window.addEventListener("resize",fitShellToVisibleViewport,{passive:true});
+window.addEventListener("orientationchange",()=>setTimeout(fitShellToVisibleViewport,150),{passive:true});
+if(window.visualViewport){
+  window.visualViewport.addEventListener("resize",fitShellToVisibleViewport,{passive:true});
+  window.visualViewport.addEventListener("scroll",fitShellToVisibleViewport,{passive:true});
+}
+if(mobileLandscapeQuery.addEventListener)mobileLandscapeQuery.addEventListener("change",fitShellToVisibleViewport);
 const BACKEND_URL="https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec";
 const SAVE_URL=BACKEND_URL;
 const params=new URLSearchParams(location.search);

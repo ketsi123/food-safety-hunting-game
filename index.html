@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18.9-MOBILE-STAGE-SELECT">
+<meta name="fs-build" content="V18.18.10-MOBILE-STAGE-LOADING">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2825,6 +2825,10 @@ body.mobile-landscape #loginScreen:not(.hidden) .login-status{margin-top:8px!imp
 body.mobile-landscape .mobile-stage-picker.active{display:flex}
 .mobile-stage-card{width:min(680px,88vw);max-height:calc(100dvh - 16px);padding:12px 16px;border:3px solid #78bff0;border-radius:20px;background:linear-gradient(180deg,#fff,#edf8ff);box-shadow:inset 0 2px #fff,0 7px 0 #c1dceb,0 20px 50px rgba(29,88,139,.22);overflow:auto;text-align:center}
 .mobile-stage-card h2{margin:0;color:#15528b;font-size:20px}.mobile-stage-card>p{margin:3px 0 9px;color:#668296;font-size:10px}
+.mobile-stage-status{display:flex;align-items:center;justify-content:center;min-height:28px;margin:0 0 8px;padding:5px 10px;border:1px solid #a6d9f2;border-radius:10px;background:#edf9ff;color:#356b87;font-size:10px;font-weight:900}
+.mobile-stage-status.loading:before{content:"";width:12px;height:12px;margin-right:7px;border:2px solid #b8dff2;border-top-color:#258bd1;border-radius:50%;animation:mobileStageSpin .7s linear infinite}
+@keyframes mobileStageSpin{to{transform:rotate(360deg)}}
+.mobile-stage-picker.loading .mobile-stage-btn,.mobile-stage-picker.loading .mobile-stage-logout{pointer-events:none;opacity:.58}
 .mobile-stage-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
 .mobile-stage-btn{min-height:67px;padding:7px 10px;border:2px solid #fff;border-radius:14px;color:#fff;text-align:left;box-shadow:0 5px 0 rgba(5,67,132,.38),0 9px 18px rgba(32,83,141,.16)}
 .mobile-stage-btn:nth-child(1){background:linear-gradient(135deg,#69d923,#20a80f)}
@@ -2860,6 +2864,7 @@ body.mobile-landscape .mobile-stage-picker.active{display:flex}
   <div class="mobile-stage-card">
     <h2 id="mobileStageTitle">🎮 เลือกด่านที่ต้องการเล่น</h2>
     <p>เลือก Season ก่อนเริ่มเกม</p>
+    <div id="mobileStageStatus" class="mobile-stage-status" role="status" aria-live="polite">พร้อมเลือกด่าน</div>
     <div class="mobile-stage-grid">
       <button class="mobile-stage-btn" type="button" data-mobile-season="1"><b>🌿 Season 1</b><small>โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</small></button>
       <button class="mobile-stage-btn" type="button" data-mobile-season="2"><b>🏭 Season 2</b><small>การผลิตและแปรรูปอาหาร</small></button>
@@ -4491,7 +4496,12 @@ if("ResizeObserver" in window){
 
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.pauseBtn.onclick=togglePause;e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;
 const mobileStagePicker=document.getElementById("mobileStagePicker");
+const mobileStageStatus=document.getElementById("mobileStageStatus");
 let mobileStageChosen=false;
+function setMobileStageStatus(message,isLoading=false){
+  if(mobileStageStatus){mobileStageStatus.textContent=message;mobileStageStatus.classList.toggle("loading",isLoading)}
+  mobileStagePicker?.classList.toggle("loading",isLoading);
+}
 function syncMobileStagePicker(){
   if(!mobileStagePicker)return;
   const loggedIn=e.loginScreen.classList.contains("hidden")&&!e.gameScreen.classList.contains("hidden");
@@ -4500,9 +4510,31 @@ function syncMobileStagePicker(){
   mobileStagePicker.classList.toggle("active",shouldShow);
 }
 document.querySelectorAll("[data-mobile-season]").forEach(btn=>btn.addEventListener("click",()=>{
+  const s=Number(btn.dataset.mobileSeason||1);
+  setMobileStageStatus(`กำลังเปิด Season ${s}...`,true);
+
+  // Season 4 uses a separate engine. Keep this picker covering the main-game
+  // START gate until navigation begins, so Season 1 never flashes on screen.
+  if(s===4){
+    const email=user?.email||localStorage.getItem(S_EMAIL)||"";
+    if(!email){setMobileStageStatus("ไม่พบข้อมูลผู้เล่น กรุณา Login ใหม่",false);return}
+    const homeUrl=new URL(location.href);homeUrl.searchParams.set("fsHome","1");
+    const target=`season4_final_quest_integrated.html?email=${encodeURIComponent(email)}&return=${encodeURIComponent(homeUrl.href)}`;
+    setTimeout(()=>location.href=target,80);
+    return;
+  }
+
+  if(!isSeasonOpenFrontend(s)){
+    setMobileStageStatus(`Season ${s} ยังไม่เปิดให้เล่น`,false);
+    return;
+  }
+  if(!questionsForSeason(s).length){
+    setMobileStageStatus(`Season ${s} ยังไม่มีคำถาม`,false);
+    return;
+  }
+  switchSeason(s);
   mobileStageChosen=true;
-  mobileStagePicker.classList.remove("active");
-  switchSeason(Number(btn.dataset.mobileSeason||1));
+  mobileStagePicker.classList.remove("active","loading");
 }));
 document.getElementById("mobileStageLogout")?.addEventListener("click",()=>{mobileStageChosen=false;mobileStagePicker.classList.remove("active");logout()});
 new MutationObserver(()=>setTimeout(syncMobileStagePicker,60)).observe(e.loginScreen,{attributes:true,attributeFilter:["class"]});
