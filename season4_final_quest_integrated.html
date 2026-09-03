@@ -50,7 +50,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 @media(max-width:800px){.top{height:65px;padding:6px}.brand{font-size:10px;padding:6px 8px}.box{min-width:68px;font-size:9px;padding:4px}.box b{font-size:13px}#question{top:142px;font-size:14px;padding:9px 12px 10px;width:88%;border-width:3px}#question small{font-size:9px;padding:3px 8px;margin-bottom:5px}#progress{left:12px;bottom:10px;width:min(260px,52%)}#heartsRow{top:72px;left:10px;padding:5px 8px;gap:3px}.heart{font-size:14px}.pauseBtn{min-width:64px;padding:4px 8px;font-size:10px}.card{padding:18px}.input{font-size:14px}#mobile{right:12px;bottom:12px;gap:6px}.mb,#fireBtn{width:48px;height:48px;font-size:20px}.fireHint{top:-15px;font-size:9px;padding:2px 6px}}
 
 @media(max-width:480px){.finishBtns{gap:8px}.finishBtns .btn{font-size:14px;padding:12px 8px}}
-.startActions{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}.startExitBtn{border:0;border-radius:16px;padding:15px 18px;font-size:22px;font-weight:1000;color:#fff;background:linear-gradient(180deg,#ef655c,#b72f2a);box-shadow:0 8px 0 #7a211d;cursor:pointer}.startExitBtn:hover{filter:brightness(1.05)}.backBtn,.exitBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:7px 13px;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244;white-space:nowrap}.backBtn{background:linear-gradient(180deg,#4d86b1,#24577c)}.exitBtn{background:linear-gradient(180deg,#e95e55,#b3322c);box-shadow:0 5px 0 #7c211d} .lockedMsg{color:#b63737;font-weight:900;margin:8px 0} 
+.startActions{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:12px;margin-top:10px}.startExitBtn{border:0;border-radius:16px;padding:15px 18px;font-size:22px;font-weight:1000;color:#fff;background:linear-gradient(180deg,#ef655c,#b72f2a);box-shadow:0 8px 0 #7a211d;cursor:pointer}.startExitBtn:hover{filter:brightness(1.05)}#fullscreenBtn{background:linear-gradient(180deg,#42a9ea,#17649b);box-shadow:0 8px 0 #10466e}.backBtn,.exitBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:7px 13px;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244;white-space:nowrap}.backBtn{background:linear-gradient(180deg,#4d86b1,#24577c)}.exitBtn{background:linear-gradient(180deg,#e95e55,#b3322c);box-shadow:0 5px 0 #7c211d}.lockedMsg{color:#b63737;font-weight:900;margin:8px 0}
 .exitConfirmOverlay{
   position:fixed;inset:0;z-index:99999;
   display:none;align-items:center;justify-content:center;
@@ -245,6 +245,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 </div>
 <div class="startActions">
   <button class="startExitBtn" id="startExitBtn">🚪 EXIT</button>
+  <button class="startExitBtn" id="fullscreenBtn">⛶ เล่นเต็มจอ</button>
   <button class="btn" id="start">▶ START RUN</button>
 </div>
 </div>
@@ -297,7 +298,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.18.15</div>
+ pointer-events:none">S4 V18.18.16</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
@@ -529,7 +530,30 @@ function startGame(){
  document.getElementById("intro").style.display="none";document.getElementById("finish").style.display="none";
  clearInterval(timer);timer=setInterval(()=>{if(state!=="play")return;seconds--;setHUD();if(seconds<=0)finish(false)},1000)
 }
+function s4FullscreenElement(){return document.fullscreenElement||document.webkitFullscreenElement||null}
+async function toggleS4Fullscreen(){
+ try{
+  if(s4FullscreenElement()){
+   const exit=document.exitFullscreen||document.webkitExitFullscreen;
+   if(exit)await exit.call(document);
+  }else{
+   const target=document.documentElement;
+   const request=target.requestFullscreen||target.webkitRequestFullscreen;
+   if(!request)throw new Error("FULLSCREEN_UNSUPPORTED");
+   await request.call(target);
+   try{if(screen.orientation?.lock)await screen.orientation.lock("landscape")}catch(_){}
+  }
+ }catch(_){flash("อุปกรณ์นี้ไม่อนุญาต Fullscreen • ยังเล่นแบบปกติได้","bad")}
+}
+function syncS4Fullscreen(){
+ const btn=document.getElementById("fullscreenBtn");
+ if(btn)btn.textContent=s4FullscreenElement()?"✓ เต็มจอแล้ว":"⛶ เล่นเต็มจอ";
+ setTimeout(()=>{if(typeof fitShellToVisibleViewport==="function")fitShellToVisibleViewport()},80);
+}
 document.getElementById("start").onclick=startGame;document.getElementById("again").onclick=startGame;document.getElementById("endGame").onclick=goToIntro;
+document.getElementById("fullscreenBtn").onclick=toggleS4Fullscreen;
+document.addEventListener("fullscreenchange",syncS4Fullscreen);
+document.addEventListener("webkitfullscreenchange",syncS4Fullscreen);
 
 function goToIntro(){
  clearInterval(timer);

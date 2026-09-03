@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18.11-MOBILE-REAL-LOAD-STATUS">
+<meta name="fs-build" content="V18.18.12-USER-FULLSCREEN">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2839,6 +2839,9 @@ body.mobile-landscape .mobile-stage-picker.active{display:flex}
 .mobile-stage-btn:nth-child(4){background:linear-gradient(135deg,#9e64ed,#6940c7)}
 .mobile-stage-btn b,.mobile-stage-btn small{display:block}.mobile-stage-btn b{font-size:14px}.mobile-stage-btn small{margin-top:2px;font-size:9px;color:rgba(255,255,255,.9)}
 .mobile-stage-logout{margin-top:8px;border:0;background:transparent;color:#55758a;font-size:9px;font-weight:900;text-decoration:underline}
+.mobile-stage-tools{display:flex;gap:8px;align-items:center;margin:0 0 8px}
+.mobile-fullscreen-btn{flex:1;min-height:34px;padding:6px 12px;border:2px solid #8dcff2;border-radius:11px;background:linear-gradient(180deg,#fff,#daf3ff);color:#125d91;font-size:11px;font-weight:1000;box-shadow:0 3px 0 #b8dbe9;cursor:pointer}
+.mobile-fullscreen-btn.is-fullscreen{border-color:#68d49b;background:linear-gradient(180deg,#effff6,#caffdf);color:#087346}
 @media (orientation:landscape) and (max-height:380px){
   .mobile-stage-card{padding:8px 12px}.mobile-stage-card h2{font-size:16px}.mobile-stage-card>p{margin:2px 0 5px}
   .mobile-stage-grid{gap:5px}.mobile-stage-btn{min-height:52px;padding:5px 8px}.mobile-stage-btn b{font-size:11px}.mobile-stage-btn small{font-size:8px}
@@ -2867,6 +2870,9 @@ body.mobile-landscape .mobile-stage-picker.active{display:flex}
     <h2 id="mobileStageTitle">🎮 เลือกด่านที่ต้องการเล่น</h2>
     <p>เลือก Season ก่อนเริ่มเกม</p>
     <button id="mobileStageStatus" class="mobile-stage-status" type="button" role="status" aria-live="polite">⏳ กำลังโหลดข้อมูลเกม...</button>
+    <div class="mobile-stage-tools">
+      <button id="mobileFullscreenBtn" class="mobile-fullscreen-btn" type="button">⛶ เล่นเต็มจอ</button>
+    </div>
     <div class="mobile-stage-grid">
       <button class="mobile-stage-btn" type="button" data-mobile-season="1"><b>🌿 Season 1</b><small>โลจิสติกส์ &amp; ตลาดถึงมือผู้บริโภค</small></button>
       <button class="mobile-stage-btn" type="button" data-mobile-season="2"><b>🏭 Season 2</b><small>การผลิตและแปรรูปอาหาร</small></button>
@@ -4502,7 +4508,35 @@ if("ResizeObserver" in window){
 e.loginBtn.onclick=login;e.emailInput.onkeydown=x=>{if(x.key==="Enter")login()};e.changeUserBtn.onclick=logout;e.leaderboardBtn.onclick=leaderboard;e.qualifierBtn.onclick=qualifierModal;e.historyBtn.onclick=history;e.howToBtn.onclick=howto;e.menuModalClose.onclick=()=>e.menuOverlay.classList.add("hidden-layer");e.menuOverlay.onclick=x=>{if(x.target===e.menuOverlay)e.menuOverlay.classList.add("hidden-layer")};document.querySelectorAll(".nav-item[data-season]").forEach(b=>b.onclick=()=>switchSeason(Number(b.dataset.season||1)));e.pauseBtn.onclick=togglePause;e.submitBtn.onclick=()=>submit(false);e.nextBtn.onclick=next;e.endGameBtn.onclick=endGame;e.startQuestionBtn.onclick=startQuestion;e.gateLogoutBtn.onclick=logout;e.resultHomeBtn.onclick=endGame;
 const mobileStagePicker=document.getElementById("mobileStagePicker");
 const mobileStageStatus=document.getElementById("mobileStageStatus");
+const mobileFullscreenBtn=document.getElementById("mobileFullscreenBtn");
 let mobileStageChosen=false;
+function fullscreenElement(){return document.fullscreenElement||document.webkitFullscreenElement||null}
+async function toggleMobileFullscreen(){
+  try{
+    if(fullscreenElement()){
+      const exit=document.exitFullscreen||document.webkitExitFullscreen;
+      if(exit)await exit.call(document);
+    }else{
+      const target=document.documentElement;
+      const request=target.requestFullscreen||target.webkitRequestFullscreen;
+      if(!request)throw new Error("FULLSCREEN_UNSUPPORTED");
+      await request.call(target);
+      try{if(screen.orientation?.lock)await screen.orientation.lock("landscape")}catch(_){}
+    }
+  }catch(_){
+    setMobileStageStatus("อุปกรณ์นี้ไม่อนุญาต Fullscreen • ยังเล่นแบบปกติได้",false,"retry");
+  }
+}
+function syncMobileFullscreenButton(){
+  if(!mobileFullscreenBtn)return;
+  const active=!!fullscreenElement();
+  mobileFullscreenBtn.classList.toggle("is-fullscreen",active);
+  mobileFullscreenBtn.textContent=active?"✓ เต็มจอแล้ว • แตะเพื่อออก":"⛶ เล่นเต็มจอ";
+  setTimeout(()=>{syncAllOverlayGeometry();syncMobileStagePicker()},80);
+}
+mobileFullscreenBtn?.addEventListener("click",toggleMobileFullscreen);
+document.addEventListener("fullscreenchange",syncMobileFullscreenButton);
+document.addEventListener("webkitfullscreenchange",syncMobileFullscreenButton);
 function setMobileStageStatus(message,isLoading=false,state=""){
   if(mobileStageStatus){
     mobileStageStatus.textContent=message;
