@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.19.2-S1Q07-HOTSPOT-FIX">
+<meta name="fs-build" content="V18.19.3-SHARED-HOTSPOT-REVEAL">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -4157,6 +4157,7 @@ function tick(){e.timerText.textContent=`${String(Math.max(0,Math.floor(seconds/
 // coordinates of the single hairnet hotspot. Therefore the issue scores only once.
 const SAME_ISSUE_ALT_ZONES={
   S1Q01:{
+    hotspotId:"H02",
     canonical:{x:58.8,y:29.9},
     zones:[
       {x:18.4,y:29.2,rx:4.8,ry:9.0},   // inspector at left
@@ -4165,6 +4166,7 @@ const SAME_ISSUE_ALT_ZONES={
     ]
   },
   S1Q05:{
+    hotspotId:"H01",
     canonical:{x:35.3,y:16.2},
     zones:[
       {x:35.3,y:16.2,rx:4.8,ry:9.0},   // worker in truck
@@ -4173,6 +4175,7 @@ const SAME_ISSUE_ALT_ZONES={
     ]
   },
   S1Q06:{
+    hotspotId:"H05",
     canonical:{x:36.5,y:23.0},
     zones:[
       {x:36.5,y:23.0,rx:4.8,ry:9.5},   // receiving inspector
@@ -4180,13 +4183,15 @@ const SAME_ISSUE_ALT_ZONES={
     ]
   },
   S1Q07:{
-    canonical:{x:38.5,y:25.0},
+    hotspotId:"H06",
+    canonical:{x:39.4,y:18.7},
     zones:[
-      {x:38.5,y:25.0,rx:4.8,ry:9.5},   // foreground worker
-      {x:58.5,y:32.0,rx:4.8,ry:9.5}    // background worker
+      {x:39.4,y:18.7,rx:4.8,ry:7.0},   // foreground worker head
+      {x:20.5,y:25.0,rx:4.8,ry:9.0}    // background worker head
     ]
   },
   S1Q09:{
+    hotspotId:"H05",
     canonical:{x:38.0,y:23.0},
     zones:[
       {x:38.0,y:23.0,rx:4.8,ry:9.5},   // foreground worker
@@ -4205,6 +4210,27 @@ function normalizeSameIssuePoint(questionId,s){
     return {x:cfg.canonical.x,y:cfg.canonical.y};
   }
   return {x:s.x,y:s.y};
+}
+
+// V18.19.3 — when one issue has several valid visible locations,
+// scoring is still ONE answer, but the result screen shows ALL valid circles.
+function expandSharedIssueReveal(questionId,revealList){
+  const baseList=Array.isArray(revealList)?revealList:[];
+  const cfg=SAME_ISSUE_ALT_ZONES[String(questionId||"")];
+  if(!cfg||!cfg.hotspotId||!Array.isArray(cfg.zones)||!cfg.zones.length)return baseList;
+
+  const canonicalId=String(cfg.hotspotId);
+  const base=baseList.find(h=>String(h?.hotspotId||"")===canonicalId);
+  if(!base)return baseList;
+
+  const others=baseList.filter(h=>String(h?.hotspotId||"")!==canonicalId);
+  const shared=cfg.zones.map((z,i)=>({
+    ...base,
+    hotspotId:i===0?canonicalId:`${canonicalId}__ALT${i}`,
+    sharedCanonicalId:canonicalId,
+    x:z.x,y:z.y,rx:z.rx,ry:z.ry
+  }));
+  return [...others,...shared];
 }
 
 function selectPoint(cx,cy){if(ended||!started){if(!started)toast("กด START ก่อนเริ่มเลือกจุด");return;}const max=actualHotspotCount(q);if(selections.length>=max){toast(`เลือกได้สูงสุด ${max} จุด`);return}const r=e.clickLayer.getBoundingClientRect(),x=(cx-r.left)/r.width*100,y=(cy-r.top)/r.height*100;if(x<0||x>100||y<0||y>100)return;if(selections.some(s=>Math.hypot(s.x-x,s.y-y)<2.1)){toast("จุดนี้ใกล้กับจุดที่เลือกไว้แล้ว");return}selections.push({x:+x.toFixed(2),y:+y.toFixed(2),reasonChoiceId:""});renderMarkers();renderReasons();action(`เลือกแล้ว ${selections.length}/${max} จุด`,"ok")}
@@ -4330,14 +4356,19 @@ function renderReasons(){
   e.reasonList.querySelectorAll("[data-delete-selection]").forEach(btn=>{btn.onclick=ev=>{ev.stopPropagation();removeSelectionAt(Number(btn.dataset.deleteSelection))}});
   wireReasonDrag();
 }
-function reveal(list){e.revealLayer.innerHTML="";(list||[]).forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})}
+function reveal(list){
+  e.revealLayer.innerHTML="";
+  const visualList=expandSharedIssueReveal(q?.questionId,list);
+  visualList.forEach(h=>{const d=document.createElement("div");d.className="reveal-ring";d.style.left=h.x+"%";d.style.top=h.y+"%";d.style.width=h.rx*2+"%";d.style.height=h.ry*2+"%";e.revealLayer.appendChild(d)})
+}
 function renderResultVisual(revealList,results){
   if(!e.resultVisual||!e.resultVisualImage)return;
   e.resultVisual.classList.remove("hidden");
   e.resultVisualImage.src=imagePath(q);
   e.resultVisualReveal.innerHTML="";
   e.resultVisualMarkers.innerHTML="";
-  (revealList||[]).forEach(h=>{
+  const visualList=expandSharedIssueReveal(q?.questionId,revealList);
+  visualList.forEach(h=>{
     const ring=document.createElement("div");
     ring.className="answer-ring";
     ring.style.left=h.x+"%";ring.style.top=h.y+"%";
