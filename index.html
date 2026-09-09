@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18.17-AUTO-SCORE-TIMEOUT">
+<meta name="fs-build" content="V18.18.18-PRESTART-NEXT-BUTTONS">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3032,9 +3032,8 @@ body.mobile-landscape .mobile-stage-picker.active{display:flex}
             <div id="preMissionTitle" class="prehint-title">เลือกจุดที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety</div>
             <div id="preMissionList" class="prehint-list"></div>
             <div class="prehint-count-wrap">
-              <div class="prehint-count-line">ถัดไปใน <b id="preMissionCount">4</b> วินาที</div>
-              <div class="prehint-progress"><span id="preMissionProgress"></span></div>
-              <div class="prehint-foot">💡 ดูภารกิจและวิธีเล่นก่อน แล้วค่อยดู Hint ต่อ</div>
+              <button id="preMissionNext" class="gate-start" type="button">ถัดไป ▶</button>
+              <div class="prehint-foot">💡 ดูภารกิจและวิธีเล่นก่อน แล้วกดถัดไปเพื่อดู Hint</div>
             </div>
           </div>
         </div>
@@ -3047,9 +3046,8 @@ body.mobile-landscape .mobile-stage-picker.active{display:flex}
             <div id="preHintTitle" class="prehint-title">มองหาสิ่งที่ <b>“ไม่สอดคล้อง”</b><br>กับ Food Safety</div>
             <div id="preHintList" class="prehint-list"></div>
             <div class="prehint-count-wrap">
-              <div class="prehint-count-line">เริ่มใน <b id="preHintCount">5</b> วินาที</div>
-              <div class="prehint-progress"><span id="preHintProgress"></span></div>
-              <div class="prehint-foot">💡 ดูคำใบ้สั้น ๆ ก่อนเริ่มค้นหาจุดเสี่ยง</div>
+              <button id="preHintNext" class="gate-start" type="button">เริ่มเกม ▶</button>
+              <div class="prehint-foot">💡 ดูคำใบ้ให้พร้อม แล้วกดเริ่มเกมเมื่อคุณพร้อม</div>
             </div>
           </div>
         </div>
@@ -3910,12 +3908,8 @@ function hidePreStartMission(runFinish=true){
   if(runFinish&&typeof preMissionOnFinish==="function"){const fn=preMissionOnFinish;preMissionOnFinish=null;fn()}else if(!runFinish){preMissionOnFinish=null}
 }
 function showPreStartMission(season,onFinish){
-  clearInterval(preMissionTimer);preMissionOnFinish=onFinish;preMissionRemaining=PRESTART_MISSION_SECONDS;renderPreStartMission(season);
-  const overlay=document.getElementById("preStartMission"),count=document.getElementById("preMissionCount"),bar=document.getElementById("preMissionProgress");
-  if(count)count.textContent=preMissionRemaining;
-  if(bar){bar.style.transition="none";bar.style.transform="scaleX(1)";requestAnimationFrame(()=>{bar.style.transition=`transform ${PRESTART_MISSION_SECONDS}s linear`;bar.style.transform="scaleX(0)"})}
-  overlay?.classList.remove("hidden");
-  preMissionTimer=setInterval(()=>{preMissionRemaining--;if(count)count.textContent=Math.max(0,preMissionRemaining);if(preMissionRemaining<=0)hidePreStartMission(true)},1000);
+  clearInterval(preMissionTimer);preMissionTimer=null;preMissionOnFinish=onFinish;renderPreStartMission(season);
+  document.getElementById("preStartMission")?.classList.remove("hidden");
 }
 function renderPreStartHint(season){
   const s=Number(season||1);
@@ -3932,15 +3926,13 @@ function hidePreStartHint(runFinish=true){
   if(runFinish&&typeof preHintOnFinish==="function"){const fn=preHintOnFinish;preHintOnFinish=null;fn()}else if(!runFinish){preHintOnFinish=null}
 }
 function showPreStartHint(season,onFinish){
-  clearInterval(preHintTimer);preHintOnFinish=onFinish;preHintRemaining=PRESTART_HINT_SECONDS;renderPreStartHint(season);
-  const overlay=document.getElementById("preStartHint"),count=document.getElementById("preHintCount"),bar=document.getElementById("preHintProgress");
-  if(count)count.textContent=preHintRemaining;
-  if(bar){bar.style.transition="none";bar.style.transform="scaleX(1)";requestAnimationFrame(()=>{bar.style.transition=`transform ${PRESTART_HINT_SECONDS}s linear`;bar.style.transform="scaleX(0)"})}
-  overlay?.classList.remove("hidden");
-  preHintTimer=setInterval(()=>{preHintRemaining--;if(count)count.textContent=Math.max(0,preHintRemaining);if(preHintRemaining<=0)hidePreStartHint(true)},1000);
+  clearInterval(preHintTimer);preHintTimer=null;preHintOnFinish=onFinish;renderPreStartHint(season);
+  document.getElementById("preStartHint")?.classList.remove("hidden");
 }
 document.getElementById("preMissionClose")?.addEventListener("click",()=>hidePreStartMission(true));
 document.getElementById("preHintClose")?.addEventListener("click",()=>hidePreStartHint(true));
+document.getElementById("preMissionNext")?.addEventListener("click",()=>hidePreStartMission(true));
+document.getElementById("preHintNext")?.addEventListener("click",()=>hidePreStartHint(true));
 
 function startSession(){
   clearInterval(timer); started=false; ended=false; preHintShownSeasons=new Set(); clearInterval(preMissionTimer); preMissionTimer=null; document.getElementById("preStartMission")?.classList.add("hidden");
