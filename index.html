@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18.20-PAUSE-BLUR-ANTI-CHEAT">
+<meta name="fs-build" content="V18.19.1-SUPABASE-CUMULATIVE-FINAL">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3368,7 +3368,75 @@ async function backendGet(query,timeoutMs=30000){
   const sep=query.startsWith("?")?"":"?";
   return request(`${base}${sep}${query}`,{timeoutMs});
 }
+
 const api=p=>backendPost(p,30000);
+
+// ===== V18.19.1: Supabase primary submit backend for Season 1-3 (cumulative scoring) =====
+const SUPABASE_URL="https://psnxnpsjdldqvgpdjzfx.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_De5yhRQIPI-SoW7ejAOOFA__SooBHkm";
+const SUPABASE_SCORE_MODE="CUMULATIVE";
+
+async function supabaseRpc(functionName,params,timeoutMs=12000){
+  const ctl=new AbortController();
+  const to=setTimeout(()=>ctl.abort(),timeoutMs);
+  try{
+    const r=await fetch(`${SUPABASE_URL}/rest/v1/rpc/${functionName}`,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "apikey":SUPABASE_PUBLISHABLE_KEY
+      },
+      body:JSON.stringify(params),
+      signal:ctl.signal
+    });
+    const bodyText=await r.text();
+    let data=null;
+    try{data=bodyText?JSON.parse(bodyText):null}catch{}
+    if(!r.ok){
+      const detail=data?.message||data?.details||bodyText||`HTTP ${r.status}`;
+      throw Error(`Supabase HTTP ${r.status}: ${detail}`);
+    }
+    return data;
+  }catch(err){
+    if(err?.name==="AbortError")throw Error("Supabase ใช้เวลานานเกินกำหนด");
+    if(err instanceof TypeError)throw Error(`Supabase Network/CORS: ${err.message||"Failed to fetch"}`);
+    throw err;
+  }finally{
+    clearTimeout(to);
+  }
+}
+
+async function submitToSupabase(payload){
+  return supabaseRpc("game_submit_v1",{
+    p_attempt_id:payload.attemptId,
+    p_user_email:payload.email,
+    p_display_name:user?.displayName||user?.name||payload.email,
+    p_question_id:payload.questionId,
+    p_selections:payload.selections.map(s=>({
+      x:Number(s.x),
+      y:Number(s.y),
+      reasonChoiceId:String(s.reasonChoiceId||"")
+    })),
+    p_time_left_sec:Math.max(0,Number(seconds||0))
+  },12000);
+}
+
+// Keep Google Sheet as a non-blocking backup during migration.
+// Supabase is the scoring source of truth. Every NEW play accumulates score.
+// Google backup NEVER delays the result popup.
+function mirrorAttemptToGoogle(payload){
+  api({...payload,isRetry:true})
+    .then(d=>{
+      if(user&&d?.qualifier){
+        user.qualifier=d.qualifier;
+        saveUser(user);
+        updateQualifierUI(user.qualifier||{});
+      }
+      setTimeout(()=>{try{refreshSeasonControl()}catch{}},300);
+    })
+    .catch(err=>console.warn("Google backup mirror failed (Supabase already saved)",err));
+}
+
 
 // V18.16.1: warm lookup caches in the backend without blocking the game.
 function prewarmSeasonBackend(season){
@@ -4353,29 +4421,22 @@ async function submit(auto=false){
     let d;
     const transientSubmitError=(err)=>{
       const msg=String(err?.message||err||"");
-      return /Backend ใช้เวลานาน|Network\/CORS|HTTP 5\d\d|หมดเวลาการล็อก|ล็อกไว้นานเกินไป|Lock timed out|Could not acquire lock|Service invoked too many times/i.test(msg);
+      return /Supabase ใช้เวลานาน|Supabase Network\/CORS|Supabase HTTP 5\d\d|Failed to fetch|NetworkError/i.test(msg);
     };
 
     try{
-      d=await api(payload);
+      d=await submitToSupabase(payload);
     }catch(firstErr){
       if(!transientSubmitError(firstErr))throw firstErr;
 
-      // V18.13: transient lock/network errors are retried automatically.
-      // Reuse the SAME attemptId so the backend remains idempotent.
-      action("ระบบกำลังบันทึกซ้ำอัตโนมัติ • คำตอบไม่หาย...");
-      await new Promise(r=>setTimeout(r,700));
-
-      try{
-        d=await api({...payload,isRetry:true});
-      }catch(secondErr){
-        if(!transientSubmitError(secondErr))throw secondErr;
-
-        action("ยังมีการใช้งานพร้อมกัน • กำลังลองอีกครั้ง...");
-        await new Promise(r=>setTimeout(r,1200));
-        d=await api({...payload,isRetry:true});
-      }
+      // Retry the SAME attemptId only for network duplication. A new play gets a new attemptId and adds score again.
+      action("Supabase กำลังลองบันทึกซ้ำอัตโนมัติ • คำตอบไม่หาย...");
+      await new Promise(r=>setTimeout(r,450));
+      d=await submitToSupabase(payload);
     }
+
+    // Google Sheet becomes backup only; do not await it.
+    mirrorAttemptToGoogle(payload);
 
     clearInterval(statusTimer);
     setBackend(true);
@@ -4453,8 +4514,8 @@ async function submit(auto=false){
     const msg=String(err?.message||err||"");
     if(/HTTP 404/i.test(msg)){
       setBackend(false);
-      action("Backend URL ใช้ไม่ได้ • คำตอบยังอยู่ ไม่ต้องตอบใหม่");
-      toast("Backend HTTP 404 • กรุณาใส่ Web app URL /exec ล่าสุด",5000);
+      action("ระบบบันทึกยังเชื่อมไม่ได้ • คำตอบยังอยู่ ไม่ต้องตอบใหม่");
+      toast("ระบบบันทึกตอบกลับ HTTP 404 • คำตอบยังไม่หาย",5000);
       await configureBackend();
     }else{
       action("ยังบันทึกไม่สำเร็จ • คำตอบยังอยู่ กดลองบันทึกอีกครั้ง");
