@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.18.16-Q20-NO-TIME-GUESS">
+<meta name="fs-build" content="V18.18.17-AUTO-SCORE-TIMEOUT">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3072,7 +3072,7 @@ body.mobile-landscape .mobile-stage-picker.active{display:flex}
                 <span>✓ ตำแหน่ง <b id="positionMaxScore">40</b></span>
                 <span>★ เหตุผล <b id="reasonMaxScore">40</b></span>
               </div>
-              <p class="save-rule">💾 บันทึกคำตอบก่อนหมดเวลา</p>
+              <p class="save-rule">💾 กดบันทึกได้ทันที • หากหมดเวลา ระบบจะตรวจคำตอบที่เลือกไว้อัตโนมัติ</p>
             </div>
           </div>
         </section>
@@ -4266,16 +4266,28 @@ function renderResultVisual(revealList,results){
 function startStatusCycle(){const msgs=["กำลังตรวจตำแหน่ง...","กำลังตรวจเหตุผล...","กำลังบันทึกคะแนน..."];let i=0;e.busyText.textContent=msgs[0];clearInterval(statusTimer);statusTimer=setInterval(()=>{i=(i+1)%msgs.length;e.busyText.textContent=msgs[i]},900)}
 function timeoutQuestion(){
   if(ended)return;
-  ended=true;started=false;paused=false;seconds=0;tick();clearInterval(timer);
+  seconds=0;tick();clearInterval(timer);timer=null;
+
+  // V18.18.17: เมื่อหมดเวลา ถ้ามีคำตอบค้างอยู่ให้ตรวจและบันทึกอัตโนมัติ
+  // แม้ผู้เล่นจะยังไม่ได้กด Submit ก็ตาม
+  if(selections.length){
+    action("หมดเวลา • กำลังตรวจคำตอบที่เลือกไว้อัตโนมัติ...");
+    submit(true);
+    return;
+  }
+
+  // ไม่มีการเลือกคำตอบเลย จึงไม่มีคะแนนให้ตรวจ
+  ended=true;started=false;paused=false;
   e.submitBtn.disabled=true;e.pauseBtn.disabled=true;e.clickLayer.style.pointerEvents="none";
-  action("หมดเวลา • ข้อนี้ไม่ได้บันทึกคะแนน");
-  e.liveQuestionScore.textContent="--";
+  action("หมดเวลา • ไม่มีคำตอบที่เลือกไว้");
+  e.liveQuestionScore.textContent="0";
   if(e.resultIcon)e.resultIcon.textContent="⏰";
   const card=e.resultOverlay.querySelector(".result-modal");if(card)card.classList.add("timeout");
   e.resultTitle.textContent="หมดเวลา";
-  e.resultScore.textContent="ไม่ได้บันทึกคะแนน";
-  e.resultLine.innerHTML='คุณยังไม่ได้กด <b>บันทึกคำตอบ</b> ก่อนหมดเวลา<br>จึงไม่มีการส่งคำตอบไป Google Sheet และข้อนี้ไม่ได้คะแนน';
-  if(e.resultVisual)e.resultVisual.classList.add("hidden");e.resultAnswers.innerHTML='<div class="timeout-note">คะแนนจะถูกบันทึกเฉพาะเมื่อกด “บันทึกคำตอบ” ก่อนเวลาหมดเท่านั้น</div>';
+  e.resultScore.textContent="0 คะแนน";
+  e.resultLine.innerHTML='หมดเวลาและไม่มีจุดที่เลือกไว้<br>จึงไม่มีคำตอบให้ระบบตรวจคะแนน';
+  if(e.resultVisual)e.resultVisual.classList.add("hidden");
+  e.resultAnswers.innerHTML='<div class="timeout-note">ถ้ามีการเลือกจุดไว้ก่อนหมดเวลา ระบบจะตรวจและนับคะแนนให้อัตโนมัติ</div>';
   const more=idx<order.length-1;
   e.nextBtn.textContent="▶ เริ่มข้อถัดไป";e.nextBtn.classList.toggle("hidden",!more);
   e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
@@ -4284,7 +4296,7 @@ function timeoutQuestion(){
 }
 async function submit(auto=false){
   if(ended)return;
-  if(seconds<=0){timeoutQuestion();return}
+  if(seconds<=0&&!auto){timeoutQuestion();return}
   if(!started){toast("กด START ก่อน");return}
   if(paused){toast("กดเล่นต่อก่อนบันทึกคำตอบ");return}
   if(!selections.length){toast("กรุณาเลือกจุดในภาพก่อน");return}
@@ -4302,8 +4314,8 @@ async function submit(auto=false){
   e.submitBtn.disabled=true;e.pauseBtn.disabled=true;
   e.submitBtn.classList.add("loading");
   e.submitBtn.innerHTML='<span class="btn-game-icon">⏳</span><span>กำลังตรวจ...</span>';
-  action("กำลังบันทึกและตรวจคำตอบ...");
-  busy(true,"กำลังตรวจคำตอบ...","รอสักครู่ • คำตอบของคุณจะไม่หาย");
+  action(auto?"หมดเวลา • กำลังตรวจและบันทึกคำตอบอัตโนมัติ...":"กำลังบันทึกและตรวจคำตอบ...");
+  busy(true,auto?"หมดเวลา • กำลังตรวจคำตอบอัตโนมัติ...":"กำลังตรวจคำตอบ...","รอสักครู่ • คำตอบของคุณจะไม่หาย");
   startStatusCycle();
 
   try{
@@ -4401,7 +4413,7 @@ async function submit(auto=false){
     e.resultAnswers.innerHTML=`<div class="answer-section"><div class="answer-section-title">📍 ผลตามจุดที่คุณเลือก</div>${selectedRows||'<div class="answer-none">ไม่ได้เลือกจุด</div>'}</div><div class="answer-section"><div class="answer-section-title">🔎 ${missedTitle}</div>${missedRows}</div>`;
 
     const more=idx<order.length-1;
-    e.resultTitle.textContent=more?"สรุปผลข้อนี้":"สรุปผลข้อสุดท้าย";
+    e.resultTitle.textContent=auto?"หมดเวลา • ตรวจคำตอบอัตโนมัติ":(more?"สรุปผลข้อนี้":"สรุปผลข้อสุดท้าย");
     e.nextBtn.textContent="▶ เริ่มข้อถัดไป";
     e.nextBtn.classList.toggle("hidden",!more);
     e.endGameBtn.textContent=more?"■ จบเกมส์":"✓ จบเกมส์";
@@ -4409,7 +4421,7 @@ async function submit(auto=false){
 
     busy(false);
     syncAllOverlayGeometry();e.resultOverlay.classList.remove("hidden-layer");
-    action(more?"บันทึกสำเร็จ • กดเริ่มข้อถัดไปเมื่อพร้อม":"บันทึกสำเร็จ • กดจบเกมส์","ok");
+    action(auto?(more?"หมดเวลา • นับคะแนนคำตอบที่เลือกไว้แล้ว":"หมดเวลา • นับคะแนนคำตอบที่เลือกไว้แล้ว"):(more?"บันทึกสำเร็จ • กดเริ่มข้อถัดไปเมื่อพร้อม":"บันทึกสำเร็จ • กดจบเกมส์"),"ok");
 
   }catch(err){
     clearInterval(statusTimer);
@@ -4501,7 +4513,7 @@ async function history(){
     busy(false);
   }
 }
-function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>จับคู่เหตุผล</b><br>ลากข้อความเหตุผลสั้น ๆ ไปวางในช่องของจุดที่เลือก • เป็นคะแนนเสริมและไม่บังคับ</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • ต้องบันทึกก่อนหมดเวลา</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800</div></div></div>`)}
+function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>จับคู่เหตุผล</b><br>ลากข้อความเหตุผลสั้น ๆ ไปวางในช่องของจุดที่เลือก • เป็นคะแนนเสริมและไม่บังคับ</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • หากหมดเวลา ระบบจะตรวจคำตอบที่เลือกไว้อัตโนมัติ</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800</div></div></div>`)}
 function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
