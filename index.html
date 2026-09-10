@@ -5953,6 +5953,17 @@ const SAME_ISSUE_ALT_ZONES={
       {x:9.8,y:67.5,rx:12.8,ry:17.5},  // worker holding raw chicken at left
       {x:18.2,y:83.8,rx:13.8,ry:12.0}  // red tote of raw chicken below
     ]
+  },
+  // V16.9.39 — S1Q19:
+  // "ใช้มือเปล่าสัมผัสอาหาร" มีตำแหน่งที่มองเห็นได้ 2 จุดในภาพ
+  // แตะมือที่เขียง หรือมือด้านขวาบนจาน ให้เป็นคำตอบ H03 เดียวกัน
+  S1Q19:{
+    hotspotId:"H03",
+    canonical:{x:79.0,y:61.0},
+    zones:[
+      {x:41.5,y:60.5,rx:7.5,ry:10.5}, // มือซ้ายบนเขียง
+      {x:79.0,y:61.0,rx:10.0,ry:10.0} // มือขวาสัมผัสอาหารบนจาน
+    ]
   }
 };
 function pointInsideEllipse(px,py,z){
@@ -6786,7 +6797,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.38 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.39 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
