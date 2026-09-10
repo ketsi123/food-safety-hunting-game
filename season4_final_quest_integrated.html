@@ -569,6 +569,132 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 }
 </style>
 
+
+<style id="v18-20-6-ipad-balance-fix">
+/* iPad / large tablet landscape tuning */
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (min-width:900px){
+  .top{
+    top:6px!important;
+    left:50%!important;
+    transform:translateX(-50%)!important;
+    width:calc(100% - 18px)!important;
+    height:58px!important;
+    padding:4px 6px!important;
+    gap:4px!important;
+    align-items:center!important;
+    z-index:15!important;
+  }
+
+  .brand{display:none!important;}
+
+  .hud{
+    width:100%!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:84px 94px repeat(5,minmax(92px,1fr)) 86px 80px!important;
+    gap:4px!important;
+    align-items:center!important;
+  }
+
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn,
+  .box{
+    width:100%!important;
+    min-width:0!important;
+    height:46px!important;
+    border-radius:11px!important;
+    padding:4px 6px!important;
+    overflow:hidden!important;
+  }
+
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn{
+    font-size:9px!important;
+    line-height:1.05!important;
+    white-space:normal!important;
+  }
+
+  .box{
+    font-size:8px!important;
+    line-height:1.05!important;
+  }
+
+  .box b{
+    margin-top:3px!important;
+    font-size:17px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+  }
+
+  #heartsRow{
+    top:64px!important;
+    left:16px!important;
+    padding:4px 8px!important;
+    gap:3px!important;
+    border-radius:12px!important;
+    transform:none!important;
+    z-index:12!important;
+  }
+  #heartsRow .heart{font-size:15px!important;}
+
+  #question{
+    top:98px!important;
+    width:min(820px,58%)!important;
+    max-height:98px!important;
+    padding:10px 18px 12px!important;
+    font-size:18px!important;
+    line-height:1.22!important;
+    border-width:3px!important;
+    border-radius:18px!important;
+    overflow:auto!important;
+    z-index:11!important;
+  }
+  #question small{
+    font-size:11px!important;
+    padding:2px 10px!important;
+    margin:0 0 5px!important;
+    line-height:1.1!important;
+  }
+  #question:after{
+    font-size:10px!important;
+    line-height:1.1!important;
+    margin-top:3px!important;
+  }
+
+  #progress{
+    left:18px!important;
+    bottom:18px!important;
+    width:min(520px,45%)!important;
+    height:14px!important;
+  }
+
+  #mobile{
+    right:22px!important;
+    bottom:22px!important;
+    gap:12px!important;
+    align-items:end!important;
+  }
+  #mobile .mb,
+  #mobile #fireBtn{
+    width:64px!important;
+    height:64px!important;
+    font-size:28px!important;
+  }
+  #mobile .fireHint{
+    top:-20px!important;
+    font-size:13px!important;
+    padding:3px 10px!important;
+  }
+}
+
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (min-width:1180px){
+  .hud{
+    grid-template-columns:86px 96px repeat(5,minmax(98px,1fr)) 90px 84px!important;
+  }
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn,.box{height:48px!important;}
+  #question{top:102px!important;width:min(860px,60%)!important;font-size:19px!important;}
+  #mobile .mb,#mobile #fireBtn{width:68px!important;height:68px!important;font-size:30px!important;}
+}
+</style>
+
 </head>
 <body>
 <div id="shell">
@@ -671,13 +797,18 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.18.21</div>
+ pointer-events:none">S4 V18.20.6</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
 const ground=620, worldW=21500;
 const shell=document.getElementById("shell");
 const mobileLandscapeQuery=window.matchMedia("(hover:none) and (pointer:coarse) and (orientation:landscape)");
+function isTabletLandscape(){
+  const vv=window.visualViewport;
+  const side=Math.max(vv?.width||0,vv?.height||0,window.innerWidth,window.innerHeight);
+  return mobileLandscapeQuery.matches && side>=900;
+}
 
 // Chrome mobile's 100vh can include space hidden behind its URL/navigation bars.
 // Fit the complete 16:9 game to the actually visible viewport instead.
@@ -822,7 +953,11 @@ async function autoSaveEnd(reason){
 function setupGate(){
   if(active>=20){gateClosed=false;qBox.style.display="none";return}
   const gx=checkpointXs[active];
-  const q=qs[active], ans=q[2], correctIdx=q[3], bw=225,bh=74,gap=24,total=bw*3+gap*2,start=gx-total/2;
+  const q=qs[active], ans=q[2], correctIdx=q[3];
+  const tablet=isTabletLandscape();
+  const bw=tablet?270:225, bh=tablet?86:74, gap=tablet?30:24;
+  const total=bw*3+gap*2, start=gx-total/2;
+  const blockY=tablet?388:375;
   const correctSlot=correctSlotPattern[active%correctSlotPattern.length];
   const wrongChoices=ans.map((txt,idx)=>({txt,idx})).filter(o=>o.idx!==correctIdx);
   for(let i=wrongChoices.length-1;i>0;i--){
@@ -837,7 +972,7 @@ function setupGate(){
     const w=wrongChoices[wi++];
     arranged[slot]={txt:w.txt,originalIndex:w.idx,correct:false};
   }
-  blocks=arranged.map((item,slot)=>({x:start+slot*(bw+gap),y:375,w:bw,h:bh,i:slot,txt:item.txt,originalIndex:item.originalIndex,correct:item.correct,bounce:0,flash:0}));
+  blocks=arranged.map((item,slot)=>({x:start+slot*(bw+gap),y:blockY,w:bw,h:bh,i:slot,txt:item.txt,originalIndex:item.originalIndex,correct:item.correct,bounce:0,flash:0}));
   gateClosed=true;
 }
 function showQuestion(){
@@ -1207,9 +1342,15 @@ function drawWorld(){
  const signs=[[checkpointXs[0]-450,"🛒 MODERN TRADE"],[checkpointXs[5]-300,"🏭 FACTORY"],[checkpointXs[10]-300,"🧠 CULTURE"],[checkpointXs[15]-300,"🏆 FINAL MIX"]];
  for(const [wx,label] of signs){const x=wx-cam;if(x>-260&&x<W+40){ctx.save();ctx.shadowColor="rgba(0,0,0,.22)";ctx.shadowBlur=12;ctx.shadowOffsetY=7;let sg2=ctx.createLinearGradient(x,485,x,537);sg2.addColorStop(0,"#1976ae");sg2.addColorStop(1,"#083f63");ctx.fillStyle=sg2;rr(x,482,230,54,14);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle="rgba(255,255,255,.55)";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#fff";ctx.font="bold 17px Tahoma";ctx.textAlign="center";ctx.fillText(label,x+115,516);ctx.restore();}}
 }
-function wrap(t,x,y,mw,lh){
- const a=[...t];let lines=[],cur="";for(const c of a){if(ctx.measureText(cur+c).width>mw){lines.push(cur);cur=c}else cur+=c}if(cur)lines.push(cur);
- const sy=y-(lines.length-1)*lh/2;lines.slice(0,3).forEach((l,i)=>ctx.fillText(l,x,sy+i*lh))
+function wrap(t,x,y,mw,lh,maxLines=3){
+ const a=[...String(t||"")];let lines=[],cur="";
+ for(const c of a){
+   if(ctx.measureText(cur+c).width>mw && cur){lines.push(cur);cur=c}else cur+=c;
+ }
+ if(cur)lines.push(cur);
+ lines=lines.slice(0,maxLines);
+ const sy=y-(lines.length-1)*lh/2;
+ lines.forEach((l,i)=>ctx.fillText(l,x,sy+i*lh));
 }
 function drawGate(){
  if(active>=20)return;
@@ -1228,7 +1369,11 @@ function drawGate(){
    ctx.save();ctx.shadowColor="rgba(0,0,0,.28)";ctx.shadowBlur=13;ctx.shadowOffsetY=9;
    let bg=ctx.createLinearGradient(x,y,x,y+b.h);if(ok){bg.addColorStop(0,"#72ee8c");bg.addColorStop(1,"#1ba447")}else if(bad){bg.addColorStop(0,"#ff8d8d");bg.addColorStop(1,"#c72a2a")}else{bg.addColorStop(0,"#ffd85e");bg.addColorStop(.48,"#f5b62e");bg.addColorStop(1,"#cc7c09")};ctx.fillStyle=bg;rr(x,y,b.w,b.h,15);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle=ok?"#d9ffe2":bad?"#ffdcdc":"#fff0a0";ctx.lineWidth=3;ctx.stroke();
    ctx.fillStyle="rgba(255,255,255,.32)";rr(x+7,y+7,b.w-14,12,6);ctx.fill();
-   ctx.fillStyle=ok?"#ffffff":bad?"#ffffff":"#4b2b00";ctx.font="bold 17px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.shadowColor="transparent";ctx.shadowBlur=0;wrap(b.txt,x+b.w/2,y+b.h/2+2,b.w-20,20);ctx.restore();
+   const tablet=isTabletLandscape();
+   ctx.fillStyle=ok?"#ffffff":bad?"#ffffff":"#4b2b00";
+   ctx.font=`bold ${tablet?19:17}px Tahoma`;
+   ctx.textAlign="center";ctx.textBaseline="middle";ctx.shadowColor="transparent";ctx.shadowBlur=0;
+   wrap(b.txt,x+b.w/2,y+b.h/2+(tablet?1:2),b.w-(tablet?28:20),tablet?22:20,tablet?2:3);ctx.restore();
  }
 }
 function drawCheckpoints(){
