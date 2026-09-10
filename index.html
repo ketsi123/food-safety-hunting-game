@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.19.8-MOBILE-UX-FIT-DRAG">
+<meta name="fs-build" content="V18.19.9-MOBILE-HARD-NO-COPY">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3136,6 +3136,34 @@ body.mobile-landscape #gameScreen:not(.hidden) .image-tip{
 }
 </style>
 
+
+<style id="v18-19-9-hard-no-copy">
+/* Hard block native image callout/copy on gameplay media only */
+#gameScreen img,
+#gameScreen .image-wrap,
+#gameScreen .image-wrap *,
+#gameScreen .click-layer,
+#gameScreen .click-layer *,
+#gameScreen .game-image,
+#gameScreen canvas {
+  -webkit-touch-callout: none !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
+
+#gameScreen img,
+#gameScreen .game-image {
+  pointer-events: none !important;
+}
+
+#gameScreen .click-layer {
+  pointer-events: auto !important;
+  touch-action: none !important;
+}
+</style>
+
 </head>
 <body>
 
@@ -5626,6 +5654,67 @@ if(fsHomeReturn && cachedReturnUser?.email){
       if(area)area.style.visibility="visible";
     },80);
   },{passive:true});
+})();
+</script>
+
+
+<script>
+/* V18.19.9 — aggressively suppress native long-press image menus on mobile/iPad */
+(function(){
+  const inGameMedia = (t) => !!t?.closest?.(
+    '#gameScreen .image-wrap, #gameScreen .click-layer, #gameScreen img, #gameScreen canvas'
+  );
+
+  const stopNative = (e) => {
+    if(inGameMedia(e.target)) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  };
+
+  document.addEventListener('contextmenu', stopNative, {capture:true});
+  document.addEventListener('dragstart', stopNative, {capture:true});
+  document.addEventListener('selectstart', stopNative, {capture:true});
+  document.addEventListener('copy', stopNative, {capture:true});
+
+  // iOS / in-app browsers sometimes trigger callout from touch hold even with CSS.
+  // Cancel only on the gameplay image interaction layer, not globally.
+  let holdTimer=null;
+  document.addEventListener('touchstart', function(e){
+    if(!inGameMedia(e.target)) return;
+    clearTimeout(holdTimer);
+    holdTimer=setTimeout(()=>{
+      try{ e.preventDefault(); }catch(_){}
+    },120);
+  }, {capture:true, passive:false});
+
+  document.addEventListener('touchmove', function(e){
+    if(!inGameMedia(e.target)) return;
+    // Prevent browser from converting hold into image selection/callout.
+    e.preventDefault();
+  }, {capture:true, passive:false});
+
+  document.addEventListener('touchend', function(e){
+    if(!inGameMedia(e.target)) return;
+    clearTimeout(holdTimer);
+  }, {capture:true, passive:true});
+
+  document.addEventListener('touchcancel', function(){
+    clearTimeout(holdTimer);
+  }, {capture:true, passive:true});
+
+  // Belt-and-suspenders: mark game images non-draggable and non-saveable.
+  const hardenImages=()=>{
+    document.querySelectorAll('#gameScreen img').forEach(img=>{
+      img.setAttribute('draggable','false');
+      img.setAttribute('oncontextmenu','return false');
+      img.style.webkitTouchCallout='none';
+      img.style.webkitUserSelect='none';
+      img.style.userSelect='none';
+    });
+  };
+  hardenImages();
+  new MutationObserver(hardenImages).observe(document.documentElement,{childList:true,subtree:true});
 })();
 </script>
 
