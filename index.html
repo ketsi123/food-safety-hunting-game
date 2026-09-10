@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.19.5-S1Q02-REMOVE-DOOR">
+<meta name="fs-build" content="V18.19.6-MOBILE-NO-LONGPRESS">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2446,6 +2446,44 @@ body:before{
 .mission-card .prehint-emblem{background:linear-gradient(145deg,#ffbf39,#f39a10 60%,#e17d08)}
 .mission-card .prehint-kicker{background:linear-gradient(180deg,#ffb82f,#f09210);box-shadow:0 4px 0 #ca7700}
 .mission-card .prehint-title b{color:#d97a00}
+
+
+/* === Mobile/iPad gameplay: disable image long-press/copy/drag without breaking hotspot taps === */
+.game-scene,
+.game-scene img,
+.hotspot-layer,
+.scene-wrap,
+.scene-wrap img,
+#sceneImage,
+#gameImage,
+img.game-image {
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
+  touch-action: manipulation;
+}
+
+.game-scene img,
+.scene-wrap img,
+#sceneImage,
+#gameImage,
+img.game-image {
+  pointer-events: none !important;
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+}
+
+.hotspot-layer,
+.hotspot-overlay,
+.scene-overlay,
+[data-hotspot-layer] {
+  pointer-events: auto !important;
+  -webkit-user-select: none !important;
+  user-select: none !important;
+  -webkit-touch-callout: none !important;
+  touch-action: manipulation;
+}
 
 </style>
 
@@ -5120,6 +5158,45 @@ if(fsHomeReturn && cachedReturnUser?.email){
 .nav-item.locked:hover{transform:none!important}
 
 </style>
+
+
+<script>
+/* === Mobile/iPad anti long-press/copy/drag for game scene only === */
+(function(){
+  const isGameSceneTarget = (target) => {
+    if (!target || !target.closest) return false;
+    return !!target.closest(
+      '.game-scene, .scene-wrap, .hotspot-layer, .hotspot-overlay, .scene-overlay, [data-hotspot-layer], #sceneImage, #gameImage'
+    );
+  };
+
+  document.addEventListener('contextmenu', function(e){
+    if (isGameSceneTarget(e.target)) e.preventDefault();
+  }, {capture:true});
+
+  document.addEventListener('dragstart', function(e){
+    if (isGameSceneTarget(e.target)) e.preventDefault();
+  }, {capture:true});
+
+  document.addEventListener('selectstart', function(e){
+    if (isGameSceneTarget(e.target)) e.preventDefault();
+  }, {capture:true});
+
+  document.addEventListener('gesturestart', function(e){
+    if (isGameSceneTarget(e.target)) e.preventDefault();
+  }, {capture:true});
+
+  const disableImageDrag = () => {
+    document.querySelectorAll(
+      '.game-scene img, .scene-wrap img, #sceneImage, #gameImage, img.game-image'
+    ).forEach(img => img.setAttribute('draggable','false'));
+  };
+
+  disableImageDrag();
+  const mo = new MutationObserver(disableImageDrag);
+  mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
 
 </body>
 </html>
