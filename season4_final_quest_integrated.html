@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.18.21-MOBILE-HUD-FIT-HEARTS">
+<meta name="fs-build" content="V18.20.8-FINISH-GATE-UNLOCK">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -830,7 +830,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.20.7</div>
+ pointer-events:none">S4 V18.20.8</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
@@ -984,7 +984,13 @@ async function autoSaveEnd(reason){
   document.getElementById("fr").innerHTML += `<br><span style="font-size:12px;color:#537286">${t}</span>`;
 }
 function setupGate(){
-  if(active>=20){gateClosed=false;qBox.style.display="none";blocks=[];return}
+  if(active>=20){
+    gateClosed=false;
+    locked=false;
+    blocks=[];
+    qBox.style.display="none";
+    return;
+  }
   const gx=checkpointXs[active];
   const q=qs[active], ans=q[2], correctIdx=q[3];
   const tablet=isTabletLandscape();
@@ -1172,9 +1178,12 @@ function update(){
  let m=0;if(keys.ArrowLeft||keys.KeyA)m--;if(keys.ArrowRight||keys.KeyD)m++;
  player.vx=m*player.speed;if(m)player.dir=m>0?1:-1;
  let nx=player.x+player.vx;
- if(gateClosed && active<20){
+ if(active<20 && gateClosed){
    const gx=checkpointXs[active];
    if(nx>gx+360) nx=gx+360;
+ }else if(active>=20){
+   gateClosed=false;
+   locked=false;
  }
  player.x=Math.max(20,Math.min(worldW-80,nx));
  player.vy+=.72;player.y+=player.vy;
@@ -1294,16 +1303,54 @@ function update(){
 
  if(active>=20){
    const finishX=checkpointXs[19]+560;
-   if(player.x+player.w>=finishX+24) finish(true);
+   // Entering the arch itself is enough to finish.
+   if(player.x+player.w>=finishX+8){
+     finish(true);
+     return;
+   }
  }
 }
+function clearFinalRunway(){
+  if(active<20) return;
+  gateClosed=false;
+  locked=false;
+  blocks=[];
+  hideQuestion();
+
+  const finishX=checkpointXs[19]+560;
+
+  // Remove / recycle enemies near the final runway so they cannot trap the player.
+  for(let i=0;i<enemies.length;i++){
+    const e=enemies[i];
+    if(!e) continue;
+    if(e.x>checkpointXs[19]-500 && e.x<finishX+420){
+      e.alive=false;
+      e.respawnDelay=999999;
+    }
+  }
+}
+
 function answer(b){
  locked=true;
  const good=!!b.correct;b.flash=28;
  if(good){score+=20;correctAnswers++;flash("✓ CORRECT! +20","ok")}
  else{score=Math.max(0,score-10);wrongAnswers++;flash("✕ WRONG! -10 pts","bad")}
- answered++;active++;setHUD();hideQuestion();gateClosed=false;
- setTimeout(()=>{locked=false;setupGate()},520);
+ answered++;
+ active++;
+ setHUD();
+ hideQuestion();
+ gateClosed=false;
+
+ if(active>=20){
+   clearFinalRunway();
+   flash("🏁 ครบ 20 ข้อแล้ว • วิ่งเข้า FINISH!","ok");
+   return;
+ }
+
+ setTimeout(()=>{
+   locked=false;
+   setupGate();
+ },520);
 }
 function flash(t,c){note.textContent=t;note.className="show "+c;setTimeout(()=>note.className="",470)}
 function gameOver(){
@@ -1440,7 +1487,16 @@ function drawCheckpoints(){
   ctx.restore();
  }
  // finish arch
- const fx=checkpointXs[19]+560-cam;if(fx>-120&&fx<W+120){ctx.fillStyle="#145f89";ctx.fillRect(fx,410,25,210);ctx.fillRect(fx+140,410,25,210);ctx.fillRect(fx,410,165,28);ctx.fillStyle="#fff";ctx.font="bold 18px Arial";ctx.fillText("FINISH",fx+82,432)}
+ const fx=checkpointXs[19]+560-cam;
+ if(fx>-140&&fx<W+140){
+   ctx.fillStyle="#145f89";
+   ctx.fillRect(fx,410,25,210);
+   ctx.fillRect(fx+155,410,25,210);
+   ctx.fillRect(fx,410,180,28);
+   ctx.fillStyle="#fff";
+   ctx.font="bold 18px Arial";
+   ctx.fillText("FINISH",fx+90,432);
+ }
 }
 
 function drawCollectibles(){
