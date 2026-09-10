@@ -4515,6 +4515,15 @@ body.mobile-landscape #resultOverlay .result-visual-wrap{
 }
 </style>
 
+
+<style id="v16940-mobile-hidden-overlay-fix">
+/* Critical: when result overlay is logically hidden, it MUST stay hidden.
+   This outranks the mobile result-scroll display:block rule. */
+body.mobile-landscape #resultOverlay.hidden-layer{
+  display:none!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -5536,6 +5545,10 @@ function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
 function openGame(){
   const t0=performance.now();
+  // Clear stale overlays before showing Home / Season picker.
+  e.resultOverlay?.classList.add("hidden-layer");
+  e.menuOverlay?.classList.add("hidden-layer");
+  e.busyOverlay?.classList.add("hidden-layer");
   renderUser();
   renderTotalUsers();
 
@@ -6504,7 +6517,19 @@ async function history(){
   }
 }
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>จับคู่เหตุผล</b><br>ลากข้อความเหตุผลสั้น ๆ ไปวางในช่องของจุดที่เลือก • เป็นคะแนนเสริมและไม่บังคับ</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • หากหมดเวลา ระบบจะตรวจคำตอบที่เลือกไว้อัตโนมัติ</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800</div></div></div>`)}
-function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
+function logout(){
+  clearInterval(timer);
+  clearQuestionGateViewportGeometry();
+  clearUser();
+  e.resultOverlay?.classList.add("hidden-layer");
+  e.menuOverlay?.classList.add("hidden-layer");
+  e.busyOverlay?.classList.add("hidden-layer");
+  e.emailInput.value=localStorage.getItem(S_EMAIL)||"";
+  e.gameScreen.classList.add("hidden");
+  e.loginScreen.classList.remove("hidden");
+  document.documentElement.style.setProperty("--fs-overlay-top","0px");
+  setBackend(false);
+}
 
 function visibleGameHeaderBottom(){
   if(!e.gameScreen || e.gameScreen.classList.contains("hidden"))return 0;
@@ -6797,7 +6822,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.39 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.40 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
