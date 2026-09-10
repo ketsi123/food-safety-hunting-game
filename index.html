@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.19.6-MOBILE-NO-LONGPRESS">
+<meta name="fs-build" content="V18.19.7-MOBILE-SEASON-ENTRY-FIX">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -2485,6 +2485,29 @@ img.game-image {
   touch-action: manipulation;
 }
 
+
+/* === V18.19.7 Mobile/iPad stage picker entry hardening === */
+.mobile-stage-btn,
+.mobile-stage-logout,
+#mobileFullscreenBtn {
+  touch-action: manipulation !important;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+.mobile-stage-picker:not(.loading) .mobile-stage-btn,
+.mobile-stage-picker:not(.loading) .mobile-stage-logout {
+  pointer-events: auto !important;
+  opacity: 1 !important;
+}
+.mobile-stage-status.offline{
+  cursor:default;
+  border-color:#8ec5ff;
+  background:#eef8ff;
+  color:#245b88;
+}
+
 </style>
 
 <style id="v161-build-marker">
@@ -3628,9 +3651,12 @@ async function login(){
       setTimeout(()=>{ refreshSeasonControl(); },5000);
     }catch(err){
       setBackend(false);
-      setMobileStageStatus("โหลดข้อมูลไม่สำเร็จ • แตะเพื่อลองใหม่",false,"retry");
+      // Backend sync must never block the mobile/iPad stage picker.
+      // Local question data + cached login are enough to enter a season screen.
+      mobileStagePicker?.classList.remove("loading");
+      setMobileStageStatus("เชื่อมข้อมูลกลางไม่ได้ชั่วคราว • ยังเลือกด่านและเล่นได้",false,"offline");
       console.warn("Background login sync failed",err);
-      // Season 1 remains playable; backend will still protect Season 2-4.
+      // Season 1 remains playable; Season 4 navigation also remains available.
     }finally{
       e.loginBtn.disabled=false;
       e.loginBtn.textContent="🚀 เริ่มเล่นเกม";
@@ -4770,6 +4796,7 @@ function setMobileStageStatus(message,isLoading=false,state=""){
     mobileStageStatus.classList.toggle("loading",isLoading);
     mobileStageStatus.classList.toggle("success",state==="success");
     mobileStageStatus.classList.toggle("retry",state==="retry");
+    mobileStageStatus.classList.toggle("offline",state==="offline");
   }
   mobileStagePicker?.classList.toggle("loading",isLoading);
 }
@@ -4787,33 +4814,73 @@ function syncMobileStagePicker(){
   const shouldShow=document.body.classList.contains("mobile-landscape")&&!mobileStageChosen;
   mobileStagePicker.classList.toggle("active",shouldShow);
 }
-document.querySelectorAll("[data-mobile-season]").forEach(btn=>btn.addEventListener("click",()=>{
-  const s=Number(btn.dataset.mobileSeason||1);
+
+async function openMobileSeason(s){
+  s=Number(s||1);
+  if(![1,2,3,4].includes(s))return;
+
+  // Never leave the picker stuck in loading state.
+  mobileStagePicker?.classList.add("loading");
   setMobileStageStatus(`กำลังเปิด Season ${s}...`,true);
 
-  // Season 4 uses a separate engine. Keep this picker covering the main-game
-  // START gate until navigation begins, so Season 1 never flashes on screen.
-  if(s===4){
-    const email=user?.email||localStorage.getItem(S_EMAIL)||"";
-    if(!email){setMobileStageStatus("ไม่พบข้อมูลผู้เล่น กรุณา Login ใหม่",false);return}
-    const homeUrl=new URL(location.href);homeUrl.searchParams.set("fsHome","1");
-    const target=`season4_final_quest_integrated.html?email=${encodeURIComponent(email)}&return=${encodeURIComponent(homeUrl.href)}`;
-    setTimeout(()=>location.href=target,80);
-    return;
-  }
+  try{
+    if(s===4){
+      const email=user?.email||localStorage.getItem(S_EMAIL)||"";
+      if(!email){
+        setMobileStageStatus("ไม่พบข้อมูลผู้เล่น กรุณา Login ใหม่",false,"offline");
+        return;
+      }
+      const homeUrl=new URL(location.href);
+      homeUrl.searchParams.set("fsHome","1");
+      const target=new URL("season4_final_quest_integrated.html", location.href);
+      target.searchParams.set("email",email);
+      target.searchParams.set("return",homeUrl.href);
+      location.assign(target.href);
+      return;
+    }
 
-  if(!isSeasonOpenFrontend(s)){
-    setMobileStageStatus(`Season ${s} ยังไม่เปิดให้เล่น`,false);
-    return;
+    // Season 1-3 use embedded/local question metadata, so a failed background
+    // backend sync must not prevent entering the game screen.
+    if(!questions?.length) questions=masterQuestions();
+
+    if(!questionsForSeason(s).length){
+      setMobileStageStatus(`Season ${s} ยังไม่มีคำถาม`,false,"offline");
+      return;
+    }
+
+    // Keep normal server gating when it is available.
+    // Season 1 is always open. For S2/S3, allow cached/open state only.
+    if(s!==1 && seasonControlLoaded && !isSeasonOpenFrontend(s)){
+      setMobileStageStatus(`Season ${s} ยังไม่เปิดให้เล่น`,false,"offline");
+      return;
+    }
+
+    switchSeason(s);
+    mobileStageChosen=true;
+    mobileStagePicker?.classList.remove("active","loading");
+  }catch(err){
+    console.error("Mobile season open failed",err);
+    setMobileStageStatus(`เปิด Season ${s} ไม่สำเร็จ • แตะใหม่อีกครั้ง`,false,"retry");
+  }finally{
+    mobileStagePicker?.classList.remove("loading");
   }
-  if(!questionsForSeason(s).length){
-    setMobileStageStatus(`Season ${s} ยังไม่มีคำถาม`,false);
-    return;
-  }
-  switchSeason(s);
-  mobileStageChosen=true;
-  mobileStagePicker.classList.remove("active","loading");
-}));
+}
+
+let mobileSeasonOpening=false;
+document.querySelectorAll("[data-mobile-season]").forEach(btn=>{
+  const run=async(e)=>{
+    if(e){e.preventDefault();e.stopPropagation();}
+    if(mobileSeasonOpening)return;
+    mobileSeasonOpening=true;
+    try{await openMobileSeason(btn.dataset.mobileSeason);}
+    finally{setTimeout(()=>{mobileSeasonOpening=false},250);}
+  };
+  btn.addEventListener("click",run);
+  // pointerup improves reliability in Android WebView / iOS in-app browsers.
+  btn.addEventListener("pointerup",e=>{
+    if(e.pointerType==="touch"||e.pointerType==="pen")run(e);
+  });
+});
 document.getElementById("mobileStageLogout")?.addEventListener("click",()=>{mobileStageChosen=false;mobileStagePicker.classList.remove("active");logout()});
 new MutationObserver(()=>setTimeout(syncMobileStagePicker,60)).observe(e.loginScreen,{attributes:true,attributeFilter:["class"]});
 new MutationObserver(()=>setTimeout(syncMobileStagePicker,60)).observe(e.gameScreen,{attributes:true,attributeFilter:["class"]});
@@ -5195,6 +5262,22 @@ if(fsHomeReturn && cachedReturnUser?.email){
   disableImageDrag();
   const mo = new MutationObserver(disableImageDrag);
   mo.observe(document.documentElement, {childList:true, subtree:true});
+})();
+</script>
+
+
+<script>
+/* Mobile stage-picker loading watchdog */
+(function(){
+  setInterval(()=>{
+    const picker=document.getElementById("mobileStagePicker");
+    const status=document.getElementById("mobileStageStatus");
+    if(!picker?.classList.contains("loading"))return;
+    const txt=String(status?.textContent||"");
+    if(!/กำลังเปิด Season/.test(txt) && !/กำลังโหลดข้อมูลเกม/.test(txt)){
+      picker.classList.remove("loading");
+    }
+  },1500);
 })();
 </script>
 
