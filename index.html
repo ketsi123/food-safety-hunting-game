@@ -4878,6 +4878,68 @@ body.mobile-landscape > .prehint-overlay .prehint-close{
 }
 </style>
 
+
+<style id="v16945-mobile-popup-emblem-inside">
+/* FINAL mobile popup top fix:
+   keep the emblem INSIDE the card instead of hanging outside with negative top.
+   This avoids Chrome/Android clipping negative positioned content inside a scroll container. */
+body.mobile-landscape > .prehint-overlay{
+  padding:8px 10px!important;
+  overflow:auto!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-card{
+  position:relative!important;
+  overflow:auto!important;
+  width:min(620px,88vw)!important;
+  max-height:calc(100dvh - 16px)!important;
+  margin:auto!important;
+  padding:54px 14px 8px!important;
+}
+
+/* emblem fully inside visible card area */
+body.mobile-landscape > .prehint-overlay .prehint-emblem{
+  position:absolute!important;
+  left:50%!important;
+  top:7px!important;
+  transform:translateX(-50%)!important;
+  width:40px!important;
+  height:40px!important;
+  border-radius:11px!important;
+  border-width:2px!important;
+  font-size:20px!important;
+  z-index:5!important;
+  box-shadow:0 3px 0 #164d9a!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-close{
+  top:7px!important;
+  right:8px!important;
+  z-index:6!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-kicker{
+  margin-top:0!important;
+}
+
+/* Very short Android landscape */
+@media (orientation:landscape) and (max-height:430px){
+  body.mobile-landscape > .prehint-overlay{
+    padding:5px 8px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-card{
+    max-height:calc(100dvh - 10px)!important;
+    padding-top:46px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-emblem{
+    top:6px!important;
+    width:34px!important;
+    height:34px!important;
+    font-size:17px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -7207,7 +7269,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.44 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.45 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
