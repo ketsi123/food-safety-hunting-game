@@ -4453,6 +4453,68 @@ body.ipad-landscape #reasonList{
 }
 </style>
 
+
+<style id="v16937-mobile-result-natural-scroll">
+/* Mobile landscape result:
+   scroll the whole result page naturally.
+   Buttons stay after the content; user scrolls down to press Next. */
+body.mobile-landscape #resultOverlay{
+  display:block!important;
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:4px!important;
+}
+
+body.mobile-landscape #resultOverlay .result-modal,
+body.mobile-landscape #resultOverlay .result-modal.timeout{
+  display:block!important;
+  width:min(96vw,980px)!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  margin:0 auto 12px!important;
+  overflow:visible!important;
+  padding:8px 10px 10px!important;
+}
+
+/* Let answer details expand naturally instead of making an inner scroll box. */
+body.mobile-landscape #resultOverlay .result-answers{
+  display:block!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:visible!important;
+  margin:4px 0 0!important;
+  padding:4px 3px 6px!important;
+}
+
+/* Action buttons are part of normal document flow at the bottom. */
+body.mobile-landscape #resultOverlay .result-actions-v6,
+body.mobile-landscape #resultOverlay .result-modal.timeout .result-actions-v6{
+  position:static!important;
+  bottom:auto!important;
+  z-index:auto!important;
+  display:grid!important;
+  grid-template-columns:.85fr 1.6fr!important;
+  gap:6px!important;
+  margin:8px 0 0!important;
+  padding:7px 2px 3px!important;
+  background:#fff!important;
+  border-top:1px solid #dce9f1!important;
+}
+
+body.mobile-landscape #resultOverlay .result-actions-v6.final{
+  grid-template-columns:1fr!important;
+}
+
+/* Keep the already-correct answer image/hotspot alignment. */
+body.mobile-landscape #resultOverlay .result-visual-wrap{
+  position:relative!important;
+  overflow:hidden!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -6737,7 +6799,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.36 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.37 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
