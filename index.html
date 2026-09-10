@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.20.2-FAST-LOGIN-LAZY-IMAGE">
+<meta name="fs-build" content="V18.20.4-MOBILE-EXIT-ONLY">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3739,6 +3739,56 @@ body.mobile-landscape .mobile-stage-card::after{
 }
 </style>
 
+
+<style id="v18-20-3-mobile-login-exit">
+.mobile-stage-account-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+  margin-top:8px;
+}
+.mobile-stage-account-actions .mobile-stage-logout,
+.mobile-stage-login-exit{
+  min-height:34px;
+  margin:0!important;
+  border-radius:10px!important;
+  font-size:9px!important;
+  font-weight:1000!important;
+  text-decoration:none!important;
+  cursor:pointer;
+}
+.mobile-stage-account-actions .mobile-stage-logout{
+  border:1px solid #a9cfe6!important;
+  background:#f3fbff!important;
+  color:#356b87!important;
+}
+.mobile-stage-login-exit{
+  border:1px solid #ef9a95;
+  background:linear-gradient(180deg,#ff8078,#dc453e);
+  color:#fff;
+  box-shadow:0 3px 0 #a62f2a;
+}
+.mobile-stage-login-exit:active{
+  transform:translateY(2px);
+  box-shadow:0 1px 0 #a62f2a;
+}
+@media (orientation:landscape) and (max-height:430px){
+  .mobile-stage-account-actions{margin-top:5px;gap:5px}
+  .mobile-stage-account-actions .mobile-stage-logout,
+  .mobile-stage-login-exit{min-height:28px;font-size:8px!important}
+}
+</style>
+
+
+<style id="v18-20-4-exit-only">
+.mobile-stage-account-actions.exit-only{
+  display:block!important;
+}
+.mobile-stage-account-actions.exit-only .mobile-stage-login-exit{
+  width:100%!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -3765,7 +3815,9 @@ body.mobile-landscape .mobile-stage-card::after{
       <button class="mobile-stage-btn" type="button" data-mobile-season="3"><b>🛡️ Season 3</b><small>Food Safety &amp; Quality Culture</small></button>
       <button class="mobile-stage-btn" type="button" data-mobile-season="4"><b>🏆 Season 4</b><small>Final Quest: Quiz &amp; Run</small></button>
     </div>
-    <button id="mobileStageLogout" class="mobile-stage-logout" type="button">เปลี่ยนผู้เล่น</button>
+    <div class="mobile-stage-account-actions exit-only">
+      <button id="mobileStageLoginExit" class="mobile-stage-login-exit" type="button">🚪 Excit</button>
+    </div>
   </div>
 </div>
 
@@ -5829,7 +5881,11 @@ document.querySelectorAll("[data-mobile-season]").forEach(btn=>{
     if(e.pointerType==="touch"||e.pointerType==="pen")run(e);
   });
 });
-document.getElementById("mobileStageLogout")?.addEventListener("click",()=>{mobileStageChosen=false;mobileStagePicker.classList.remove("active");logout()});
+document.getElementById("mobileStageLoginExit")?.addEventListener("click",()=>{
+  mobileStageChosen=false;
+  mobileStagePicker.classList.remove("active");
+  logout();
+});
 new MutationObserver(()=>setTimeout(syncMobileStagePicker,60)).observe(e.loginScreen,{attributes:true,attributeFilter:["class"]});
 new MutationObserver(()=>setTimeout(syncMobileStagePicker,60)).observe(e.gameScreen,{attributes:true,attributeFilter:["class"]});
 window.addEventListener("resize",()=>setTimeout(syncMobileStagePicker,80),{passive:true});
