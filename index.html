@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.20.4-MOBILE-EXIT-ONLY">
+<meta name="fs-build" content="V18.20.5-MOBILE-RESULT-IMAGE-FIX">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3790,79 +3790,507 @@ body.mobile-landscape .mobile-stage-card::after{
 </style>
 
 
-<style id="v18-20-10-ipad-s1s3-strong">
-/* V18.20.10 - STRONG iPad landscape overrides for Season 1-3 + popup sizing */
-@media (orientation: landscape) and (pointer: coarse) and (min-width: 1000px) and (max-width: 1400px){
-  /* GAME LAYOUT */
-  body #gameScreen:not(.hidden){height:100dvh!important;min-height:100dvh!important;overflow:hidden!important}
-  body #gameScreen:not(.hidden) .workspace{display:block!important;width:100%!important;max-width:none!important;height:100dvh!important;min-height:0!important;margin:0!important;padding:10px 12px 12px!important;overflow:hidden!important}
-  body #gameScreen:not(.hidden) .sidebar{display:none!important}
-  body #gameScreen:not(.hidden) .content{width:100%!important;max-width:none!important;height:100%!important;display:flex!important;flex-direction:column!important;overflow:hidden!important}
-  body #gameScreen:not(.hidden) .season-bar{flex:0 0 42px!important;min-height:42px!important;height:42px!important;padding:0 18px!important;border-radius:14px 14px 0 0!important}
-  body #gameScreen:not(.hidden) .play-card{flex:1 1 auto!important;min-height:0!important;padding:10px!important;border-radius:0 0 18px 18px!important;overflow:hidden!important;display:flex!important;flex-direction:column!important}
-  body #gameScreen:not(.hidden) .question-strip-v12{flex:0 0 auto!important;margin:0 0 8px!important;padding:10px 12px!important;border-radius:14px!important}
-  body #gameScreen:not(.hidden) .question-strip-main{display:grid!important;grid-template-columns:minmax(0,1fr) 138px!important;gap:10px 12px!important;align-items:center!important}
-  body #gameScreen:not(.hidden) .question-strip-v12 h2{font-size:23px!important;line-height:1.22!important;white-space:normal!important;overflow:visible!important;text-overflow:clip!important}
-  body #gameScreen:not(.hidden) .question-strip-timer{min-height:68px!important;height:68px!important;padding:10px 12px!important;border-radius:18px!important}
-  body #gameScreen:not(.hidden) .question-strip-timer .timer-label{font-size:11px!important}
-  body #gameScreen:not(.hidden) .question-strip-timer .timer-value{font-size:17px!important}
-  body #gameScreen:not(.hidden) .question-strip-timer #timerText{font-size:28px!important}
-  body #gameScreen:not(.hidden) .question-strip-rules{grid-column:1 / -1!important;gap:8px!important;margin-top:0!important}
-  body #gameScreen:not(.hidden) .question-strip-rules .score-rules-inline span, body #gameScreen:not(.hidden) .question-strip-rules .save-rule{font-size:11px!important}
+<style id="v18-20-5-mobile-result-image-fix">
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+  #resultOverlay .result-visual{
+    flex:0 0 auto!important;
+    margin:2px 0 3px!important;
+    padding:3px!important;
+  }
 
-  body #gameScreen:not(.hidden) .play-grid,
-  body #gameScreen:not(.hidden) .side-reason-layout,
-  body #gameScreen:not(.hidden) .v12-layout{flex:1 1 auto!important;min-height:0!important;height:auto!important;display:grid!important;grid-template-columns:minmax(0,1.55fr) minmax(400px,0.92fr)!important;gap:10px!important;align-items:start!important;overflow:hidden!important}
+  #resultOverlay .result-visual-wrap{
+    position:relative!important;
+    width:min(100%, calc(35svh * 16 / 9))!important;
+    height:auto!important;
+    max-height:none!important;
+    aspect-ratio:16 / 9!important;
+    margin:0 auto!important;
+    overflow:hidden!important;
+    border-radius:8px!important;
+    background:#eef6fa!important;
+  }
 
-  body #gameScreen:not(.hidden) .image-wrap{width:100%!important;height:calc(100dvh - 255px)!important;max-height:calc(100dvh - 255px)!important;min-height:390px!important;display:flex!important;align-items:flex-start!important;justify-content:center!important;border-radius:16px!important;overflow:hidden!important}
-  body #gameScreen:not(.hidden) .image-wrap img{width:100%!important;height:100%!important;object-fit:contain!important;object-position:top center!important;max-height:none!important}
-  body #gameScreen:not(.hidden) .image-tip{left:14px!important;bottom:12px!important;font-size:11px!important;padding:8px 12px!important}
-  body #gameScreen:not(.hidden) .right-game-panel, body #gameScreen:not(.hidden) .v12-reason-column{width:100%!important;height:calc(100dvh - 255px)!important;max-height:calc(100dvh - 255px)!important;min-height:390px!important}
-  body #gameScreen:not(.hidden) .reason-side-panel, body #gameScreen:not(.hidden) .v12-reason-panel{display:flex!important;flex-direction:column!important;height:100%!important;max-height:100%!important;min-height:0!important;border-radius:18px!important;overflow:hidden!important}
-  body #gameScreen:not(.hidden) .side-reason-head{padding:10px 12px!important}
-  body #gameScreen:not(.hidden) .side-reason-head > div:first-child b{font-size:18px!important}
-  body #gameScreen:not(.hidden) .side-reason-head > div:first-child small{font-size:11px!important;line-height:1.35!important}
-  body #gameScreen:not(.hidden) .reason-list, body #gameScreen:not(.hidden) .reason-scroll, body #gameScreen:not(.hidden) .v12-reason-list{flex:1 1 auto!important;min-height:0!important;overflow-y:auto!important;padding:10px 12px 14px!important;-webkit-overflow-scrolling:touch!important}
-  body #gameScreen:not(.hidden) .match-row{grid-template-columns:58px minmax(0,1fr) 38px!important;gap:8px!important}
-  body #gameScreen:not(.hidden) .match-no{min-height:46px!important;font-size:15px!important;border-radius:12px!important}
-  body #gameScreen:not(.hidden) .reason-drop-slot{min-height:46px!important;padding:9px 12px!important;font-size:14px!important;line-height:1.3!important;border-radius:12px!important}
-  body #gameScreen:not(.hidden) .selection-delete{width:38px!important;height:38px!important;border-radius:12px!important}
-  body #gameScreen:not(.hidden) .reason-choice-bank{gap:8px!important}
-  body #gameScreen:not(.hidden) .reason-choice-card{min-height:44px!important;padding:9px 12px!important;font-size:13px!important;line-height:1.28!important;border-radius:12px!important}
-  body #gameScreen:not(.hidden) .side-submit-area{display:block!important;flex:0 0 auto!important;position:sticky!important;bottom:0!important;z-index:20!important;padding:10px 12px 12px!important;border-top:1px solid rgba(139,184,214,.55)!important;background:linear-gradient(180deg,#f8fcff 0%,#e8f4ff 100%)!important;box-shadow:0 -8px 18px rgba(45,93,130,.10)!important}
-  body #gameScreen:not(.hidden) .side-actions{display:grid!important;grid-template-columns:1fr 1.18fr!important;gap:10px!important}
-  body #gameScreen:not(.hidden) .side-actions .btn{min-height:56px!important;height:56px!important;font-size:16px!important;border-radius:15px!important}
+  #resultOverlay .result-visual-wrap img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    max-height:none!important;
+    aspect-ratio:16 / 9!important;
+    object-fit:fill!important;
+    object-position:center!important;
+    margin:0!important;
+  }
 
-  /* POPUPS - this is the main fix */
-  body #gameScreen:not(.hidden) .prehint-overlay{position:absolute!important;inset:0!important;display:flex!important;align-items:center!important;justify-content:center!important;padding:28px 42px!important;background:rgba(6,34,63,.58)!important;backdrop-filter:blur(6px)!important;-webkit-backdrop-filter:blur(6px)!important;overflow:auto!important;z-index:999!important}
-  body #gameScreen:not(.hidden) .prehint-card{position:relative!important;width:min(860px, calc(100vw - 110px))!important;max-width:none!important;max-height:calc(100dvh - 100px)!important;padding:60px 28px 22px!important;border-radius:28px!important;overflow:auto!important}
-  body #gameScreen:not(.hidden) .prehint-emblem{width:76px!important;height:76px!important;top:-34px!important;border-radius:24px!important;font-size:38px!important}
-  body #gameScreen:not(.hidden) .prehint-close{right:16px!important;top:16px!important;width:44px!important;height:44px!important;font-size:24px!important}
-  body #gameScreen:not(.hidden) .prehint-kicker{padding:6px 16px!important;font-size:13px!important}
-  body #gameScreen:not(.hidden) .prehint-title{margin:12px 0 16px!important;font-size:28px!important;line-height:1.22!important}
-  body #gameScreen:not(.hidden) .prehint-list{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px!important;max-width:none!important;margin:0 auto 16px!important}
-  body #gameScreen:not(.hidden) .prehint-item{min-height:58px!important;padding:10px 14px!important;border-radius:15px!important;font-size:15px!important;line-height:1.28!important;gap:10px!important}
-  body #gameScreen:not(.hidden) .prehint-item i{width:34px!important;height:34px!important;flex:0 0 34px!important;font-size:18px!important}
-  body #gameScreen:not(.hidden) .prehint-count-wrap{margin-top:8px!important;padding-top:12px!important}
-  body #gameScreen:not(.hidden) .prehint-count-line{font-size:16px!important}
-  body #gameScreen:not(.hidden) .prehint-count-line b{font-size:26px!important}
-  body #gameScreen:not(.hidden) .prehint-progress{height:8px!important;max-width:360px!important;margin-top:8px!important}
-  body #gameScreen:not(.hidden) .prehint-foot{margin-top:10px!important;font-size:12px!important;line-height:1.35!important}
-  body #gameScreen:not(.hidden) .gate-start{width:100%!important;min-height:58px!important;margin-top:0!important;font-size:20px!important;border-radius:16px!important;box-shadow:0 6px 0 #198112!important}
+  #resultOverlay .result-visual-layer{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    pointer-events:none!important;
+  }
+
+  #resultOverlay .result-legend{
+    width:min(100%, calc(35svh * 16 / 9))!important;
+    margin:3px auto 0!important;
+  }
+
+  /* Keep answer text scrollable and buttons fully visible. */
+  #resultOverlay .result-answers{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+  }
+
+  #resultOverlay .result-actions-v6{
+    flex:0 0 auto!important;
+    position:sticky!important;
+    bottom:0!important;
+    z-index:20!important;
+  }
 }
 
-@media (orientation: landscape) and (pointer: coarse) and (min-width: 1000px) and (max-width: 1400px) and (max-height: 840px){
-  body #gameScreen:not(.hidden) .question-strip-v12{padding:8px 10px!important;margin-bottom:6px!important}
-  body #gameScreen:not(.hidden) .question-strip-v12 h2{font-size:21px!important}
-  body #gameScreen:not(.hidden) .question-strip-timer{min-height:62px!important;height:62px!important}
-  body #gameScreen:not(.hidden) .play-grid,
-  body #gameScreen:not(.hidden) .side-reason-layout,
-  body #gameScreen:not(.hidden) .v12-layout{grid-template-columns:minmax(0,1.42fr) minmax(388px,0.94fr)!important}
-  body #gameScreen:not(.hidden) .image-wrap, body #gameScreen:not(.hidden) .right-game-panel, body #gameScreen:not(.hidden) .v12-reason-column{height:calc(100dvh - 242px)!important;max-height:calc(100dvh - 242px)!important;min-height:350px!important}
-  body #gameScreen:not(.hidden) .prehint-card{width:min(810px, calc(100vw - 90px))!important;max-height:calc(100dvh - 86px)!important;padding:54px 24px 20px!important}
-  body #gameScreen:not(.hidden) .prehint-title{font-size:24px!important}
-  body #gameScreen:not(.hidden) .prehint-item{min-height:50px!important;font-size:14px!important}
-  body #gameScreen:not(.hidden) .gate-start{min-height:52px!important;font-size:18px!important}
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:430px){
+  #resultOverlay .result-visual-wrap,
+  #resultOverlay .result-legend{
+    width:min(100%, calc(29svh * 16 / 9))!important;
+  }
+}
+</style>
+
+
+<style id="v18-20-11-ipad-separate-layout">
+/* =========================================================
+   iPad landscape is separated from phone layout completely.
+   Phone "mobile-landscape" rules no longer shrink iPad UI.
+   ========================================================= */
+body.ipad-landscape #gameScreen:not(.hidden){
+  height:100dvh!important;
+  min-height:100dvh!important;
+  overflow:hidden!important;
+}
+
+/* Hide desktop chrome that wastes vertical space */
+body.ipad-landscape #gameScreen:not(.hidden) .game-header,
+body.ipad-landscape #gameScreen:not(.hidden) .sidebar{
+  display:none!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .workspace{
+  display:block!important;
+  width:100%!important;
+  max-width:none!important;
+  height:100dvh!important;
+  min-height:0!important;
+  margin:0!important;
+  padding:8px 10px 10px!important;
+  overflow:hidden!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .content{
+  width:100%!important;
+  max-width:none!important;
+  height:100%!important;
+  min-height:0!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .season-bar{
+  flex:0 0 38px!important;
+  min-height:38px!important;
+  height:38px!important;
+  padding:0 14px!important;
+  border-radius:14px 14px 0 0!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .season-bar b{
+  font-size:14px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .season-bar span{
+  font-size:11px!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .play-card{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  padding:8px!important;
+  border-radius:0 0 16px 16px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  overflow:hidden!important;
+}
+
+/* ---------- Question strip ---------- */
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-v12{
+  flex:0 0 auto!important;
+  margin:0 0 7px!important;
+  padding:8px 10px!important;
+  border-radius:13px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-main{
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) 128px!important;
+  gap:8px 10px!important;
+  align-items:center!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-top{
+  margin-bottom:2px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-v12 .question-kicker{
+  font-size:11px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-v12 .question-meta span{
+  padding:3px 7px!important;
+  font-size:9px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-v12 h2{
+  font-size:19px!important;
+  line-height:1.2!important;
+  white-space:normal!important;
+  overflow:visible!important;
+  text-overflow:clip!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-timer{
+  min-width:0!important;
+  width:128px!important;
+  min-height:58px!important;
+  height:58px!important;
+  padding:7px 9px!important;
+  border-radius:15px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-timer .timer-label{
+  font-size:9px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-timer .timer-value{
+  font-size:14px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-timer #timerText{
+  font-size:23px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-rules{
+  grid-column:1 / -1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:8px!important;
+  margin-top:0!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-rules .score-rules-inline{
+  display:flex!important;
+  gap:6px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-rules .score-rules-inline span,
+body.ipad-landscape #gameScreen:not(.hidden) .question-strip-rules .save-rule{
+  font-size:9px!important;
+  line-height:1.2!important;
+}
+
+/* ---------- Main game area ---------- */
+body.ipad-landscape #gameScreen:not(.hidden) .play-grid,
+body.ipad-landscape #gameScreen:not(.hidden) .side-reason-layout,
+body.ipad-landscape #gameScreen:not(.hidden) .v12-layout{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1.62fr) minmax(395px,.9fr)!important;
+  gap:8px!important;
+  align-items:stretch!important;
+  overflow:hidden!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .image-wrap{
+  width:100%!important;
+  height:auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  align-self:stretch!important;
+  display:flex!important;
+  align-items:flex-start!important;
+  justify-content:center!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  background:#eef6fa!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .image-wrap img{
+  width:100%!important;
+  height:auto!important;
+  max-height:100%!important;
+  aspect-ratio:16/9!important;
+  object-fit:contain!important;
+  object-position:top center!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .image-tip{
+  left:12px!important;
+  bottom:10px!important;
+  font-size:10px!important;
+  padding:7px 10px!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .right-game-panel,
+body.ipad-landscape #gameScreen:not(.hidden) .v12-reason-column{
+  min-height:0!important;
+  height:100%!important;
+  max-height:100%!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .reason-side-panel,
+body.ipad-landscape #gameScreen:not(.hidden) .v12-reason-panel{
+  display:flex!important;
+  flex-direction:column!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:100%!important;
+  overflow:hidden!important;
+  border-radius:16px!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .side-reason-head{
+  flex:0 0 auto!important;
+  padding:8px 10px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .side-reason-head>div:first-child b{
+  font-size:15px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .side-reason-head>div:first-child small{
+  margin-top:3px!important;
+  font-size:9px!important;
+  line-height:1.25!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .reason-list,
+body.ipad-landscape #gameScreen:not(.hidden) .reason-scroll,
+body.ipad-landscape #gameScreen:not(.hidden) .v12-reason-list{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain!important;
+  -webkit-overflow-scrolling:touch!important;
+  padding:8px 10px 10px!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .match-row{
+  grid-template-columns:52px minmax(0,1fr) 34px!important;
+  gap:6px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .match-no{
+  min-height:40px!important;
+  font-size:13px!important;
+  border-radius:10px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .reason-drop-slot{
+  min-height:40px!important;
+  padding:7px 10px!important;
+  font-size:12px!important;
+  line-height:1.25!important;
+  border-radius:10px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .selection-delete{
+  width:34px!important;
+  height:34px!important;
+  border-radius:10px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .reason-choice-bank{
+  gap:6px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .reason-choice-card{
+  min-height:38px!important;
+  padding:7px 9px!important;
+  font-size:11px!important;
+  line-height:1.2!important;
+  border-radius:10px!important;
+}
+
+/* Submit must always be visible */
+body.ipad-landscape #gameScreen:not(.hidden) .side-submit-area{
+  flex:0 0 auto!important;
+  position:relative!important;
+  bottom:auto!important;
+  z-index:30!important;
+  display:block!important;
+  padding:8px 10px 10px!important;
+  margin:0!important;
+  border-top:1px solid rgba(139,184,214,.55)!important;
+  background:linear-gradient(180deg,#f8fcff,#eaf6ff)!important;
+  box-shadow:0 -5px 14px rgba(45,93,130,.10)!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .action-status{
+  margin-bottom:6px!important;
+  font-size:10px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .side-actions,
+body.ipad-landscape #gameScreen:not(.hidden) .v12-reason-panel .side-actions{
+  display:grid!important;
+  grid-template-columns:.72fr 1.28fr!important;
+  gap:8px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .side-actions .btn,
+body.ipad-landscape #gameScreen:not(.hidden) .v12-reason-panel .side-actions .btn{
+  min-height:48px!important;
+  height:48px!important;
+  padding:0 12px!important;
+  border-radius:13px!important;
+  font-size:14px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .game-submit{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+}
+
+/* Bottom timer should not cover the submit area on iPad */
+body.ipad-landscape .floating-game-timer{
+  bottom:10px!important;
+  min-width:210px!important;
+  height:58px!important;
+  padding:7px 11px!important;
+  border-radius:18px!important;
+}
+body.ipad-landscape .floating-game-timer .float-timer-icon{
+  width:36px!important;
+  height:36px!important;
+  flex-basis:36px!important;
+  font-size:18px!important;
+}
+body.ipad-landscape .floating-game-timer .float-timer-copy b{
+  font-size:22px!important;
+}
+body.ipad-landscape .floating-game-timer .float-question-chip{
+  font-size:9px!important;
+  padding:4px 6px!important;
+}
+
+/* ---------- Mission / Hint popup: large, centered, complete ---------- */
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:24px 36px!important;
+  overflow:auto!important;
+  background:rgba(4,31,60,.64)!important;
+  backdrop-filter:blur(6px)!important;
+  -webkit-backdrop-filter:blur(6px)!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-card{
+  position:relative!important;
+  width:min(820px, calc(100vw - 100px))!important;
+  max-width:none!important;
+  max-height:calc(100dvh - 70px)!important;
+  margin:auto!important;
+  padding:54px 24px 18px!important;
+  border-radius:24px!important;
+  overflow:auto!important;
+  text-align:center!important;
+}
+
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-emblem{
+  top:10px!important;
+  width:42px!important;
+  height:42px!important;
+  border-radius:14px!important;
+  border-width:2px!important;
+  font-size:23px!important;
+  box-shadow:0 3px 0 #164d9a!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-close{
+  right:14px!important;
+  top:14px!important;
+  width:38px!important;
+  height:38px!important;
+  font-size:20px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-kicker{
+  padding:5px 14px!important;
+  font-size:11px!important;
+  box-shadow:0 3px 0 #0b4e99!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-title{
+  margin:10px 0 12px!important;
+  font-size:24px!important;
+  line-height:1.2!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:9px!important;
+  margin:0 auto 12px!important;
+  max-width:none!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-item{
+  min-height:48px!important;
+  padding:8px 11px!important;
+  gap:8px!important;
+  border-radius:12px!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-item i{
+  width:28px!important;
+  height:28px!important;
+  flex:0 0 28px!important;
+  font-size:15px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-count-wrap{
+  margin-top:5px!important;
+  padding-top:9px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-count-line{
+  font-size:13px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-count-line b{
+  font-size:22px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-progress{
+  height:6px!important;
+  margin-top:6px!important;
+  max-width:320px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-count-wrap .gate-start{
+  width:100%!important;
+  min-height:50px!important;
+  margin:0!important;
+  border-radius:14px!important;
+  font-size:17px!important;
+}
+body.ipad-landscape #gameScreen:not(.hidden) .prehint-foot{
+  margin-top:7px!important;
+  font-size:10px!important;
+  line-height:1.25!important;
+}
+
+/* Slightly shorter iPad viewport */
+@media (orientation:landscape) and (max-height:820px){
+  body.ipad-landscape #gameScreen:not(.hidden) .question-strip-v12{
+    padding:6px 9px!important;
+    margin-bottom:5px!important;
+  }
+  body.ipad-landscape #gameScreen:not(.hidden) .question-strip-v12 h2{
+    font-size:17px!important;
+  }
+  body.ipad-landscape #gameScreen:not(.hidden) .question-strip-timer{
+    height:52px!important;
+    min-height:52px!important;
+  }
+  body.ipad-landscape #gameScreen:not(.hidden) .prehint-card{
+    width:min(760px, calc(100vw - 80px))!important;
+    max-height:calc(100dvh - 50px)!important;
+    padding:48px 20px 14px!important;
+  }
+  body.ipad-landscape #gameScreen:not(.hidden) .prehint-title{
+    font-size:21px!important;
+  }
+  body.ipad-landscape #gameScreen:not(.hidden) .prehint-item{
+    min-height:42px!important;
+    font-size:11px!important;
+  }
+  body.ipad-landscape #gameScreen:not(.hidden) .prehint-count-wrap .gate-start{
+    min-height:46px!important;
+    font-size:16px!important;
+  }
 }
 </style>
 
@@ -5147,8 +5575,22 @@ function updateOrientationGate(){
   const gate=document.getElementById("orientationGate");
   if(!gate)return;
   const touchDevice=(navigator.maxTouchPoints||0)>0||window.matchMedia("(pointer: coarse)").matches;
-  const mobileLandscape=touchDevice&&window.matchMedia("(orientation: landscape) and (max-width: 1366px) and (max-height: 900px)").matches;
+  const isLandscape=window.matchMedia("(orientation: landscape)").matches;
+
+  // iPad Safari can report desktop-like viewport values, so detect by touch + large side.
+  const vv=window.visualViewport;
+  const vw=Math.max(vv?.width||0,window.innerWidth||0);
+  const vh=Math.max(vv?.height||0,window.innerHeight||0);
+  const longSide=Math.max(vw,vh);
+  const shortSide=Math.min(vw,vh);
+  const ipadLandscape=touchDevice&&isLandscape&&longSide>=1000&&shortSide>=650;
+
+  // IMPORTANT: phone CSS must NOT be applied on iPad.
+  const mobileLandscape=touchDevice&&isLandscape&&!ipadLandscape&&
+    window.matchMedia("(max-width: 980px), (max-height: 520px)").matches;
+
   document.body.classList.toggle("mobile-landscape",mobileLandscape);
+  document.body.classList.toggle("ipad-landscape",ipadLandscape);
   const mustBlock=shouldBlockPortraitPlay();
   gate.classList.toggle("active",mustBlock);
   gate.setAttribute("aria-hidden",mustBlock?"false":"true");
@@ -6069,7 +6511,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.24 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.25 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
@@ -6468,6 +6910,20 @@ if(fsHomeReturn && cachedReturnUser?.email){
   hardenImages();
   new MutationObserver(hardenImages).observe(document.documentElement,{childList:true,subtree:true});
 })();
+</script>
+
+
+<script>
+window.addEventListener("load",()=>{
+  const vv=window.visualViewport;
+  console.info("IPAD_LAYOUT_CHECK",{
+    inner:[window.innerWidth,window.innerHeight],
+    visual:[vv?.width,vv?.height],
+    touch:navigator.maxTouchPoints,
+    mobile:document.body.classList.contains("mobile-landscape"),
+    ipad:document.body.classList.contains("ipad-landscape")
+  });
+});
 </script>
 
 </body>
