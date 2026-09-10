@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.20.1-MOBILE-POPUP-TIMER-FIT-PLUS">
+<meta name="fs-build" content="V18.20.2-FAST-LOGIN-LAZY-IMAGE">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3723,6 +3723,22 @@ body.mobile-landscape #resultOverlay .result-modal.timeout .result-actions-v6 .b
 }
 </style>
 
+
+<style id="v18-20-2-fast-login">
+body.mobile-landscape .mobile-stage-status.success{
+  pointer-events:none!important;
+}
+body.mobile-landscape .mobile-stage-card::after{
+  content:"คำถามอยู่ในตัวเกมแล้ว • ไม่ต้องรอโหลดครบทุก Season";
+  display:block;
+  margin-top:4px;
+  text-align:center;
+  font-size:7px;
+  font-weight:800;
+  color:#6b8797;
+}
+</style>
+
 </head>
 <body>
 
@@ -4352,19 +4368,41 @@ function imagePath(x){
   return `./${file}?v=20260901V18161S3FAST`;
 }
 function preload(items){
-  (items||masterQuestions()).forEach(x=>{
+  (items||[]).forEach(x=>{
     const im=new Image();
     im.decoding="async";
+    im.loading="eager";
     im.src=imagePath(x);
   });
 }
+function idleRun(fn,delay=450){
+  const run=()=>{try{fn()}catch(err){console.warn("idle preload failed",err)}};
+  if("requestIdleCallback" in window){
+    setTimeout(()=>requestIdleCallback(run,{timeout:1600}),delay);
+  }else{
+    setTimeout(run,delay);
+  }
+}
+function prefetchNextQuestionImages(count=2){
+  if(!questions?.length||!order?.length)return;
+  const items=[];
+  for(let n=1;n<=count;n++){
+    const oi=order[idx+n];
+    if(oi===undefined)continue;
+    const item=questions[oi];
+    if(item)items.push(item);
+  }
+  if(items.length)idleRun(()=>preload(items),500);
+}
 async function loadQuestions(){
+  // Question metadata is embedded in the HTML; no network wait is required.
   questions=masterQuestions();
-  preload(questions);
   return questions;
 }
 function warmQuestions(){
-  preload(masterQuestions());
+  // Never flood mobile bandwidth with every image after Login.
+  // Only warm a tiny set later, when the browser is idle.
+  idleRun(()=>preload(masterQuestions().slice(0,2)),1200);
 }
 
 async function login(){
@@ -4400,7 +4438,8 @@ async function login(){
   seasonControl[1]='OPEN';
   seasonControlLoaded=true;
   activeSeason=1;
-  setMobileStageStatus("กำลังโหลดข้อมูลเกม...",true);
+  // Frontend metadata is already embedded, so the stage picker is usable immediately.
+  setMobileStageStatus("✓ พร้อมเลือกด่าน • กำลังซิงก์ข้อมูลเบื้องหลัง",false,"success");
   openGame();
 
   e.loginBackendText.textContent="กำลังซิงก์ข้อมูลเบื้องหลัง...";
@@ -4425,10 +4464,11 @@ async function login(){
       setMobileStageStatus("✓ โหลดข้อมูลสำเร็จ • พร้อมเลือกด่าน",false,"success");
 
       // Warm S3 while the player is still on Home/S1, so S3 Submit is not cold.
-      prewarmSeasonBackend(3);
+      // Keep the first few seconds after Login light on mobile.
+      idleRun(()=>prewarmSeasonBackend(3),1800);
 
       // Re-check later without blocking gameplay.
-      setTimeout(()=>{ refreshSeasonControl(); },5000);
+      setTimeout(()=>{ refreshSeasonControl(); },9000);
     }catch(err){
       setBackend(false);
       // Backend sync must never block the mobile/iPad stage picker.
@@ -4682,6 +4722,7 @@ function updateQualifierUI(qf){const q=normalizeQualifier(qf||user?.qualifier||{
 function qualifierModal(){const q=updateQualifierUI(user?.qualifier||{}),names={1:"โลจิสติกส์ & ตลาดถึงมือผู้บริโภค",2:"การผลิตและแปรรูปอาหาร",3:"Food Safety & Quality Culture",4:"Final Quest: Quiz & Run"};const cards=[1,2,3,4].map(s=>{const st=q.seasonStatus[String(s)],minimum=st.minimum,pct=Math.max(0,Math.min(100,(st.score/minimum)*100));return `<div class="qualifier-season ${st.passed?"pass":""}"><div class="q-top"><span>Season ${s} • ${esc(names[s])}</span><span>${st.passed?"✅ ผ่าน":"⏳ ยังไม่ผ่าน"}</span></div><div class="q-score">${formatGameNumber(st.score)} / ${formatGameNumber(minimum)} คะแนนสะสม</div><div class="q-bar"><div class="q-fill" style="width:${pct}%"></div></div></div>`}).join("");modal("🏅 Qualifier",`<div class="qualifier-summary"><div class="qualifier-hero ${q.qualified?"qualified":""}"><strong>${q.qualified?"🏆 QUALIFIED":"QUALIFIER "+q.qualifiedSeasons+" / 4"}</strong><div class="qualifier-rule">เกณฑ์คะแนนสะสม: Season 1 ≥ 1,500 • Season 2 ≥ 800 • Season 3 ≥ 150 • Season 4 ≥ 800</div></div><div class="qualifier-grid">${cards}</div></div>`)}
 function setTotal(v){const score=Number(v||0);e.totalScore.textContent=formatGameNumber(score);e.sideTotalScore.textContent=`${formatGameNumber(score)} คะแนน`;updateHeaderScoreProgress(score)}
 function openGame(){
+  const t0=performance.now();
   renderUser();
   renderTotalUsers();
 
@@ -4694,9 +4735,27 @@ function openGame(){
   applySeasonControlUI();
 
   questions=questionsForSeason(1);
-  preload(questions);
   hideSeasonLockedScreen();
-  startSession();
+
+  const touchLandscape =
+    document.body.classList.contains("mobile-landscape") ||
+    !!window.matchMedia?.("(hover:none) and (pointer:coarse) and (orientation:landscape)")?.matches;
+
+  if(touchLandscape){
+    // Mobile/iPad: show Season picker immediately.
+    // Do not load a random S1 image before the player has even selected a Season.
+    mobileStageChosen=false;
+    e.questionImage?.removeAttribute("src");
+    e.questionImage?.classList.remove("loading");
+    requestAnimationFrame(()=>{
+      syncMobileStagePicker();
+      mobileStagePicker?.classList.remove("loading");
+      console.info(`Fast Login: stage picker shown in ${Math.round(performance.now()-t0)} ms`);
+    });
+  }else{
+    // Desktop keeps the familiar direct Season 1 flow.
+    startSession();
+  }
 }
 function shuffle(a){
   a=[...a];
@@ -5834,6 +5893,7 @@ e.clickLayer.addEventListener("pointercancel",()=>{
 e.questionImage.onload=()=>{
   e.questionImage.classList.remove("loading");
   e.questionImage.dataset.retry="";
+  prefetchNextQuestionImages(2);
 };
 e.questionImage.onerror=()=>{
   e.questionImage.classList.remove("loading");
