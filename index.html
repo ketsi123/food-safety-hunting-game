@@ -4295,21 +4295,63 @@ body.ipad-landscape #gameScreen:not(.hidden) .prehint-foot{
 </style>
 
 
-<style id="v16-9-28-ipad-question-image-only">
-@media (orientation:landscape) and (pointer:coarse) and (min-width:1000px){
-  body.ipad-landscape #gameScreen:not(.hidden) .question-strip-v12{
-    position:relative!important;
-    z-index:8!important;
+<style id="v16933-ipad-chrome-popup-portal">
+body.ipad-landscape > .prehint-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:22px 34px!important;
+  overflow:auto!important;
+  background:rgba(4,31,60,.68)!important;
+  backdrop-filter:blur(6px)!important;
+  -webkit-backdrop-filter:blur(6px)!important;
+}
+body.ipad-landscape > .prehint-overlay.hidden{
+  display:none!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-card{
+  position:relative!important;
+  width:min(820px,calc(100vw - 90px))!important;
+  max-width:none!important;
+  max-height:calc(100dvh - 56px)!important;
+  margin:auto!important;
+  padding:54px 24px 18px!important;
+  border-radius:24px!important;
+  overflow:auto!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-title{
+  margin:10px 0 12px!important;
+  font-size:24px!important;
+  line-height:1.2!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:9px!important;
+  margin:0 auto 12px!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-item{
+  min-height:48px!important;
+  padding:8px 11px!important;
+  font-size:12px!important;
+  line-height:1.2!important;
+}
+body.ipad-landscape > .prehint-overlay .gate-start{
+  width:100%!important;
+  min-height:50px!important;
+  font-size:17px!important;
+}
+@media (orientation:landscape) and (max-height:820px){
+  body.ipad-landscape > .prehint-overlay .prehint-card{
+    width:min(760px,calc(100vw - 80px))!important;
+    max-height:calc(100dvh - 44px)!important;
+    padding:48px 20px 14px!important;
   }
-  body.ipad-landscape #gameScreen:not(.hidden) .question-strip-copy,
-  body.ipad-landscape #gameScreen:not(.hidden) #questionText{
-    visibility:visible!important;
-    opacity:1!important;
-  }
-  body.ipad-landscape #gameScreen:not(.hidden) .image-wrap img{
-    visibility:visible!important;
-    opacity:1!important;
-  }
+  body.ipad-landscape > .prehint-overlay .prehint-title{font-size:21px!important}
+  body.ipad-landscape > .prehint-overlay .prehint-item{min-height:42px!important;font-size:11px!important}
 }
 </style>
 
@@ -4938,57 +4980,17 @@ function cachedQuestions(){
   // V16.9.16: Q1-Q8 metadata is local master data only.
   return masterQuestions();
 }
-function repoRootPath(){
-  try{
-    const seg=(location.pathname||"/").split("/").filter(Boolean);
-    return (location.hostname||"").endsWith("github.io") && seg.length ? `/${seg[0]}/` : "/";
-  }catch(_){ return "/"; }
-}
-function imageCandidates(x){
+function imagePath(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  if(!file) return [];
-  const bust=`v=20260910V16930&t=${Date.now()}`;
-  const origin=location.origin||"";
-  const root=repoRootPath();
-  const cleanFile=file.replace(/^\.\//,"").replace(/^\//,"");
-  const candidates=[
-    `${origin}${root}${cleanFile}?${bust}`,
-    new URL(cleanFile, document.baseURI).href + (new URL(cleanFile, document.baseURI).search ? '&' : '?') + bust,
-    `${origin}${root}${encodeURIComponent(cleanFile).replace(/%2F/g,'/') }?${bust}`,
-    `./${cleanFile}?${bust}`,
-    `${cleanFile}?${bust}`
-  ];
-  return [...new Set(candidates)];
-}
-function imagePath(x){
-  return imageCandidates(x)[0]||"";
-}
-function loadQuestionImageSafe(x){
-  const candidates=imageCandidates(x);
-  e.questionImage.classList.add("loading");
-  e.questionImage.dataset.retry="";
-  e.questionImage.dataset.candidates=JSON.stringify(candidates);
-  e.questionImage.dataset.candidateIndex="0";
-  if(candidates.length){
-    e.questionImage.removeAttribute("srcset");
-    e.questionImage.loading="eager";
-    e.questionImage.decoding="sync";
-    e.questionImage.fetchPriority="high";
-    e.questionImage.src=candidates[0];
-  }else{
-    e.questionImage.removeAttribute("src");
-    e.questionImage.classList.remove("loading");
-  }
+  return `./${file}?v=20260901V18161S3FAST`;
 }
 function preload(items){
   (items||[]).forEach(x=>{
-    const src=imagePath(x);
-    if(!src) return;
     const im=new Image();
     im.decoding="async";
     im.loading="eager";
-    im.src=src;
+    im.src=imagePath(x);
   });
 }
 function idleRun(fn,delay=450){
@@ -5509,14 +5511,13 @@ const PRESTART_HINTS={
 };
 let preMissionTimer=null,preMissionRemaining=0,preMissionOnFinish=null;
 
-function ipadKeepQuestionVisible(){
-  if(!document.body.classList.contains("ipad-landscape")) return;
-  try{
-    document.documentElement.scrollTop=0;
-    document.body.scrollTop=0;
-    window.scrollTo(0,0);
-    setTimeout(()=>window.scrollTo(0,0),60);
-  }catch(_){}
+function ensurePreStartPopupPortal(){
+  ["preStartMission","preStartHint"].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el && el.parentElement!==document.body){
+      document.body.appendChild(el);
+    }
+  });
 }
 let preHintTimer=null,preHintRemaining=0,preHintOnFinish=null,preHintShownSeasons=new Set();
 function renderPreStartMission(season){
@@ -5530,13 +5531,17 @@ function renderPreStartMission(season){
 }
 function hidePreStartMission(runFinish=true){
   clearInterval(preMissionTimer);preMissionTimer=null;
-  document.getElementById("preStartMission")?.classList.add("hidden");
-  ipadKeepQuestionVisible();
+  const missionEl=document.getElementById("preStartMission");
+  missionEl?.classList.add("hidden");
+  if(missionEl) missionEl.style.display="";
   if(runFinish&&typeof preMissionOnFinish==="function"){const fn=preMissionOnFinish;preMissionOnFinish=null;fn()}else if(!runFinish){preMissionOnFinish=null}
 }
 function showPreStartMission(season,onFinish){
+  ensurePreStartPopupPortal();
   clearInterval(preMissionTimer);preMissionTimer=null;preMissionOnFinish=onFinish;renderPreStartMission(season);
-  document.getElementById("preStartMission")?.classList.remove("hidden");
+  const el=document.getElementById("preStartMission");
+  el?.classList.remove("hidden");
+  if(el){ el.style.display="flex"; el.scrollTop=0; }
 }
 function renderPreStartHint(season){
   const s=Number(season||1);
@@ -5549,13 +5554,17 @@ function renderPreStartHint(season){
 }
 function hidePreStartHint(runFinish=true){
   clearInterval(preHintTimer);preHintTimer=null;
-  document.getElementById("preStartHint")?.classList.add("hidden");
-  ipadKeepQuestionVisible();
+  const hintEl=document.getElementById("preStartHint");
+  hintEl?.classList.add("hidden");
+  if(hintEl) hintEl.style.display="";
   if(runFinish&&typeof preHintOnFinish==="function"){const fn=preHintOnFinish;preHintOnFinish=null;fn()}else if(!runFinish){preHintOnFinish=null}
 }
 function showPreStartHint(season,onFinish){
+  ensurePreStartPopupPortal();
   clearInterval(preHintTimer);preHintTimer=null;preHintOnFinish=onFinish;renderPreStartHint(season);
-  document.getElementById("preStartHint")?.classList.remove("hidden");
+  const el=document.getElementById("preStartHint");
+  el?.classList.remove("hidden");
+  if(el){ el.style.display="flex"; el.scrollTop=0; }
 }
 document.getElementById("preMissionClose")?.addEventListener("click",()=>hidePreStartMission(true));
 document.getElementById("preHintClose")?.addEventListener("click",()=>hidePreStartHint(true));
@@ -5586,7 +5595,7 @@ function loadQ(startImmediately=false){
   e.questionText.textContent=Number(q.season||1)===3?'จากภาพนี้ จุดใดที่ “สอดคล้อง” กับ Food Safety & Quality Culture?':'จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
   if(e.progressSeasonLabel)e.progressSeasonLabel.textContent=`Season ${q.season||1} - ${sm.title}`;
   e.progressFill.style.width=`${cur/total*100}%`;e.progressText.textContent=`ภาพที่ ${cur} / ${total}`;
-  loadQuestionImageSafe(q);hardRefreshQuestionImageIfBlank();tick();ipadKeepQuestionVisible();
+  e.questionImage.classList.add("loading");e.questionImage.src=imagePath(q);tick();
   e.playCard.classList.add("game-paused");
   e.gateLogoutBtn.classList.add("hidden");
   e.gateIcon.textContent="🎯";e.gateKicker.textContent=cur===1?"ก่อนเริ่มเกมส์":"พร้อมสำหรับข้อต่อไป";e.gateTitle.textContent=cur===1?`กด START เพื่อเริ่ม Season ${q.season||activeSeason}`:`Season ${q.season||activeSeason} • ข้อ ${cur}`;
@@ -6016,6 +6025,7 @@ function renderReasons(){
   e.reasonList.innerHTML=`<div class="reason-mini-guide"><b>① เลือกจุดบนภาพ</b><span>② ลากเหตุผล → ช่องของข้อนั้น</span></div><div class="mobile-match-help">📱 ลากยาก? แตะ “เหตุผล” 1 ครั้ง แล้วแตะช่องข้อที่ต้องการได้เลย</div><div class="selected-match-list">${rows}</div><div class="reason-bank-title"><b>เหตุผล</b><small>ลาก หรือแตะเพื่อจับคู่ • ไม่บังคับ</small></div><div class="reason-choice-bank">${bank}</div>`;
   e.reasonList.querySelectorAll("[data-clear-slot]").forEach(btn=>{btn.onclick=ev=>{ev.stopPropagation();clearReasonChoice(Number(btn.dataset.clearSlot))}});
   e.reasonList.querySelectorAll("[data-delete-selection]").forEach(btn=>{btn.onclick=ev=>{ev.stopPropagation();removeSelectionAt(Number(btn.dataset.deleteSelection))}});
+  e.reasonList.scrollTop=0;
   wireReasonDrag();
 }
 function reveal(list){
@@ -6539,33 +6549,17 @@ e.clickLayer.addEventListener("pointercancel",()=>{
 e.questionImage.onload=()=>{
   e.questionImage.classList.remove("loading");
   e.questionImage.dataset.retry="";
-  e.questionImage.dataset.loadedSrc=e.questionImage.currentSrc||e.questionImage.src||"";
   prefetchNextQuestionImages(2);
 };
-function hardRefreshQuestionImageIfBlank(){
-  setTimeout(()=>{
-    if(!e.questionImage) return;
-    const src=e.questionImage.currentSrc||e.questionImage.src||"";
-    const visible = e.questionImage.naturalWidth>0 && e.questionImage.clientWidth>0;
-    if(src && !visible){
-      const cands=imageCandidates(q);
-      if(cands[1]) e.questionImage.src=cands[1];
-    }
-  },1200);
-}
 e.questionImage.onerror=()=>{
-  const mq=masterQuestionById(q?.questionId)||q||{};
-  let candidates=[];
-  try{ candidates=JSON.parse(e.questionImage.dataset.candidates||'[]'); }catch(_){ candidates=[]; }
-  let idx=Number(e.questionImage.dataset.candidateIndex||0);
-  idx += 1;
-  if(idx < candidates.length){
-    e.questionImage.dataset.candidateIndex=String(idx);
-    e.questionImage.src=candidates[idx];
+  e.questionImage.classList.remove("loading");
+  const mq=masterQuestionById(q?.questionId);
+  if(mq && !e.questionImage.dataset.retry){
+    e.questionImage.dataset.retry="1";
+    e.questionImage.src=`./${mq.imageFile}?retry=${Date.now()}`;
     return;
   }
-  e.questionImage.classList.remove("loading");
-  toast(`ไม่พบภาพ ${mq?.imageFile||""}`,4500);
+  toast(`ไม่พบภาพ ${mq?.imageFile||q?.imageFile||""}`,4500);
 };
 localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
@@ -6598,7 +6592,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.29 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.33 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
