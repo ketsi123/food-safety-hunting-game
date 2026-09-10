@@ -4938,22 +4938,44 @@ function cachedQuestions(){
   // V16.9.16: Q1-Q8 metadata is local master data only.
   return masterQuestions();
 }
-function imagePath(x){
+function repoRootPath(){
+  try{
+    const seg=(location.pathname||"/").split("/").filter(Boolean);
+    return (location.hostname||"").endsWith("github.io") && seg.length ? `/${seg[0]}/` : "/";
+  }catch(_){ return "/"; }
+}
+function imageCandidates(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  if(!file) return "";
-  // Resolve from the actual deployed page location on GitHub Pages.
-  // Example: /food-safety-hunting-game/S1_Q01.jpg
-  const u=new URL(file, document.baseURI);
-  u.searchParams.set("v","20260910V16929");
-  return u.href;
+  if(!file) return [];
+  const bust=`v=20260910V16930&t=${Date.now()}`;
+  const origin=location.origin||"";
+  const root=repoRootPath();
+  const cleanFile=file.replace(/^\.\//,"").replace(/^\//,"");
+  const candidates=[
+    `${origin}${root}${cleanFile}?${bust}`,
+    new URL(cleanFile, document.baseURI).href + (new URL(cleanFile, document.baseURI).search ? '&' : '?') + bust,
+    `${origin}${root}${encodeURIComponent(cleanFile).replace(/%2F/g,'/') }?${bust}`,
+    `./${cleanFile}?${bust}`,
+    `${cleanFile}?${bust}`
+  ];
+  return [...new Set(candidates)];
+}
+function imagePath(x){
+  return imageCandidates(x)[0]||"";
 }
 function loadQuestionImageSafe(x){
-  const src=imagePath(x);
+  const candidates=imageCandidates(x);
   e.questionImage.classList.add("loading");
   e.questionImage.dataset.retry="";
-  if(src){
-    e.questionImage.src=src;
+  e.questionImage.dataset.candidates=JSON.stringify(candidates);
+  e.questionImage.dataset.candidateIndex="0";
+  if(candidates.length){
+    e.questionImage.removeAttribute("srcset");
+    e.questionImage.loading="eager";
+    e.questionImage.decoding="sync";
+    e.questionImage.fetchPriority="high";
+    e.questionImage.src=candidates[0];
   }else{
     e.questionImage.removeAttribute("src");
     e.questionImage.classList.remove("loading");
@@ -4961,10 +4983,12 @@ function loadQuestionImageSafe(x){
 }
 function preload(items){
   (items||[]).forEach(x=>{
+    const src=imagePath(x);
+    if(!src) return;
     const im=new Image();
     im.decoding="async";
     im.loading="eager";
-    im.src=imagePath(x);
+    im.src=src;
   });
 }
 function idleRun(fn,delay=450){
@@ -5562,7 +5586,7 @@ function loadQ(startImmediately=false){
   e.questionText.textContent=Number(q.season||1)===3?'จากภาพนี้ จุดใดที่ “สอดคล้อง” กับ Food Safety & Quality Culture?':'จากภาพนี้ จุดใด “ไม่สอดคล้อง” กับหลัก Food Safety?';
   if(e.progressSeasonLabel)e.progressSeasonLabel.textContent=`Season ${q.season||1} - ${sm.title}`;
   e.progressFill.style.width=`${cur/total*100}%`;e.progressText.textContent=`ภาพที่ ${cur} / ${total}`;
-  loadQuestionImageSafe(q);tick();ipadKeepQuestionVisible();
+  loadQuestionImageSafe(q);hardRefreshQuestionImageIfBlank();tick();ipadKeepQuestionVisible();
   e.playCard.classList.add("game-paused");
   e.gateLogoutBtn.classList.add("hidden");
   e.gateIcon.textContent="🎯";e.gateKicker.textContent=cur===1?"ก่อนเริ่มเกมส์":"พร้อมสำหรับข้อต่อไป";e.gateTitle.textContent=cur===1?`กด START เพื่อเริ่ม Season ${q.season||activeSeason}`:`Season ${q.season||activeSeason} • ข้อ ${cur}`;
@@ -6518,17 +6542,27 @@ e.questionImage.onload=()=>{
   e.questionImage.dataset.loadedSrc=e.questionImage.currentSrc||e.questionImage.src||"";
   prefetchNextQuestionImages(2);
 };
+function hardRefreshQuestionImageIfBlank(){
+  setTimeout(()=>{
+    if(!e.questionImage) return;
+    const src=e.questionImage.currentSrc||e.questionImage.src||"";
+    const visible = e.questionImage.naturalWidth>0 && e.questionImage.clientWidth>0;
+    if(src && !visible){
+      const cands=imageCandidates(q);
+      if(cands[1]) e.questionImage.src=cands[1];
+    }
+  },1200);
+}
 e.questionImage.onerror=()=>{
   const mq=masterQuestionById(q?.questionId)||q||{};
-  if(!e.questionImage.dataset.retry){
-    e.questionImage.dataset.retry="1";
-    const file=String(mq.imageFile||"").trim();
-    if(file){
-      const u=new URL(file,document.baseURI);
-      u.searchParams.set("retry",String(Date.now()));
-      e.questionImage.src=u.href;
-      return;
-    }
+  let candidates=[];
+  try{ candidates=JSON.parse(e.questionImage.dataset.candidates||'[]'); }catch(_){ candidates=[]; }
+  let idx=Number(e.questionImage.dataset.candidateIndex||0);
+  idx += 1;
+  if(idx < candidates.length){
+    e.questionImage.dataset.candidateIndex=String(idx);
+    e.questionImage.src=candidates[idx];
+    return;
   }
   e.questionImage.classList.remove("loading");
   toast(`ไม่พบภาพ ${mq?.imageFile||""}`,4500);
