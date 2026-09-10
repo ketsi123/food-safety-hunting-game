@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.19.9-MOBILE-HARD-NO-COPY">
+<meta name="fs-build" content="V18.20.0-MOBILE-POPUP-TIMER-FIT">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3161,6 +3161,291 @@ body.mobile-landscape #gameScreen:not(.hidden) .image-tip{
 #gameScreen .click-layer {
   pointer-events: auto !important;
   touch-action: none !important;
+}
+</style>
+
+
+<style id="v18-20-0-mobile-popup-timer-fit">
+/* =========================================================
+   V18.20.0 — short landscape phone fit
+   - result popup always shows action buttons
+   - question/timer header reduced ~50%
+   - recovered space goes back to game image/reason area
+   ========================================================= */
+
+/* ---------- Compact top question/timer strip on phones ---------- */
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-v12{
+  padding:2px 5px!important;
+  margin:0 0 2px!important;
+  min-height:0!important;
+  border-radius:8px!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-main{
+  grid-template-columns:minmax(0,1fr) 82px!important;
+  gap:4px!important;
+  align-items:center!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-top{
+  margin:0!important;
+  gap:4px!important;
+  line-height:1!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-v12 .question-kicker{
+  font-size:8px!important;
+  line-height:1!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-v12 .question-meta span{
+  padding:1px 4px!important;
+  font-size:6px!important;
+  line-height:1.05!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-v12 h2{
+  margin:1px 0 0!important;
+  font-size:9px!important;
+  line-height:1.12!important;
+  white-space:nowrap!important;
+  overflow:hidden!important;
+  text-overflow:ellipsis!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-timer{
+  min-width:82px!important;
+  width:82px!important;
+  height:42px!important;
+  padding:2px 4px!important;
+  border-radius:10px!important;
+  box-shadow:0 3px 8px rgba(46,118,172,.08),inset 0 1px 0 rgba(255,255,255,.8)!important;
+  transform:none!important;
+  margin:0!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-timer .timer-label{
+  font-size:7px!important;
+  line-height:1!important;
+  margin-bottom:2px!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-timer .timer-value{
+  gap:2px!important;
+  font-size:10px!important;
+  line-height:1!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-timer #timerText{
+  font-size:17px!important;
+  line-height:1!important;
+  letter-spacing:0!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .question-strip-rules{
+  display:none!important;
+}
+
+/* Give the saved height back to the actual game */
+body.mobile-landscape #gameScreen:not(.hidden) .right-game-panel,
+body.mobile-landscape #gameScreen:not(.hidden) .v12-reason-column{
+  height:calc(100dvh - 48px)!important;
+  max-height:calc(100dvh - 48px)!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .image-wrap{
+  max-height:calc(100dvh - 48px)!important;
+}
+body.mobile-landscape #gameScreen:not(.hidden) .image-wrap img{
+  max-height:calc(100dvh - 48px)!important;
+}
+
+/* ---------- Result popup: fit one short landscape viewport ---------- */
+body.mobile-landscape #resultOverlay{
+  padding:4px!important;
+  place-items:center!important;
+  overflow:hidden!important;
+}
+body.mobile-landscape #resultOverlay .result-modal{
+  width:min(96vw,980px)!important;
+  height:calc(100dvh - 8px)!important;
+  max-height:calc(100dvh - 8px)!important;
+  padding:7px 10px 6px!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+  display:flex!important;
+  flex-direction:column!important;
+}
+body.mobile-landscape #resultOverlay .modal-x{
+  width:28px!important;
+  height:28px!important;
+  right:7px!important;
+  top:6px!important;
+  font-size:12px!important;
+  z-index:12!important;
+}
+
+/* Compact summary header */
+body.mobile-landscape #resultOverlay .result-icon{
+  display:none!important;
+}
+body.mobile-landscape #resultOverlay .result-modal h2,
+body.mobile-landscape #resultOverlay .result-title{
+  flex:0 0 auto!important;
+  margin:0 34px 1px!important;
+  font-size:13px!important;
+  line-height:1.08!important;
+}
+body.mobile-landscape #resultOverlay .result-score{
+  flex:0 0 auto!important;
+  margin:0 0 2px!important;
+  font-size:20px!important;
+  line-height:1!important;
+}
+body.mobile-landscape #resultOverlay .result-line{
+  flex:0 0 auto!important;
+  margin:0 4px 3px!important;
+  font-size:9px!important;
+  line-height:1.22!important;
+}
+
+/* Image answer preview stays visible but compact */
+body.mobile-landscape #resultOverlay .result-visual{
+  flex:0 0 auto!important;
+  margin:2px 0 3px!important;
+  padding:4px!important;
+  border-radius:9px!important;
+}
+body.mobile-landscape #resultOverlay .result-visual-title{
+  display:none!important;
+}
+body.mobile-landscape #resultOverlay .result-visual-wrap{
+  max-height:31dvh!important;
+  border-radius:8px!important;
+}
+body.mobile-landscape #resultOverlay .result-visual-wrap img{
+  width:100%!important;
+  height:31dvh!important;
+  max-height:31dvh!important;
+  object-fit:contain!important;
+  background:#eef6fa!important;
+}
+body.mobile-landscape #resultOverlay .result-legend{
+  margin-top:3px!important;
+  gap:7px!important;
+  font-size:7px!important;
+  line-height:1!important;
+}
+
+/* Explanations scroll inside; they no longer push buttons off-screen */
+body.mobile-landscape #resultOverlay .result-answers{
+  flex:1 1 auto!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+  margin:2px 0 0!important;
+  padding:3px 3px 5px!important;
+  border-top:1px solid #e3edf2!important;
+  font-size:8px!important;
+  line-height:1.28!important;
+}
+body.mobile-landscape #resultOverlay .answer-section{
+  margin-top:4px!important;
+  padding:5px!important;
+  border-radius:8px!important;
+}
+body.mobile-landscape #resultOverlay .answer-section-title{
+  margin-bottom:3px!important;
+  font-size:9px!important;
+}
+body.mobile-landscape #resultOverlay .answer-user-row,
+body.mobile-landscape #resultOverlay .answer-missed-row{
+  margin-top:3px!important;
+  padding:4px 5px!important;
+  border-radius:6px!important;
+}
+body.mobile-landscape #resultOverlay .answer-user-head{
+  margin-bottom:1px!important;
+}
+body.mobile-landscape #resultOverlay .answer-choice-note{
+  margin-top:2px!important;
+  padding:3px 4px!important;
+  font-size:7px!important;
+}
+
+/* Always-visible bottom action bar */
+body.mobile-landscape #resultOverlay .result-actions-v6{
+  flex:0 0 auto!important;
+  position:sticky!important;
+  bottom:0!important;
+  z-index:20!important;
+  display:grid!important;
+  grid-template-columns:.85fr 1.6fr!important;
+  gap:6px!important;
+  margin:3px -2px 0!important;
+  padding:5px 2px 3px!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.78),#fff 28%)!important;
+  border-top:1px solid #dce9f1!important;
+}
+body.mobile-landscape #resultOverlay .result-actions-v6 .btn{
+  min-height:38px!important;
+  height:38px!important;
+  padding:6px 8px!important;
+  border-radius:11px!important;
+  font-size:11px!important;
+  line-height:1!important;
+  margin:0!important;
+}
+body.mobile-landscape #resultOverlay .result-actions-v6.final{
+  grid-template-columns:1fr!important;
+}
+
+/* Timeout popup follows the same compact phone layout */
+body.mobile-landscape #resultOverlay .result-modal.timeout{
+  width:min(96vw,980px)!important;
+  height:calc(100dvh - 8px)!important;
+  max-height:calc(100dvh - 8px)!important;
+  padding:7px 10px 6px!important;
+  border-radius:14px!important;
+  overflow:hidden!important;
+}
+body.mobile-landscape #resultOverlay .result-modal.timeout .result-icon{
+  display:none!important;
+}
+body.mobile-landscape #resultOverlay .result-modal.timeout h2{
+  margin:0 34px 1px!important;
+  font-size:13px!important;
+}
+body.mobile-landscape #resultOverlay .result-modal.timeout .result-score{
+  margin:0 0 2px!important;
+  font-size:20px!important;
+}
+body.mobile-landscape #resultOverlay .result-modal.timeout .result-line{
+  font-size:9px!important;
+  line-height:1.22!important;
+}
+body.mobile-landscape #resultOverlay .result-modal.timeout .timeout-note{
+  padding:5px 7px!important;
+  border-radius:8px!important;
+  font-size:8px!important;
+  line-height:1.25!important;
+}
+body.mobile-landscape #resultOverlay .result-modal.timeout .result-actions-v6{
+  margin-top:3px!important;
+  gap:6px!important;
+}
+body.mobile-landscape #resultOverlay .result-modal.timeout .result-actions-v6 .btn{
+  min-height:38px!important;
+  height:38px!important;
+  font-size:11px!important;
+  border-radius:11px!important;
+}
+
+/* Extra-short Android landscape browser bars */
+@media (orientation:landscape) and (max-height:430px){
+  body.mobile-landscape #resultOverlay .result-visual-wrap,
+  body.mobile-landscape #resultOverlay .result-visual-wrap img{
+    height:25dvh!important;
+    max-height:25dvh!important;
+  }
+  body.mobile-landscape #resultOverlay .result-answers{
+    font-size:7.5px!important;
+  }
+  body.mobile-landscape #resultOverlay .result-actions-v6 .btn{
+    height:36px!important;
+    min-height:36px!important;
+    font-size:10px!important;
+  }
 }
 </style>
 
