@@ -695,6 +695,39 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 }
 </style>
 
+
+<style id="v18-20-7-ipad-play-fix">
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (min-width:900px){
+  #mobile{
+    right:18px!important;
+    bottom:34px!important;
+    gap:14px!important;
+    align-items:flex-end!important;
+    z-index:16!important;
+  }
+  #mobile .mb,
+  #mobile #fireBtn{
+    width:72px!important;
+    height:72px!important;
+    font-size:31px!important;
+    border-width:3px!important;
+  }
+  #mobile #j{margin-right:10px!important;}
+  #mobile .fireWrap{
+    margin-left:8px!important;
+    position:relative!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 auto!important;
+  }
+  #mobile .fireHint{
+    top:-22px!important;
+    font-size:13px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 <div id="shell">
@@ -797,7 +830,7 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 <div id="fsBuildBadge" style="
  position:absolute;left:10px;bottom:8px;z-index:99998;
  font:700 9px Arial;color:rgba(255,255,255,.58);
- pointer-events:none">S4 V18.20.6</div>
+ pointer-events:none">S4 V18.20.7</div>
 
 <script>
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
@@ -951,13 +984,13 @@ async function autoSaveEnd(reason){
   document.getElementById("fr").innerHTML += `<br><span style="font-size:12px;color:#537286">${t}</span>`;
 }
 function setupGate(){
-  if(active>=20){gateClosed=false;qBox.style.display="none";return}
+  if(active>=20){gateClosed=false;qBox.style.display="none";blocks=[];return}
   const gx=checkpointXs[active];
   const q=qs[active], ans=q[2], correctIdx=q[3];
   const tablet=isTabletLandscape();
-  const bw=tablet?270:225, bh=tablet?86:74, gap=tablet?30:24;
+  const bw=tablet?252:225, bh=tablet?94:74, gap=tablet?18:24;
   const total=bw*3+gap*2, start=gx-total/2;
-  const blockY=tablet?388:375;
+  const blockY=tablet?386:375;
   const correctSlot=correctSlotPattern[active%correctSlotPattern.length];
   const wrongChoices=ans.map((txt,idx)=>({txt,idx})).filter(o=>o.idx!==correctIdx);
   for(let i=wrongChoices.length-1;i>0;i--){
@@ -1253,9 +1286,16 @@ function update(){
   }
  }
  blocks.forEach(b=>{if(b.bounce>0)b.bounce*=.72;if(b.flash>0)b.flash--});
- const target=Math.max(0,Math.min(worldW-W,player.x-330));cam+=(target-cam)*.11;
+ let targetBase=player.x-330;
+ if(isTabletLandscape() && active<20 && gateClosed){
+   targetBase=checkpointXs[active]-W*0.46;
+ }
+ const target=Math.max(0,Math.min(worldW-W,targetBase));cam+=(target-cam)*.11;
 
- if(active>=20 && player.x>checkpointXs[19]+520) finish(true);
+ if(active>=20){
+   const finishX=checkpointXs[19]+560;
+   if(player.x+player.w>=finishX+24) finish(true);
+ }
 }
 function answer(b){
  locked=true;
@@ -1371,9 +1411,9 @@ function drawGate(){
    ctx.fillStyle="rgba(255,255,255,.32)";rr(x+7,y+7,b.w-14,12,6);ctx.fill();
    const tablet=isTabletLandscape();
    ctx.fillStyle=ok?"#ffffff":bad?"#ffffff":"#4b2b00";
-   ctx.font=`bold ${tablet?19:17}px Tahoma`;
+   ctx.font=`bold ${tablet?16:17}px Tahoma`;
    ctx.textAlign="center";ctx.textBaseline="middle";ctx.shadowColor="transparent";ctx.shadowBlur=0;
-   wrap(b.txt,x+b.w/2,y+b.h/2+(tablet?1:2),b.w-(tablet?28:20),tablet?22:20,tablet?2:3);ctx.restore();
+   wrap(b.txt,x+b.w/2,y+b.h/2+(tablet?2:2),b.w-(tablet?26:20),tablet?18:20,tablet?3:3);ctx.restore();
  }
 }
 function drawCheckpoints(){
@@ -1400,7 +1440,7 @@ function drawCheckpoints(){
   ctx.restore();
  }
  // finish arch
- const fx=checkpointXs[19]+600-cam;if(fx>-100&&fx<W+100){ctx.fillStyle="#145f89";ctx.fillRect(fx,410,25,210);ctx.fillRect(fx+140,410,25,210);ctx.fillRect(fx,410,165,28);ctx.fillStyle="#fff";ctx.font="bold 18px Arial";ctx.fillText("FINISH",fx+82,432)}
+ const fx=checkpointXs[19]+560-cam;if(fx>-120&&fx<W+120){ctx.fillStyle="#145f89";ctx.fillRect(fx,410,25,210);ctx.fillRect(fx+140,410,25,210);ctx.fillRect(fx,410,165,28);ctx.fillStyle="#fff";ctx.font="bold 18px Arial";ctx.fillText("FINISH",fx+82,432)}
 }
 
 function drawCollectibles(){
