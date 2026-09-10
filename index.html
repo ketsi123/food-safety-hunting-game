@@ -4355,6 +4355,92 @@ body.ipad-landscape > .prehint-overlay .gate-start{
 }
 </style>
 
+
+<style id="v16934-ipad-chrome-popup-final">
+body.ipad-landscape > .prehint-overlay{
+  padding:64px 36px 24px!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-card{
+  width:min(760px,calc(100vw - 100px))!important;
+  max-height:calc(100dvh - 100px)!important;
+  padding:62px 28px 18px!important;
+  overflow:visible!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-emblem{
+  top:-40px!important;
+  width:82px!important;
+  height:82px!important;
+  font-size:40px!important;
+  border-radius:24px!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-kicker{
+  margin-top:0!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-title{
+  font-size:23px!important;
+  line-height:1.22!important;
+  margin:8px 0 14px!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-list{
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:10px!important;
+  margin-bottom:14px!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-item{
+  min-height:50px!important;
+  padding:9px 12px!important;
+  font-size:12px!important;
+  line-height:1.22!important;
+}
+body.ipad-landscape > .prehint-overlay .gate-start{
+  min-height:52px!important;
+  font-size:17px!important;
+}
+body.ipad-landscape > .prehint-overlay .prehint-foot{
+  margin-top:8px!important;
+  font-size:11px!important;
+}
+</style>
+
+
+<style id="v16935-home-stage-picker-restore">
+/* Restore HOME / Season picker on iPad Chrome.
+   Popup/gameplay overrides must never hide or cover the stage selection screen. */
+body.ipad-landscape #homeScreen:not(.hidden),
+body.ipad-landscape #seasonSelectScreen:not(.hidden),
+body.ipad-landscape #stagePicker:not(.hidden),
+body.ipad-landscape .stage-picker:not(.hidden){
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:relative!important;
+  z-index:1!important;
+}
+
+/* Ensure the mobile/iPad season picker itself remains visible */
+body.ipad-landscape #mobileSeasonPicker,
+body.ipad-landscape .mobile-season-picker,
+body.ipad-landscape .season-picker-mobile{
+  display:grid!important;
+  visibility:visible!important;
+  opacity:1!important;
+}
+
+/* Never let pre-start overlays exist visually while HOME is active */
+body.ipad-landscape.home-mode > .prehint-overlay,
+body.ipad-landscape.home-mode .prehint-overlay{
+  display:none!important;
+}
+
+/* HOME must be able to scroll normally; fixed gameplay rules must not trap it */
+body.ipad-landscape.home-mode{
+  overflow:auto!important;
+  position:static!important;
+  height:auto!important;
+  min-height:100dvh!important;
+}
+</style>
+
 </head>
 <body>
 
@@ -5348,7 +5434,7 @@ function openGame(){
   seasonControl[1]='OPEN';
 
   e.loginScreen.classList.add("hidden");
-  e.gameScreen.classList.remove("hidden");
+  e.gameScreen.classList.remove("hidden");syncHomeMode();
   syncAllOverlayGeometry();
   applySeasonControlUI();
 
@@ -5519,6 +5605,30 @@ function ensurePreStartPopupPortal(){
     }
   });
 }
+
+function syncHomeMode(){
+  try{
+    const homeCandidates=[
+      document.getElementById("homeScreen"),
+      document.getElementById("seasonSelectScreen"),
+      document.getElementById("stagePicker"),
+      document.querySelector(".stage-picker")
+    ].filter(Boolean);
+
+    const homeVisible=homeCandidates.some(el=>!el.classList.contains("hidden") && getComputedStyle(el).display!=="none");
+    document.body.classList.toggle("home-mode",homeVisible);
+
+    if(homeVisible){
+      ["preStartMission","preStartHint"].forEach(id=>{
+        const el=document.getElementById(id);
+        if(el){
+          el.classList.add("hidden");
+          el.style.display="";
+        }
+      });
+    }
+  }catch(_){}
+}
 let preHintTimer=null,preHintRemaining=0,preHintOnFinish=null,preHintShownSeasons=new Set();
 function renderPreStartMission(season){
   const s=Number(season||1);
@@ -5567,9 +5677,16 @@ function showPreStartHint(season,onFinish){
   if(el){ el.style.display="flex"; el.scrollTop=0; }
 }
 document.getElementById("preMissionClose")?.addEventListener("click",()=>hidePreStartMission(true));
-document.getElementById("preHintClose")?.addEventListener("click",()=>hidePreStartHint(true));
+document.getElementById("preHintClose")?.addEventListener("click",()=>{
+  hidePreStartHint(true);
+  setTimeout(()=>{ if(!started && !ended) forceBeginActualQuestion(); },80);
+});
 document.getElementById("preMissionNext")?.addEventListener("click",()=>hidePreStartMission(true));
-document.getElementById("preHintNext")?.addEventListener("click",()=>hidePreStartHint(true));
+document.getElementById("preHintNext")?.addEventListener("click",()=>{
+  hidePreStartHint(true);
+  // iPad Chrome fallback: if callback did not transition, force the game live.
+  setTimeout(()=>{ if(!started && !ended) forceBeginActualQuestion(); },80);
+});
 
 function startSession(){
   clearInterval(timer); started=false; ended=false; preHintShownSeasons=new Set(); clearInterval(preMissionTimer); preMissionTimer=null; document.getElementById("preStartMission")?.classList.add("hidden");
@@ -5606,6 +5723,48 @@ function loadQ(startImmediately=false){
   if(startImmediately) startQuestion();
   window.scrollTo({top:0,behavior:"smooth"})
 }
+function forceBeginActualQuestion(){
+  if(ended || !q) return;
+
+  // Guarantee gameplay state even if the popup callback is lost on iPad Chrome.
+  if(!started){
+    started=true;
+    paused=false;
+  }
+
+  e.playCard.classList.remove("game-paused");
+  e.submitBtn.disabled=false;
+  e.pauseBtn.disabled=false;
+
+  // Guarantee the current question image is attached.
+  try{
+    const expected=imagePath(q);
+    if(expected && (!e.questionImage.src || e.questionImage.naturalWidth===0)){
+      e.questionImage.classList.add("loading");
+      e.questionImage.src=expected;
+    }
+  }catch(err){
+    console.warn("force image failed",err);
+  }
+
+  // Guarantee the answer/reason panel is rendered from local embedded data.
+  try{
+    renderReasons();
+    if(e.reasonList){
+      e.reasonList.scrollTop=0;
+      requestAnimationFrame(()=>{ if(e.reasonList)e.reasonList.scrollTop=0; });
+    }
+  }catch(err){
+    console.warn("force reasons failed",err);
+  }
+
+  action(`เริ่มแล้ว • เลือกได้สูงสุด ${actualHotspotCount(q)} จุด`,"ok");
+
+  // Start only one timer.
+  ensureQuestionImagePainted();
+  if(!timer) startQuestionTimer();
+}
+
 function startQuestion(){
   if(started||ended)return;
   e.questionGate.classList.add("off");
@@ -5613,13 +5772,8 @@ function startQuestion(){
 
   const beginActualQuestion=()=>{
     if(started||ended)return;
-    started=true;paused=false;
     if(!backendOnline){ping().catch(()=>{})}
-    e.playCard.classList.remove("game-paused");
-    e.submitBtn.disabled=false;e.pauseBtn.disabled=false;
-    renderReasons();
-    action(`เริ่มแล้ว • เลือกได้สูงสุด ${actualHotspotCount(q)} จุด`,"ok");
-    startQuestionTimer();
+    forceBeginActualQuestion();
   };
 
   const currentSeason=Number(q?.season||1);
@@ -6299,7 +6453,7 @@ async function history(){
   }
 }
 function howto(){modal("ⓘ วิธีการเล่น",`<div class="help-list"><div class="help-step"><i>1</i><div><b>สังเกตภาพ</b><br>Season 1–2 หาจุดที่ไม่สอดคล้อง • Season 3 หาพฤติกรรมที่สอดคล้องกับ Food Safety &amp; Quality Culture</div></div><div class="help-step"><i>2</i><div><b>คลิก/แตะจุด</b><br>เลือกได้หลายจุดตามจำนวนที่กำหนด</div></div><div class="help-step"><i>3</i><div><b>จับคู่เหตุผล</b><br>ลากข้อความเหตุผลสั้น ๆ ไปวางในช่องของจุดที่เลือก • เป็นคะแนนเสริมและไม่บังคับ</div></div><div class="help-step"><i>4</i><div><b>บันทึกคำตอบ</b><br>แต่ละ Hotspot: ตำแหน่งถูก 10 + เหตุผลถูก 10 คะแนน • คะแนนเต็มขึ้นกับจำนวน Hotspot ของข้อนั้น • หากหมดเวลา ระบบจะตรวจคำตอบที่เลือกไว้อัตโนมัติ</div></div><div class="help-step"><i>5</i><div><b>สิทธิ์ Qualifier</b><br>คะแนนสะสมต้องถึงเกณฑ์: S1 ≥ 1,500 • S2 ≥ 800 • S3 ≥ 150 • S4 ≥ 800</div></div></div>`)}
-function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
+function logout(){clearInterval(timer);clearQuestionGateViewportGeometry();clearUser();e.emailInput.value=localStorage.getItem(S_EMAIL)||"";e.gameScreen.classList.add("hidden");syncHomeMode();e.loginScreen.classList.remove("hidden");document.documentElement.style.setProperty("--fs-overlay-top","0px");setBackend(false)}
 
 function visibleGameHeaderBottom(){
   if(!e.gameScreen || e.gameScreen.classList.contains("hidden"))return 0;
@@ -6551,6 +6705,18 @@ e.questionImage.onload=()=>{
   e.questionImage.dataset.retry="";
   prefetchNextQuestionImages(2);
 };
+function ensureQuestionImagePainted(){
+  setTimeout(()=>{
+    if(!started || ended || !q || !e.questionImage) return;
+    if(e.questionImage.naturalWidth>0) return;
+    const src=imagePath(q);
+    if(src){
+      const joiner=src.includes("?")?"&":"?";
+      e.questionImage.src=`${src}${joiner}ipad=${Date.now()}`;
+    }
+  },500);
+}
+
 e.questionImage.onerror=()=>{
   e.questionImage.classList.remove("loading");
   const mq=masterQuestionById(q?.questionId);
@@ -6592,7 +6758,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.33 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.35 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
@@ -7005,6 +7171,17 @@ window.addEventListener("load",()=>{
     ipad:document.body.classList.contains("ipad-landscape")
   });
 });
+
+// V16.9.35 — keep HOME / Season picker restored on iPad Chrome regardless of transition path.
+try{
+  const homeObserver=new MutationObserver(()=>syncHomeMode());
+  homeObserver.observe(document.body,{subtree:true,attributes:true,attributeFilter:["class","style"]});
+  window.addEventListener("pageshow",syncHomeMode);
+  window.addEventListener("resize",syncHomeMode);
+  setTimeout(syncHomeMode,0);
+  setTimeout(syncHomeMode,300);
+}catch(_){}
+
 </script>
 
 </body>
