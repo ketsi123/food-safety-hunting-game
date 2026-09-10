@@ -4595,6 +4595,249 @@ body.mobile-landscape #gameScreen:not(.hidden) #questionGate .gate-secondary{
 }
 </style>
 
+
+<style id="v16942-mobile-popup-result-final">
+/* =========================================================
+   MOBILE LANDSCAPE ONLY
+   1) Mission/Hint popups fit inside phone viewport
+   2) Result image is large again
+   3) Result page scrolls naturally to buttons at the bottom
+   ========================================================= */
+
+/* ---------- Mission / Hint popup after portal-to-body ---------- */
+body.mobile-landscape > .prehint-overlay{
+  position:fixed!important;
+  inset:0!important;
+  z-index:2147483000!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:18px 10px 8px!important;
+  overflow:auto!important;
+}
+
+body.mobile-landscape > .prehint-overlay.hidden{
+  display:none!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-card{
+  position:relative!important;
+  width:min(620px,88vw)!important;
+  max-width:620px!important;
+  max-height:calc(100dvh - 18px)!important;
+  margin:auto!important;
+  padding:30px 14px 8px!important;
+  border-radius:16px!important;
+  overflow:auto!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-emblem{
+  top:-16px!important;
+  width:42px!important;
+  height:42px!important;
+  border-radius:12px!important;
+  border-width:2px!important;
+  font-size:21px!important;
+  box-shadow:0 3px 0 #164d9a!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-close{
+  top:6px!important;
+  right:7px!important;
+  width:28px!important;
+  height:28px!important;
+  font-size:15px!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-kicker{
+  padding:3px 10px!important;
+  font-size:8px!important;
+  line-height:1!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-title{
+  margin:5px auto 7px!important;
+  max-width:500px!important;
+  font-size:15px!important;
+  line-height:1.15!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-list{
+  display:grid!important;
+  grid-template-columns:repeat(2,minmax(0,1fr))!important;
+  gap:5px 6px!important;
+  width:min(520px,100%)!important;
+  max-width:520px!important;
+  margin:0 auto 6px!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-item{
+  display:grid!important;
+  grid-template-columns:24px minmax(0,1fr)!important;
+  align-items:center!important;
+  min-height:34px!important;
+  padding:5px 8px!important;
+  gap:6px!important;
+  border-radius:10px!important;
+  font-size:9px!important;
+  line-height:1.16!important;
+  text-align:left!important;
+  box-shadow:none!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-item i{
+  width:22px!important;
+  height:22px!important;
+  font-size:12px!important;
+}
+
+/* 5-item Hint: center the last card instead of leaving an ugly empty cell */
+body.mobile-landscape > .prehint-overlay .prehint-list .prehint-item:last-child:nth-child(odd){
+  grid-column:1 / -1!important;
+  width:calc(50% - 3px)!important;
+  justify-self:center!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-count-wrap{
+  width:min(540px,100%)!important;
+  margin:2px auto 0!important;
+  padding-top:4px!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-count-wrap .gate-start{
+  width:100%!important;
+  min-height:38px!important;
+  margin:0!important;
+  border-radius:10px!important;
+  font-size:12px!important;
+  box-shadow:0 4px 0 #198112!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-foot{
+  margin-top:4px!important;
+  font-size:7px!important;
+  line-height:1.15!important;
+}
+
+/* Extra-short Android landscape */
+@media (orientation:landscape) and (max-height:430px){
+  body.mobile-landscape > .prehint-overlay{
+    padding:16px 8px 5px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-card{
+    width:min(590px,86vw)!important;
+    max-height:calc(100dvh - 10px)!important;
+    padding:26px 11px 6px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-title{
+    font-size:13px!important;
+    margin:3px auto 4px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-list{
+    gap:3px 5px!important;
+    margin-bottom:4px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-item{
+    min-height:29px!important;
+    padding:3px 6px!important;
+    font-size:8px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-count-wrap .gate-start{
+    min-height:34px!important;
+    font-size:11px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-foot{
+    font-size:6.5px!important;
+  }
+}
+
+/* ---------- Result / answer review ---------- */
+
+/* Keep the whole result as one natural scroll surface. */
+body.mobile-landscape #resultOverlay{
+  overflow-x:hidden!important;
+  overflow-y:auto!important;
+  -webkit-overflow-scrolling:touch!important;
+}
+
+/* Make the answer image large again.
+   Hotspot layer remains exactly on the same 16:9 coordinate surface. */
+body.mobile-landscape #resultOverlay .result-visual{
+  width:100%!important;
+  margin:8px auto 10px!important;
+  padding:5px!important;
+}
+
+body.mobile-landscape #resultOverlay .result-visual-wrap{
+  position:relative!important;
+  width:min(92vw,980px)!important;
+  height:auto!important;
+  max-height:none!important;
+  aspect-ratio:16 / 9!important;
+  margin:0 auto!important;
+  overflow:hidden!important;
+  border-radius:10px!important;
+  background:#eef6fa!important;
+}
+
+body.mobile-landscape #resultOverlay .result-visual-wrap img{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  aspect-ratio:16 / 9!important;
+  object-fit:fill!important;
+  object-position:center center!important;
+  margin:0!important;
+}
+
+body.mobile-landscape #resultOverlay .result-visual-layer{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+}
+
+body.mobile-landscape #resultOverlay .result-legend{
+  width:min(92vw,980px)!important;
+  margin:5px auto 0!important;
+  font-size:8px!important;
+}
+
+/* No inner scrolling for the explanation section:
+   swipe the page downward until the action buttons appear. */
+body.mobile-landscape #resultOverlay .result-answers{
+  display:block!important;
+  height:auto!important;
+  max-height:none!important;
+  overflow:visible!important;
+}
+
+/* Buttons stay in normal flow after all answer content. */
+body.mobile-landscape #resultOverlay .result-actions-v6,
+body.mobile-landscape #resultOverlay .result-modal.timeout .result-actions-v6{
+  position:static!important;
+  bottom:auto!important;
+  margin:10px 0 4px!important;
+  padding:8px 2px 4px!important;
+}
+
+/* Do not let the old extra-short rule shrink the result picture again. */
+@media (orientation:landscape) and (max-height:430px){
+  body.mobile-landscape #resultOverlay .result-visual-wrap,
+  body.mobile-landscape #resultOverlay .result-legend{
+    width:min(90vw,920px)!important;
+    height:auto!important;
+    max-height:none!important;
+  }
+  body.mobile-landscape #resultOverlay .result-visual-wrap img{
+    width:100%!important;
+    height:100%!important;
+    max-height:none!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -6913,7 +7156,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.41 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.42 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
