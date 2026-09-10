@@ -4941,29 +4941,19 @@ function cachedQuestions(){
 function imagePath(x){
   const mq=masterQuestionById(x?.questionId)||x||{};
   const file=String(mq.imageFile||"").trim();
-  return `./${file}?v=20260910V16928`;
-}
-function questionImageCandidates(x){
-  const mq=masterQuestionById(x?.questionId)||x||{};
-  const file=String(mq.imageFile||"").trim();
-  if(!file) return [];
-  const base=[
-    `./${file}`,
-    `${file}`,
-    `./images/${file}`,
-    `./Images/${file}`,
-    `./img/${file}`,
-    `./assets/${file}`
-  ];
-  return [...new Set(base)].map((p,i)=>`${p}?v=20260910V16928_${i}`);
+  if(!file) return "";
+  // Resolve from the actual deployed page location on GitHub Pages.
+  // Example: /food-safety-hunting-game/S1_Q01.jpg
+  const u=new URL(file, document.baseURI);
+  u.searchParams.set("v","20260910V16929");
+  return u.href;
 }
 function loadQuestionImageSafe(x){
-  const list=questionImageCandidates(x);
-  e.questionImage.dataset.candidates=JSON.stringify(list);
-  e.questionImage.dataset.candidateIndex="0";
+  const src=imagePath(x);
   e.questionImage.classList.add("loading");
-  if(list.length){
-    e.questionImage.src=list[0];
+  e.questionImage.dataset.retry="";
+  if(src){
+    e.questionImage.src=src;
   }else{
     e.questionImage.removeAttribute("src");
     e.questionImage.classList.remove("loading");
@@ -6525,20 +6515,23 @@ e.clickLayer.addEventListener("pointercancel",()=>{
 e.questionImage.onload=()=>{
   e.questionImage.classList.remove("loading");
   e.questionImage.dataset.retry="";
+  e.questionImage.dataset.loadedSrc=e.questionImage.currentSrc||e.questionImage.src||"";
   prefetchNextQuestionImages(2);
 };
 e.questionImage.onerror=()=>{
-  let list=[];
-  try{list=JSON.parse(e.questionImage.dataset.candidates||"[]")}catch(_){}
-  let idx=Number(e.questionImage.dataset.candidateIndex||0)+1;
-  if(idx<list.length){
-    e.questionImage.dataset.candidateIndex=String(idx);
-    e.questionImage.src=list[idx];
-    return;
+  const mq=masterQuestionById(q?.questionId)||q||{};
+  if(!e.questionImage.dataset.retry){
+    e.questionImage.dataset.retry="1";
+    const file=String(mq.imageFile||"").trim();
+    if(file){
+      const u=new URL(file,document.baseURI);
+      u.searchParams.set("retry",String(Date.now()));
+      e.questionImage.src=u.href;
+      return;
+    }
   }
   e.questionImage.classList.remove("loading");
-  const mq=masterQuestionById(q?.questionId);
-  toast(`ไม่พบภาพ ${mq?.imageFile||q?.imageFile||""}`,4500);
+  toast(`ไม่พบภาพ ${mq?.imageFile||""}`,4500);
 };
 localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
@@ -6571,7 +6564,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.28 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.29 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
