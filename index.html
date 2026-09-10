@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.20.4-MOBILE-EXIT-ONLY">
+<meta name="fs-build" content="V18.20.5-MOBILE-RESULT-IMAGE-FIX">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -3786,6 +3786,74 @@ body.mobile-landscape .mobile-stage-card::after{
 }
 .mobile-stage-account-actions.exit-only .mobile-stage-login-exit{
   width:100%!important;
+}
+</style>
+
+
+<style id="v18-20-5-mobile-result-image-fix">
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+  #resultOverlay .result-visual{
+    flex:0 0 auto!important;
+    margin:2px 0 3px!important;
+    padding:3px!important;
+  }
+
+  #resultOverlay .result-visual-wrap{
+    position:relative!important;
+    width:min(100%, calc(35svh * 16 / 9))!important;
+    height:auto!important;
+    max-height:none!important;
+    aspect-ratio:16 / 9!important;
+    margin:0 auto!important;
+    overflow:hidden!important;
+    border-radius:8px!important;
+    background:#eef6fa!important;
+  }
+
+  #resultOverlay .result-visual-wrap img{
+    display:block!important;
+    width:100%!important;
+    height:100%!important;
+    max-height:none!important;
+    aspect-ratio:16 / 9!important;
+    object-fit:fill!important;
+    object-position:center!important;
+    margin:0!important;
+  }
+
+  #resultOverlay .result-visual-layer{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    pointer-events:none!important;
+  }
+
+  #resultOverlay .result-legend{
+    width:min(100%, calc(35svh * 16 / 9))!important;
+    margin:3px auto 0!important;
+  }
+
+  /* Keep answer text scrollable and buttons fully visible. */
+  #resultOverlay .result-answers{
+    flex:1 1 auto!important;
+    min-height:0!important;
+    overflow-y:auto!important;
+  }
+
+  #resultOverlay .result-actions-v6{
+    flex:0 0 auto!important;
+    position:sticky!important;
+    bottom:0!important;
+    z-index:20!important;
+  }
+}
+
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-height:430px){
+  #resultOverlay .result-visual-wrap,
+  #resultOverlay .result-legend{
+    width:min(100%, calc(29svh * 16 / 9))!important;
+  }
 }
 </style>
 
