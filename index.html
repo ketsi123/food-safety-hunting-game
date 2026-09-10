@@ -4838,6 +4838,46 @@ body.mobile-landscape #resultOverlay .result-modal.timeout .result-actions-v6{
 }
 </style>
 
+
+<style id="v16944-mobile-popup-top-complete">
+/* Mobile landscape Mission / Hint:
+   keep the existing size/layout, only reveal the full top emblem/card header. */
+body.mobile-landscape > .prehint-overlay{
+  padding-top:30px!important;
+  padding-bottom:8px!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-card{
+  overflow:visible!important;
+  max-height:calc(100dvh - 38px)!important;
+  margin:8px auto 0!important;
+}
+
+body.mobile-landscape > .prehint-overlay .prehint-emblem{
+  top:-22px!important;
+  z-index:5!important;
+}
+
+/* Keep the close button above the card content */
+body.mobile-landscape > .prehint-overlay .prehint-close{
+  z-index:6!important;
+}
+
+/* Very short Android landscape screens */
+@media (orientation:landscape) and (max-height:430px){
+  body.mobile-landscape > .prehint-overlay{
+    padding-top:24px!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-card{
+    max-height:calc(100dvh - 30px)!important;
+    margin:6px auto 0!important;
+  }
+  body.mobile-landscape > .prehint-overlay .prehint-emblem{
+    top:-18px!important;
+  }
+}
+</style>
+
 </head>
 <body>
 
@@ -7167,7 +7207,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.43 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.44 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
