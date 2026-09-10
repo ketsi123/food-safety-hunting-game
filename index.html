@@ -6276,6 +6276,17 @@ const SAME_ISSUE_ALT_ZONES={
       {x:59.0,y:30.0,rx:4.8,ry:9.5}    // background worker
     ]
   },
+  // V16.9.43 — S1Q10 H01 "ใช้มือเปล่าสัมผัสอาหาร"
+  // ในภาพมีมือ 2 ข้างสัมผัสเนื้อไก่ จึงให้แตะได้ทั้งสองมือ
+  // แต่ยังนับเป็นคำตอบเดียว H01 เท่านั้น
+  S1Q10:{
+    hotspotId:"H01",
+    canonical:{x:35.0,y:55.0},
+    zones:[
+      {x:34.0,y:57.0,rx:6.0,ry:9.0},   // มือซ้ายบนเนื้อไก่
+      {x:42.5,y:57.0,rx:5.5,ry:9.0}    // มือขวาบนเนื้อไก่
+    ]
+  },
   S2Q06:{
     hotspotId:"H01",
     canonical:{x:10.2,y:69.7},
@@ -7156,7 +7167,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.42 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.43 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
