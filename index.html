@@ -5509,6 +5509,7 @@ function switchSeason(season){
   hideSeasonLockedScreen();
   activeSeason=s;
   questions=qs;
+  window.__QUESTION_SESSION_NONCE__=`${Date.now()}-${Math.floor(secureRandom()*1e9)}`;
 
   // Warm this Season before the player reaches Submit.
   prewarmSeasonBackend(s);
@@ -5570,10 +5571,20 @@ function openGame(){
     startSession();
   }
 }
+function secureRandom(){
+  try{
+    if(window.crypto?.getRandomValues){
+      const u=new Uint32Array(1);
+      window.crypto.getRandomValues(u);
+      return u[0]/4294967296;
+    }
+  }catch(_){}
+  return Math.random();
+}
 function shuffle(a){
   a=[...a];
   for(let i=a.length-1;i>0;i--){
-    const j=Math.floor(Math.random()*(i+1));
+    const j=Math.floor(secureRandom()*(i+1));
     [a[i],a[j]]=[a[j],a[i]];
   }
   return a;
@@ -5591,102 +5602,78 @@ function smartRandomOrder(){
   const base=questions.map((_,i)=>i);
   if(base.length<=2)return shuffle(base);
 
+  const season=Number(questions[0]?.season||activeSeason||1);
+  const storageKey=`FS_LAST_SMART_ORDER_S${season}`;
+
   let previous=[];
   try{
-    previous=JSON.parse(localStorage.getItem("FS_LAST_SMART_ORDER")||"[]");
+    previous=JSON.parse(localStorage.getItem(storageKey)||"[]");
     if(!Array.isArray(previous))previous=[];
   }catch(_){previous=[]}
 
-  const prevIds=previous.map(String);
   const idOf=i=>String(questions[i]?.questionId||i);
   const qNo=i=>questionNoByIndex(i);
+  const groupOf=i=>questionGroupByIndex(i);
+  const prevIds=previous.map(String);
 
-  // Build topic groups (01-05 / 06-10 / 11-15 / 16-20 for a 20-question Season).
-  const groups=new Map();
-  base.forEach(i=>{
-    const g=questionGroupByIndex(i);
-    if(!groups.has(g))groups.set(g,[]);
-    groups.get(g).push(i);
-  });
+  const scoreCandidate=(candidate)=>{
+    let score=0;
+    const ids=candidate.map(idOf);
 
-  // Shuffle questions inside each topic first.
-  for(const [g,arr] of groups)groups.set(g,shuffle(arr));
-
-  const groupIds=[...groups.keys()];
-  const result=[];
-  let lastGroup=null;
-
-  // Score one candidate question against the already-built order.
-  const itemPenalty=(candidate,pos)=>{
-    let p=0;
-    const qn=qNo(candidate);
-    const qid=idOf(candidate);
-
-    if(prevIds[pos]===qid)p+=16;                    // same position as previous game
-    if(pos===0 && prevIds[0]===qid)p+=28;           // same first question
-
-    if(result.length){
-      const prev=result[result.length-1];
-      const diff=Math.abs(qn-qNo(prev));
-      if(diff===1)p+=26;                            // avoid 7→8 / 12→11
-      else if(diff===2)p+=10;
-      if(questionGroupByIndex(prev)===questionGroupByIndex(candidate))p+=80;
+    // Make a new play visibly different from the previous play.
+    for(let pos=0;pos<ids.length;pos++){
+      if(prevIds[pos]===ids[pos]) score+=18;
     }
-    return p+Math.random()*2;
+    if(prevIds[0]===ids[0]) score+=220;
+    if(prevIds.slice(0,3).join("|")===ids.slice(0,3).join("|")) score+=500;
+    if(prevIds.slice(0,5).join("|")===ids.slice(0,5).join("|")) score+=1200;
+
+    // Avoid obvious numeric runs such as Q06,Q07,Q08.
+    for(let i=1;i<candidate.length;i++){
+      const d=Math.abs(qNo(candidate[i])-qNo(candidate[i-1]));
+      if(d===1) score+=16;
+      else if(d===2) score+=5;
+
+      // Avoid long clusters from exactly the same 5-question topic block,
+      // but do not force a repeating round-robin pattern.
+      if(groupOf(candidate[i])===groupOf(candidate[i-1])) score+=8;
+    }
+
+    // Small true-random tie breaker.
+    score+=secureRandom()*5;
+    return score;
   };
 
-  // Round-robin: each round uses at most one question from every topic group.
-  // Therefore a 20-question / 4-group Season naturally spreads as 4 different
-  // topic groups per block of ~4 questions instead of clustering.
-  while(result.length<base.length){
-    let available=groupIds.filter(g=>(groups.get(g)||[]).length>0);
-    if(!available.length)break;
+  let best=null,bestScore=Infinity;
 
-    // Randomize the group order each round, but never repeat the group at the boundary.
-    let bestGroupOrder=null,bestGroupScore=Infinity;
-    const trials=Math.max(24,available.length*12);
-
-    for(let t=0;t<trials;t++){
-      const orderTry=shuffle(available);
-      let score=0;
-      if(lastGroup!==null && orderTry[0]===lastGroup)score+=100;
-
-      // Also avoid repeating the exact group pattern from the previous round.
-      for(let k=1;k<orderTry.length;k++){
-        if(orderTry[k]===orderTry[k-1])score+=100;
-      }
-
-      score+=Math.random()*3;
-      if(score<bestGroupScore){bestGroupScore=score;bestGroupOrder=orderTry}
-    }
-
-    const roundOrder=bestGroupOrder||shuffle(available);
-
-    for(const g of roundOrder){
-      const pool=groups.get(g)||[];
-      if(!pool.length)continue;
-
-      // Pick the best remaining item from this group for the current position.
-      let bestIdx=0,bestPenalty=Infinity;
-      for(let j=0;j<pool.length;j++){
-        const penalty=itemPenalty(pool[j],result.length);
-        if(penalty<bestPenalty){bestPenalty=penalty;bestIdx=j}
-      }
-
-      const chosen=pool.splice(bestIdx,1)[0];
-      result.push(chosen);
-      lastGroup=g;
+  // Try many genuinely different full shuffles and keep the least repetitive one.
+  for(let t=0;t<140;t++){
+    const candidate=shuffle(base);
+    const score=scoreCandidate(candidate);
+    if(score<bestScore){
+      best=candidate;
+      bestScore=score;
     }
   }
 
-  // Safety fallback: every question must appear exactly once.
-  const used=new Set(result);
-  for(const i of base)if(!used.has(i))result.push(i);
+  let result=best||shuffle(base);
+
+  // Hard guarantee: first question must change from the previous play whenever possible.
+  if(prevIds.length && prevIds[0]===idOf(result[0]) && result.length>1){
+    const swapAt=result.findIndex((idx,pos)=>pos>0 && idOf(idx)!==prevIds[0]);
+    if(swapAt>0)[result[0],result[swapAt]]=[result[swapAt],result[0]];
+  }
+
+  // Hard guarantee: never return the exact same complete sequence twice.
+  if(prevIds.length===result.length && result.every((idx,pos)=>idOf(idx)===prevIds[pos])){
+    result=shuffle(result);
+  }
 
   try{
-    localStorage.setItem("FS_LAST_SMART_ORDER",JSON.stringify(result.map(idOf)));
+    localStorage.setItem(storageKey,JSON.stringify(result.map(idOf)));
   }catch(_){}
 
+  console.info(`Random order Season ${season}:`,result.map(idOf).join(" → "));
   return result;
 }
 
@@ -6799,7 +6786,7 @@ if(fsHomeReturn && cachedReturnUser?.email){
 }
 })();
 </script>
-<div id="fsBuildMarker">V16.9.37 by Ketsirin</div>
+<div id="fsBuildMarker">V16.9.38 by Ketsirin</div>
 <script id="login-neon-breath-v1697">
 (() => {
   "use strict";
