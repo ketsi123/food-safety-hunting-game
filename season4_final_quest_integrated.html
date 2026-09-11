@@ -4,13 +4,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.21.0-GRAPHICS-EDITION">
+<meta name="fs-build" content="V18.21.1-VIEWPORT-FIT">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
 body{display:grid;place-items:center}
-#shell{position:relative;width:min(100vw,1280px);aspect-ratio:16/9;max-height:100vh;overflow:hidden;border-radius:24px;background:#9fdcff;
+#shell{position:relative;width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9;max-height:100vh;overflow:hidden;border-radius:24px;background:#9fdcff;
 box-shadow:0 28px 90px rgba(0,0,0,.45),0 0 0 2px rgba(255,255,255,.22) inset,0 0 50px rgba(71,190,255,.18)}
 canvas{width:100%;height:100%;display:block}
 .top{position:absolute;top:0;left:0;width:100%;height:74px;padding:9px 13px;display:flex;gap:9px;align-items:center;pointer-events:none}
@@ -117,8 +117,8 @@ background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#10
 }
 @media (hover:none) and (pointer:coarse) and (orientation:landscape){
   #shell{
-    width:min(100vw,calc(100vh * 16 / 9),1280px);
-    height:min(100vh,calc(100vw * 9 / 16),720px);
+    width:min(100vw,calc(100vh * 16 / 9));
+    height:min(100vh,calc(100vw * 9 / 16));
     max-height:none;
     border-radius:18px;
   }
@@ -863,15 +863,10 @@ function isTabletLandscape(){
 // Chrome mobile's 100vh can include space hidden behind its URL/navigation bars.
 // Fit the complete 16:9 game to the actually visible viewport instead.
 function fitShellToVisibleViewport(){
-  if(!mobileLandscapeQuery.matches){
-    shell.style.removeProperty("position");shell.style.removeProperty("left");shell.style.removeProperty("top");
-    shell.style.removeProperty("width");shell.style.removeProperty("height");
-    return;
-  }
   const vv=window.visualViewport;
   const vw=Math.max(1,vv?.width||window.innerWidth);
   const vh=Math.max(1,vv?.height||window.innerHeight);
-  const w=Math.min(vw,vh*16/9,1280);
+  const w=Math.min(vw,vh*16/9);
   const h=w*9/16;
   shell.style.position="fixed";
   shell.style.width=`${w}px`;shell.style.height=`${h}px`;
