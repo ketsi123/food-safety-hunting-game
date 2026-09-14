@@ -5367,13 +5367,14 @@ window.FS_CONFIG = {
 </script>
 <script id="v15-inline-app">
 (()=>{"use strict";console.info("Food Safety Hunting Game V18.16.2 • S3 FAST + S4 QUALIFIER 800");
-const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1";
+const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1",S_LEADERBOARD="fs_leaderboard_cache_v1";
 let seasonControl={1:'OPEN',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
 let seasonControlLoaded=false;
 
 const e={loginScreen:$("loginScreen"),gameScreen:$("gameScreen"),emailInput:$("emailInput"),loginBtn:$("loginBtn"),loginBackendDot:$("loginBackendDot"),loginBackendText:$("loginBackendText"),gameReadyDot:$("gameReadyDot"),totalUserCount:$("totalUserCount"),avatar:$("avatar"),displayName:$("displayName"),userEmail:$("userEmail"),timerText:$("timerText"),questionCounter:$("questionCounter"),totalScore:$("totalScore"),sideTotalScore:$("sideTotalScore"),progressFill:$("progressFill"),progressText:$("progressText"),progressSeasonLabel:$("progressSeasonLabel"),seasonText:$("seasonText"),stepText:$("stepText"),questionImage:$("questionImage"),clickLayer:$("clickLayer"),markerLayer:$("markerLayer"),revealLayer:$("revealLayer"),questionText:$("questionText"),questionIdTag:$("questionIdTag"),hotspotCountTag:$("hotspotCountTag"),positionMaxScore:$("positionMaxScore"),reasonMaxScore:$("reasonMaxScore"),reasonList:$("reasonList"),liveQuestionScore:$("liveQuestionScore"),actionStatus:$("actionStatus"),pauseBtn:$("pauseBtn"),submitBtn:$("submitBtn"),changeUserBtn:$("changeUserBtn"),leaderboardBtn:$("leaderboardBtn"),qualifierBtn:$("qualifierBtn"),qualifierNavStatus:$("qualifierNavStatus"),historyBtn:$("historyBtn"),howToBtn:$("howToBtn"),resultOverlay:$("resultOverlay"),resultHomeBtn:$("resultHomeBtn"),resultIcon:$("resultIcon"),resultTitle:$("resultTitle"),resultScore:$("resultScore"),resultLine:$("resultLine"),resultAnswers:$("resultAnswers"),resultVisual:$("resultVisual"),resultVisualImage:$("resultVisualImage"),resultVisualReveal:$("resultVisualReveal"),resultVisualMarkers:$("resultVisualMarkers"),nextBtn:$("nextBtn"),menuOverlay:$("menuOverlay"),menuModalClose:$("menuModalClose"),menuModalTitle:$("menuModalTitle"),menuModalBody:$("menuModalBody"),busyOverlay:$("busyOverlay"),busyText:$("busyText"),busySub:$("busySub"),toast:$("toast"),playCard:$("playCard"),questionGate:$("questionGate"),gateIcon:$("gateIcon"),gateKicker:$("gateKicker"),gateTitle:$("gateTitle"),gateText:$("gateText"),startQuestionBtn:$("startQuestionBtn"),gateLogoutBtn:$("gateLogoutBtn"),endGameBtn:$("endGameBtn"),seasonLockScreen:$("seasonLockScreen"),seasonLockTitle:$("seasonLockTitle"),seasonLockText:$("seasonLockText")};
 let user=null,questions=[],order=[],idx=0,q=null,selections=[],ended=false,started=false,paused=false,seconds=45,timer=null,statusTimer=null,questionsPromise=null,backendOnline=false,currentAttemptId=null;
+let leaderboardPromise=null;
 let orientationGateActive=false,orientationAutoStoppedTimer=false;
 const MASTER_QUESTIONS=[
   { questionId:"S1Q01", season:1, imageFile:"S1_Q01.jpg", hotspotCount:4, fullScore:80, timeLimitSec:45 },
@@ -5760,6 +5761,11 @@ async function login(){
       renderTotalUsers(loginData?.totalUsers);
       setBackend(true);
       setMobileStageStatus("✓ โหลดข้อมูลสำเร็จ • พร้อมเลือกด่าน",false,"success");
+
+      // Load the small leaderboard snapshot while the player is choosing a
+      // season. Opening Leaderboard later is then instant, even after an Apps
+      // Script cold start.
+      idleRun(prefetchLeaderboard,250);
 
       // Warm S3 while the player is still on Home/S1, so S3 Submit is not cold.
       // Keep the first few seconds after Login light on mobile.
@@ -6956,7 +6962,59 @@ function endGame(){
   action("จบเกมส์แล้ว • เลือกเล่นใหม่หรือออกจากระบบ","ok")
 }
 function modal(title,html){syncAllOverlayGeometry();e.menuModalTitle.textContent=title;e.menuModalBody.innerHTML=html;e.menuOverlay.classList.remove("hidden-layer")}
-async function leaderboard(){busy(true,"กำลังโหลด Leaderboard...");try{const d=await backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,30000),rows=d.leaderboard||[];modal("🏆 Leaderboard",rows.length?`<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนนรวม</th><th>Qualifier</th></tr></thead><tbody>${rows.map(r=>{const q=normalizeQualifier(r.qualifier||{});return `<tr><td>${q.qualified?"🏆 "+esc(r.qualifiedRank||r.rank):esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${formatGameNumber(r.totalBestScore||0)}</b></td><td><span class="lb-qual ${q.qualified?"yes":"no"}">${q.qualified?"QUALIFIED":q.qualifiedSeasons+"/4"}</span></td></tr>`}).join('')}</tbody></table>`:'<div class="empty-reason">ยังไม่มีคะแนน</div>')}catch{toast("โหลด Leaderboard ไม่สำเร็จ")}finally{busy(false)}}
+function readLeaderboardCache(){
+  try{
+    const value=JSON.parse(localStorage.getItem(S_LEADERBOARD)||"null");
+    return value&&Array.isArray(value.rows)?value:null;
+  }catch{return null}
+}
+function writeLeaderboardCache(rows){
+  const value={rows:Array.isArray(rows)?rows:[],savedAt:Date.now()};
+  try{localStorage.setItem(S_LEADERBOARD,JSON.stringify(value))}catch(_){ }
+  return value;
+}
+function leaderboardHtml(rows,note=""){
+  const status=note?`<div class="empty-reason" style="margin-bottom:8px">${esc(note)}</div>`:"";
+  if(!rows.length)return `${status}<div class="empty-reason">ยังไม่มีคะแนน</div>`;
+  return `${status}<table class="lb-table"><thead><tr><th>อันดับ</th><th>ผู้เล่น</th><th>คะแนนรวม</th><th>Qualifier</th></tr></thead><tbody>${rows.map(r=>{const q=normalizeQualifier(r.qualifier||{});return `<tr><td>${q.qualified?"🏆 "+esc(r.qualifiedRank||r.rank):esc(r.rank)}</td><td>${esc(r.displayName||r.email||'-')}</td><td><b>${formatGameNumber(r.totalBestScore||0)}</b></td><td><span class="lb-qual ${q.qualified?"yes":"no"}">${q.qualified?"QUALIFIED":q.qualifiedSeasons+"/4"}</span></td></tr>`}).join("")}</tbody></table>`;
+}
+function fetchLeaderboard(){
+  if(leaderboardPromise)return leaderboardPromise;
+  leaderboardPromise=backendGet(`?action=leaderboard&limit=20&t=${Date.now()}`,15000)
+    .then(d=>writeLeaderboardCache(d.leaderboard||[]))
+    .finally(()=>{leaderboardPromise=null});
+  return leaderboardPromise;
+}
+function prefetchLeaderboard(){
+  const cached=readLeaderboardCache();
+  if(cached&&Date.now()-Number(cached.savedAt||0)<120000)return;
+  fetchLeaderboard().catch(err=>console.warn("Leaderboard prefetch failed",err));
+}
+async function leaderboard(){
+  const cached=readLeaderboardCache();
+  if(cached){
+    modal("🏆 Leaderboard",leaderboardHtml(cached.rows,"กำลังอัปเดตอันดับล่าสุด…"));
+  }else{
+    modal("🏆 Leaderboard",'<div class="empty-reason">⏳ กำลังโหลดอันดับ…</div>');
+  }
+  try{
+    const fresh=await fetchLeaderboard();
+    if(!e.menuOverlay.classList.contains("hidden-layer")&&e.menuModalTitle.textContent==="🏆 Leaderboard"){
+      e.menuModalBody.innerHTML=leaderboardHtml(fresh.rows);
+    }
+  }catch(err){
+    console.warn("Leaderboard load failed",err);
+    if(cached){
+      if(!e.menuOverlay.classList.contains("hidden-layer")&&e.menuModalTitle.textContent==="🏆 Leaderboard"){
+        e.menuModalBody.innerHTML=leaderboardHtml(cached.rows,"แสดงข้อมูลล่าสุดที่บันทึกไว้ • ระบบกลางตอบช้า");
+      }
+      toast("ระบบกลางตอบช้า • แสดงอันดับล่าสุดที่มีอยู่",3500);
+    }else{
+      e.menuModalBody.innerHTML='<div class="empty-reason">โหลดอันดับไม่สำเร็จ กรุณาปิดแล้วลองใหม่</div>';
+      toast("โหลด Leaderboard ไม่สำเร็จ");
+    }
+  }
+}
 async function history(){
   busy(true,"กำลังโหลดประวัติ...");
   try{
