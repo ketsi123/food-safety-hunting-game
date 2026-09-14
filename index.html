@@ -5044,9 +5044,9 @@ body.mobile-landscape > .prehint-overlay .prehint-kicker{
       <div class="login-card">
         <div class="login-icon">🛡️</div>
         <h1>เข้าสู่ระบบ</h1>
-        <p>กรอกอีเมลบริษัทเพื่อเริ่มเล่นและบันทึกคะแนน</p>
-        <label for="emailInput">อีเมลบริษัท</label>
-        <div class="email-box"><span>✉️</span><input id="emailInput" type="email" autocomplete="email" placeholder="name@cpf.co.th"></div>
+        <p>เข้าสู่ระบบด้วยอีเมลบริษัท <b>@cpf.co.th</b> เท่านั้น</p>
+        <label for="emailInput">อีเมลบริษัท CPF</label>
+        <div class="email-box"><span>✉️</span><input id="emailInput" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" pattern="[^@\s]+@cpf\.co\.th" title="กรุณาใช้อีเมล @cpf.co.th" placeholder="name@cpf.co.th"></div>
         <button id="loginBtn" class="login-btn">🚀 เริ่มเล่นเกม</button>
         <div class="login-status"><i id="loginBackendDot" class="status-dot"></i><span id="loginBackendText">กำลังตรวจสอบระบบ...</span></div>
       </div>
@@ -5595,7 +5595,7 @@ async function configureBackend(){
   return ping();
 }
 
-function validEmail(v){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)}
+function validEmail(v){return /^[^\s@]+@cpf\.co\.th$/i.test(String(v||"").trim())}
 function allCachedUsers(){
   try{
     const v=JSON.parse(localStorage.getItem(S_USERS)||"{}");
@@ -5706,7 +5706,7 @@ function warmQuestions(){
 
 async function login(){
   const email=e.emailInput.value.trim().toLowerCase();
-  if(!validEmail(email)){toast("กรุณากรอกอีเมลให้ถูกต้อง");return}
+  if(!validEmail(email)){toast("เข้าสู่ระบบได้เฉพาะอีเมล @cpf.co.th เท่านั้น",4000);e.emailInput.focus();return}
 
   e.loginBtn.disabled=true;
   e.loginBtn.textContent="กำลังเปิดเกม...";
@@ -7360,12 +7360,14 @@ e.questionImage.onerror=async()=>{
 localStorage.removeItem("fs_backend_url");
 ["fs_questions_v7","fs_questions_v7_time","fs_questions_v15","fs_questions_v15_time"].forEach(k=>localStorage.removeItem(k));
 const saved=localStorage.getItem(S_EMAIL);
-if(saved)e.emailInput.value=saved;
+if(saved&&validEmail(saved))e.emailInput.value=saved;
+else if(saved)localStorage.removeItem(S_EMAIL);
 
 let cachedReturnUser=null;
 try{
   cachedReturnUser=JSON.parse(localStorage.getItem(S_USER)||"null");
-  if(cachedReturnUser?.email)e.emailInput.value=cachedReturnUser.email;
+  if(cachedReturnUser?.email&&validEmail(cachedReturnUser.email))e.emailInput.value=cachedReturnUser.email;
+  else if(cachedReturnUser?.email){cachedReturnUser=null;localStorage.removeItem(S_USER)}
 }catch{}
 
 e.loginBackendText.textContent="พร้อมเข้าสู่ระบบ";
