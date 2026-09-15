@@ -5357,7 +5357,7 @@ window.FS_CONFIG = {
   ],
 
   QUESTION_IMAGE_DIR: "",
-  ASSET_VERSION: "20260915-S1-REVIEW-R2",
+  ASSET_VERSION: "20260915-S1-REVIEW-R3-PC-DRAG",
   GAME_MODE: "NONCONFORMITY",
   RANDOMIZE_QUESTIONS: true,
   AUTO_NEXT_SECONDS: 0,
@@ -6603,6 +6603,11 @@ function clearArmedReasonChoice(){
   e.reasonList?.querySelectorAll(".reason-choice-card.armed").forEach(x=>x.classList.remove("armed"));
   e.reasonList?.querySelectorAll(".reason-drop-slot.tap-target").forEach(x=>x.classList.remove("tap-target"));
 }
+function clearReasonDragArtifacts(){
+  document.querySelectorAll(".reason-drag-ghost").forEach(x=>x.remove());
+  document.querySelectorAll(".reason-choice-card.dragging").forEach(x=>x.classList.remove("dragging"));
+  document.querySelectorAll(".reason-drop-slot.drag-over").forEach(x=>x.classList.remove("drag-over"));
+}
 function closestReasonSlotAt(clientX,clientY,maxDistance=58){
   const direct=document.elementFromPoint(clientX,clientY)?.closest?.(".reason-drop-slot");
   if(direct)return direct;
@@ -6651,10 +6656,7 @@ function wireReasonDrag(){
       ev.dataTransfer.setData("text/reason-choice",card.dataset.choiceId||"");
       card.classList.add("dragging");
     });
-    card.addEventListener("dragend",()=>{
-      card.classList.remove("dragging");
-      document.querySelectorAll(".reason-drop-slot.drag-over").forEach(x=>x.classList.remove("drag-over"));
-    });
+    card.addEventListener("dragend",clearReasonDragArtifacts);
 
     // Mobile: tap reason -> tap target slot. If only one empty slot, auto-place.
     card.addEventListener("click",ev=>{
@@ -6679,8 +6681,9 @@ function wireReasonDrag(){
       slots.forEach(s=>s.classList.add("tap-target"));
     });
 
-    // Pointer drag works on mobile too, with a forgiving drop radius.
-    card.addEventListener("pointerdown",ev=>{
+    // Pointer drag is reserved for touch devices. On desktop, combining this
+    // with native HTML5 drag can leave a ghost/hand cursor stuck after drop.
+    if(coarse)card.addEventListener("pointerdown",ev=>{
       if(ev.button!==undefined&&ev.button!==0)return;
       const choiceId=card.dataset.choiceId||"";
       if(!choiceId)return;
@@ -6758,8 +6761,20 @@ function wireReasonDrag(){
     });
   });
 }
+// Desktop drag fail-safe: always restore the UI when the browser cancels a
+// drag because the pointer leaves the window, focus changes, or Esc is used.
+window.addEventListener("dragend",clearReasonDragArtifacts);
+window.addEventListener("drop",()=>setTimeout(clearReasonDragArtifacts,0));
+window.addEventListener("blur",clearReasonDragArtifacts);
+document.addEventListener("visibilitychange",()=>{
+  if(document.hidden)clearReasonDragArtifacts();
+});
+document.addEventListener("keydown",ev=>{
+  if(ev.key==="Escape")clearReasonDragArtifacts();
+});
 function renderReasons(){
   if(!e.reasonList)return;
+  clearReasonDragArtifacts();
   const choices=reasonChoicesForCurrentQuestion();
   const usedBy=new Map();
   selections.forEach((s,i)=>{if(s.reasonChoiceId)usedBy.set(String(s.reasonChoiceId),i)});
