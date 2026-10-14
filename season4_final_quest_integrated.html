@@ -1,0 +1,1796 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Food Safety Final Quest - Season 4</title>
+<meta name="fs-build" content="V18.21.1-VIEWPORT-FIT">
+<style>
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(circle at 50% 15%,#4bb9ff 0,#0b4776 45%,#041827 100%);font-family:Tahoma,"Noto Sans Thai",sans-serif}
+body{display:grid;place-items:center}
+#shell{position:relative;width:min(100vw,calc(100dvh * 16 / 9));aspect-ratio:16/9;max-height:100vh;overflow:hidden;border-radius:24px;background:#9fdcff;
+box-shadow:0 28px 90px rgba(0,0,0,.45),0 0 0 2px rgba(255,255,255,.22) inset,0 0 50px rgba(71,190,255,.18)}
+canvas{width:100%;height:100%;display:block}
+.top{position:absolute;top:0;left:0;width:100%;height:74px;padding:9px 13px;display:flex;gap:9px;align-items:center;pointer-events:none}
+.brand{color:#fff;background:linear-gradient(180deg,#3ca9f7 0%,#126cb8 42%,#074979 100%);border:2px solid rgba(255,255,255,.62);border-radius:16px;padding:9px 16px;font-weight:1000;text-shadow:0 2px 3px rgba(0,0,0,.35);box-shadow:0 7px 0 #04395f,0 11px 20px rgba(0,0,0,.24),inset 0 3px 0 rgba(255,255,255,.32)}
+.hud{margin-left:auto;display:flex;gap:8px}
+.box{min-width:100px;text-align:center;color:#eaf7ff;background:linear-gradient(180deg,rgba(23,78,116,.94),rgba(3,37,63,.96));border:2px solid rgba(255,255,255,.38);border-radius:14px;padding:6px 10px;font-size:11px;font-weight:800;box-shadow:0 5px 0 rgba(0,22,38,.8),0 9px 18px rgba(0,0,0,.22),inset 0 2px 0 rgba(255,255,255,.18)}
+.box b{display:block;color:#ffe467;font-size:17px}
+#question{position:absolute;left:50%;top:210px;transform:translateX(-50%);width:min(860px,84%);padding:15px 24px 16px;border-radius:22px;border:4px solid #ffd34d;
+background:linear-gradient(180deg,#ffffff 0%,#fffdf2 48%,#e6f5ff 100%);color:#103f61;text-align:center;font-weight:1000;font-size:21px;line-height:1.42;box-shadow:0 0 0 3px rgba(41,157,222,.92),0 10px 0 #126d9f,0 18px 34px rgba(0,0,0,.25),inset 0 4px 0 rgba(255,255,255,.95);display:none;z-index:7}
+#question small{display:inline-block;color:#ffffff;background:linear-gradient(180deg,#258bc5,#0d679d);border:2px solid #9ee4ff;border-radius:999px;padding:4px 13px;font-size:12px;margin-bottom:8px;font-weight:1000;box-shadow:0 3px 0 #084a75;text-shadow:0 1px 2px rgba(0,0,0,.28)}
+#question span{display:block;text-shadow:0 1px 0 #fff}
+#notice{position:absolute;left:50%;top:48%;transform:translate(-50%,-50%) scale(.8);opacity:0;padding:12px 24px;border-radius:18px;color:#fff;font-size:27px;font-weight:1000;transition:.18s;z-index:8}
+#notice.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+#notice.ok{background:linear-gradient(#4ed971,#159b42);border:3px solid #bcffca}
+#notice.bad{background:linear-gradient(#ff6868,#c52b2b);border:3px solid #ffd0d0}
+#progress{position:absolute;left:18px;bottom:18px;width:min(430px,44%);height:14px;border-radius:999px;background:rgba(3,36,61,.7);border:1px solid rgba(255,255,255,.35);overflow:hidden}
+#bar{height:100%;width:0;background:linear-gradient(90deg,#48d36d,#ffd847);transition:.25s}
+.stopBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.4);border-radius:14px;padding:6px 12px;color:#fff;background:linear-gradient(180deg,#f36a61,#b92f29);font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #7c211d;white-space:nowrap}.pauseBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.38);border-radius:14px;padding:6px 14px;min-width:92px;text-align:center;color:#fff;background:linear-gradient(180deg,#ffca4e,#df8c12);font-size:13px;font-weight:900;cursor:pointer;box-shadow:0 5px 0 rgba(117,67,0,.9),0 9px 18px rgba(0,0,0,.2),inset 0 2px 0 rgba(255,255,255,.2)}
+.fireBtn{position:static;width:52px;height:52px;border-radius:50%;border:3px solid rgba(255,255,255,.75);background:radial-gradient(circle at 35% 28%,#fff7ad 0,#ffb52e 28%,#ff652d 58%,#c72518 100%);color:#fff;font-size:22px;font-weight:1000;cursor:pointer;z-index:12;box-shadow:0 5px 0 #8f2415,0 10px 18px rgba(0,0,0,.26),inset 0 4px 0 rgba(255,255,255,.5);text-shadow:0 2px 3px rgba(90,0,0,.5)}
+.fireBtn:active{transform:translateY(3px);box-shadow:0 2px 0 #8f2415,0 6px 12px rgba(0,0,0,.22)}
+.fireWrap{position:relative;display:flex;align-items:center;justify-content:center}.fireHint{position:absolute;top:-18px;left:50%;transform:translateX(-50%);padding:2px 8px;border-radius:999px;background:rgba(3,37,63,.92);border:1px solid rgba(255,255,255,.35);color:#fff8c6;font:900 11px Tahoma,"Noto Sans Thai",sans-serif;line-height:1;white-space:nowrap;box-shadow:0 4px 10px rgba(0,0,0,.18)}
+.input{width:100%;padding:12px 14px;border:2px solid #8cd6ff;border-radius:14px;font:700 16px Tahoma,"Noto Sans Thai",sans-serif;color:#12435f;background:#fff;outline:none;box-shadow:inset 0 2px 7px rgba(0,0,0,.06)}
+.row{display:flex;gap:10px;align-items:center}.finishBtns{justify-content:center;flex-wrap:nowrap;margin-top:8px;gap:14px}.finishBtns .btn{width:50%;min-width:0;padding:14px 12px;font-size:17px}
+.mini{font-size:12px;color:#597487;font-weight:700;line-height:1.5}
+#pauseModal{position:absolute;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(3,26,45,.22),rgba(2,14,26,.72));z-index:21}
+#heartsRow{position:absolute;left:18px;top:84px;display:flex;gap:5px;align-items:center;background:rgba(3,37,63,.72);border:2px solid rgba(255,255,255,.28);border-radius:16px;padding:8px 12px;box-shadow:0 6px 14px rgba(0,0,0,.18);backdrop-filter:blur(2px)}
+.heart{font-size:20px;line-height:1;color:#ff69b4;text-shadow:0 1px 0 rgba(255,255,255,.35),0 2px 4px rgba(120,0,70,.28);filter:drop-shadow(0 1px 1px rgba(0,0,0,.25))}
+.heart.off{color:#8aa0b2;opacity:.28;text-shadow:none;filter:none}
+#intro,#finish{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:linear-gradient(rgba(3,26,45,.26),rgba(2,14,26,.78));z-index:20}
+#finish{display:none}
+.card{width:min(590px,90%);padding:28px;text-align:center;background:linear-gradient(180deg,#ffffff 0%,#f2fbff 58%,#d6efff 100%);border:4px solid #6fd2ff;border-radius:28px;box-shadow:0 12px 0 #176b9b,0 28px 70px rgba(0,0,0,.38),inset 0 4px 0 rgba(255,255,255,.95)}
+.card .icon{font-size:58px}.card h1{margin:3px 0;color:#0a4d7e;font-size:31px}.sub{color:#62798a;font-weight:700;margin-bottom:14px}
+.btn{width:100%;padding:15px;border:0;border-radius:18px;background:linear-gradient(180deg,#81ef5b 0%,#42cf27 45%,#1ea50a 100%);color:white;font-size:20px;font-weight:1000;cursor:pointer;text-shadow:0 2px 2px rgba(0,0,0,.28);box-shadow:0 8px 0 #128007,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)}
+.finishBtns .btn.endBtn{background:linear-gradient(180deg,#ff8e80 0%,#e9584f 48%,#b93430 100%);box-shadow:0 8px 0 #8c2724,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.4)}
+.finishBtns .btn.playAgainBtn{background:linear-gradient(180deg,#7df35a 0%,#42cf27 48%,#1ea50a 100%);box-shadow:0 8px 0 #128007,0 14px 24px rgba(0,0,0,.22),inset 0 3px 0 rgba(255,255,255,.45)}
+#mobile{position:absolute;right:18px;bottom:16px;z-index:14;display:flex;gap:8px;pointer-events:auto;align-items:center}.mb{position:static;width:52px;height:52px;border-radius:50%;border:2px solid rgba(255,255,255,.5);background:rgba(3,51,87,.78);color:#fff;font-size:22px;font-weight:1000;pointer-events:auto;box-shadow:0 5px 0 rgba(8,31,52,.7),0 10px 18px rgba(0,0,0,.22)}#j{background:rgba(19,132,72,.84)}
+@media(max-width:800px){.top{height:65px;padding:6px}.brand{font-size:10px;padding:6px 8px}.box{min-width:68px;font-size:9px;padding:4px}.box b{font-size:13px}#question{top:142px;font-size:14px;padding:9px 12px 10px;width:88%;border-width:3px}#question small{font-size:9px;padding:3px 8px;margin-bottom:5px}#progress{left:12px;bottom:10px;width:min(260px,52%)}#heartsRow{top:72px;left:10px;padding:5px 8px;gap:3px}.heart{font-size:14px}.pauseBtn{min-width:64px;padding:4px 8px;font-size:10px}.card{padding:18px}.input{font-size:14px}#mobile{right:12px;bottom:12px;gap:6px}.mb,#fireBtn{width:48px;height:48px;font-size:20px}.fireHint{top:-15px;font-size:9px;padding:2px 6px}}
+
+@media(max-width:480px){.finishBtns{gap:8px}.finishBtns .btn{font-size:14px;padding:12px 8px}}
+.startActions{display:grid;grid-template-columns:1fr 1fr 1.35fr;gap:12px;margin-top:10px}.startExitBtn{border:0;border-radius:16px;padding:15px 18px;font-size:22px;font-weight:1000;color:#fff;background:linear-gradient(180deg,#ef655c,#b72f2a);box-shadow:0 8px 0 #7a211d;cursor:pointer}.startExitBtn:hover{filter:brightness(1.05)}#fullscreenBtn{background:linear-gradient(180deg,#42a9ea,#17649b);box-shadow:0 8px 0 #10466e}.backBtn,.exitBtn{pointer-events:auto;border:2px solid rgba(255,255,255,.5);border-radius:14px;padding:7px 13px;color:#fff;font-weight:900;cursor:pointer;box-shadow:0 5px 0 #173244;white-space:nowrap}.backBtn{background:linear-gradient(180deg,#4d86b1,#24577c)}.exitBtn{background:linear-gradient(180deg,#e95e55,#b3322c);box-shadow:0 5px 0 #7c211d}.lockedMsg{color:#b63737;font-weight:900;margin:8px 0}
+.exitConfirmOverlay{
+  position:fixed;inset:0;z-index:99999;
+  display:none;align-items:center;justify-content:center;
+  background:rgba(8,34,52,.62);
+  backdrop-filter:blur(5px);
+}
+.exitConfirmCard{
+  width:min(520px,calc(100vw - 34px));
+  background:linear-gradient(180deg,#ffffff 0%,#eefaff 100%);
+  border:4px solid #72cfff;
+  border-radius:28px;
+  box-shadow:0 18px 0 rgba(5,76,111,.28),0 28px 55px rgba(0,0,0,.30);
+  padding:28px 30px 26px;
+  text-align:center;
+  color:#0d4f7a;
+}
+.exitConfirmIcon{
+  width:76px;height:76px;margin:0 auto 10px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:24px;
+  background:linear-gradient(180deg,#ffce58,#f49b18);
+  border:4px solid #fff1bb;
+  box-shadow:0 7px 0 #bc7010;
+  font-size:38px;
+}
+.exitConfirmTitle{
+  font-size:28px;font-weight:1000;line-height:1.15;margin:16px 0 8px;
+  color:#0c5787;
+}
+.exitConfirmText{
+  font-size:16px;font-weight:800;line-height:1.55;color:#537286;
+  margin-bottom:22px;
+}
+.exitConfirmActions{
+  display:grid;grid-template-columns:1fr 1fr;gap:14px;
+}
+.exitConfirmBtn{
+  border:0;border-radius:17px;padding:15px 16px;
+  font-size:18px;font-weight:1000;cursor:pointer;color:#fff;
+}
+.exitConfirmHome{
+  background:linear-gradient(180deg,#ff645b,#d93630);
+  box-shadow:0 7px 0 #9c231f;
+}
+.exitConfirmCancel{
+  background:linear-gradient(180deg,#37c8ff,#1688d6);
+  box-shadow:0 7px 0 #0b5f9e;
+}
+.exitConfirmBtn:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.25)}
+
+/* V18.18.10 — keep every Season 4 dialog usable in a short landscape viewport */
+#intro>.card,#finish>.card,#pauseModal>.card{
+  max-height:calc(100% - 24px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.startActions{
+  position:sticky;
+  bottom:0;
+  z-index:2;
+  padding:10px 0 8px;
+  background:linear-gradient(180deg,rgba(224,244,255,0),#d6efff 28%);
+}
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+  #shell{
+    width:min(100vw,calc(100vh * 16 / 9));
+    height:min(100vh,calc(100vw * 9 / 16));
+    max-height:none;
+    border-radius:18px;
+  }
+  #intro,#finish,#pauseModal{padding:8px}
+  #intro>.card{
+    width:min(720px,88%);
+    max-height:calc(100% - 20px);
+    padding:14px 18px 12px;
+    border-width:3px;
+    border-radius:20px;
+    overflow:hidden;
+  }
+  #intro .icon{display:none}
+  #intro h1{font-size:20px;margin:0 0 2px;line-height:1.15}
+  #intro .sub{font-size:11px;margin-bottom:5px}
+  #intro .intro-summary,#intro .control-help,#intro .save-rule-note{display:none!important}
+  #intro .mobile-intro-note{display:block!important;margin:3px 0 6px;font-size:10px;color:#466b80;font-weight:800}
+  #intro .player-block{margin-bottom:4px!important}
+  #intro .input{padding:7px 10px;font-size:12px;border-radius:10px}
+  #intro .mini{font-size:10px;line-height:1.3}
+  #intro .startActions{position:static;gap:10px;margin-top:5px;padding:2px 0 6px;background:none}
+  #intro .startExitBtn,#intro .btn{padding:10px 12px;font-size:15px;border-radius:13px}
+  #finish>.card{
+    width:min(760px,86%);
+    max-height:calc(100% - 16px);
+    padding:10px 18px 12px;
+    border-width:3px;
+    border-radius:20px;
+    overflow:hidden;
+  }
+  #finish .icon{display:none}
+  #finish h1{margin:0 0 2px;font-size:22px;line-height:1.08}
+  #finish .sub{margin:0 0 4px;font-size:12px;line-height:1.2}
+  #finish #fr{margin:0 0 6px!important;font-size:12px!important;line-height:1.32!important}
+  #finish #fr b{font-size:20px!important}
+  #finish .finishBtns{gap:10px;margin-top:3px}
+  #finish .finishBtns .btn{height:42px;padding:7px 10px;font-size:14px;border-radius:12px;box-shadow:0 5px 0 rgba(16,72,61,.55),0 8px 15px rgba(0,0,0,.16)}
+  .exitConfirmCard{max-height:calc(100vh - 24px);overflow:auto;padding:16px 20px;border-radius:20px}
+  .exitConfirmIcon{width:52px;height:52px;font-size:27px;border-radius:16px;margin-bottom:4px}
+  .exitConfirmTitle{font-size:21px;margin:9px 0 5px}
+  .exitConfirmText{font-size:12px;line-height:1.35;margin-bottom:10px}
+  .exitConfirmBtn{padding:10px;font-size:14px}
+  #question{
+    top:72px;
+    width:min(720px,66%);
+    max-height:104px;
+    overflow:auto;
+    padding:5px 10px 6px;
+    font-size:12px;
+    line-height:1.22;
+    border-width:2px;
+    border-radius:14px;
+  }
+  #question small{font-size:8px;margin:0 0 2px;padding:1px 7px}
+  #question:after{
+    content:"แตะกล่องคำตอบสีเหลือง หรือกระโดดชนจากด้านล่าง";
+    display:block;
+    margin-top:2px;
+    color:#1577ad;
+    font-size:8px;
+  }
+  #mobile{
+    left:10px;right:10px;bottom:12px;width:auto;
+    justify-content:flex-start;z-index:14;pointer-events:none;
+  }
+  #mobile .mb{pointer-events:auto}
+  #mobile #j{position:absolute;right:54px;pointer-events:auto}
+  #mobile .fireWrap{position:absolute;right:0;pointer-events:auto}
+  #mobile .mb,#mobile #fireBtn{width:46px;height:46px;font-size:18px}
+  #progress{bottom:12px}
+  .top{padding:6px 8px;gap:6px}
+  .brand{
+    width:112px;min-width:112px;height:42px;padding:5px 7px;
+    display:grid;place-items:center;border-radius:11px;font-size:0;
+    line-height:1;white-space:nowrap;box-shadow:0 4px 0 #04395f,0 7px 12px rgba(0,0,0,.18),inset 0 2px 0 rgba(255,255,255,.3)
+  }
+  .brand:after{content:"🛡️ FINAL QUEST";font-size:10px;letter-spacing:.15px}
+  #seasonStatus{
+    display:block;
+    margin:4px 0 7px;
+    padding:6px 10px;
+    border:1px solid #8fd7f7;
+    border-radius:10px;
+    background:#e9f8ff;
+    color:#165f84;
+    font-size:10px;
+    line-height:1.25;
+  }
+  #start:disabled{opacity:.62;filter:grayscale(.25);cursor:wait;box-shadow:0 5px 0 #789b71}
+}
+
+
+/* === V18.18.18 mobile controls + question/hearts fit === */
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+  /* Keep hearts and question from overlapping */
+  #heartsRow{
+    top:58px !important;
+    left:10px !important;
+    padding:4px 7px !important;
+    gap:2px !important;
+    border-radius:12px !important;
+  }
+  #heartsRow .heart{
+    font-size:13px !important;
+  }
+  #question{
+    top:100px !important;
+    width:min(720px,68%) !important;
+    max-height:88px !important;
+    padding:5px 10px 6px !important;
+    font-size:12px !important;
+    line-height:1.18 !important;
+  }
+
+  /* Hard-disable native selection/copy/callout on mobile game controls */
+  #mobile,
+  #mobile *,
+  .mb,
+  .fireBtn,
+  .fireWrap,
+  .fireHint,
+  #l,#r,#j,#fireBtn{
+    -webkit-touch-callout:none !important;
+    -webkit-user-select:none !important;
+    user-select:none !important;
+    -webkit-user-drag:none !important;
+    user-drag:none !important;
+    touch-action:none !important;
+    -webkit-tap-highlight-color:transparent !important;
+  }
+
+  #mobile .mb,
+  #mobile #fireBtn{
+    cursor:pointer !important;
+  }
+}
+
+</style>
+
+<style id="v18-18-19-mobile-question-up">
+/* Season 4 mobile: move question higher so it does not cover answer blocks */
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+  #question{
+    top:72px !important;
+    width:min(700px,64%) !important;
+    max-height:76px !important;
+    padding:4px 9px 5px !important;
+    font-size:11px !important;
+    line-height:1.16 !important;
+    border-width:2px !important;
+    border-radius:13px !important;
+    overflow:auto !important;
+    z-index:9 !important;
+  }
+  #question small{
+    font-size:7px !important;
+    padding:1px 6px !important;
+    margin:0 0 2px !important;
+    line-height:1.05 !important;
+  }
+  #question:after{
+    margin-top:1px !important;
+    font-size:7px !important;
+    line-height:1.05 !important;
+  }
+
+  /* Keep hearts tucked under the HUD on the far left */
+  #heartsRow{
+    top:76px !important;
+    left:10px !important;
+    padding:3px 6px !important;
+    gap:2px !important;
+    border-radius:11px !important;
+    z-index:8 !important;
+  }
+  #heartsRow .heart{
+    font-size:12px !important;
+  }
+}
+</style>
+
+
+<style id="v18-18-20-mobile-hud-cache-home">
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+  /* Full HUD on mobile, compact instead of hiding items */
+  .top{
+    top:4px!important;
+    left:50%!important;
+    transform:translateX(-50%)!important;
+    width:calc(100% - 14px)!important;
+    height:52px!important;
+    padding:3px 4px!important;
+    gap:3px!important;
+    align-items:center!important;
+    z-index:15!important;
+  }
+
+  .brand{
+    flex:0 0 82px!important;
+    width:82px!important;
+    min-width:82px!important;
+    height:40px!important;
+    padding:3px 4px!important;
+    border-radius:10px!important;
+    border-width:1px!important;
+    font-size:0!important;
+    box-shadow:0 3px 0 #04395f,0 5px 9px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.25)!important;
+  }
+  .brand:after{
+    content:"🛡️ FINAL";
+    font-size:9px!important;
+    font-weight:1000!important;
+    white-space:nowrap!important;
+  }
+
+  .hud{
+    margin-left:0!important;
+    width:calc(100% - 85px)!important;
+    display:grid!important;
+    grid-template-columns:
+      66px 74px
+      minmax(58px,.75fr)
+      minmax(52px,.62fr)
+      minmax(52px,.62fr)
+      minmax(54px,.62fr)
+      minmax(54px,.72fr)
+      70px 62px!important;
+    gap:3px!important;
+    align-items:center!important;
+  }
+
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn{
+    min-width:0!important;
+    width:100%!important;
+    height:38px!important;
+    padding:2px 4px!important;
+    border-radius:9px!important;
+    border-width:1px!important;
+    font-size:8px!important;
+    line-height:1.05!important;
+    white-space:normal!important;
+    box-shadow:0 3px 0 rgba(20,45,65,.68)!important;
+  }
+
+  .box{
+    min-width:0!important;
+    width:100%!important;
+    height:38px!important;
+    padding:3px 3px!important;
+    border-radius:9px!important;
+    border-width:1px!important;
+    font-size:7px!important;
+    line-height:1!important;
+    box-shadow:0 3px 0 rgba(0,22,38,.68),0 5px 8px rgba(0,0,0,.14),inset 0 1px 0 rgba(255,255,255,.16)!important;
+  }
+  .box b{
+    margin-top:2px!important;
+    font-size:12px!important;
+    line-height:1!important;
+  }
+
+  /* Hearts remain available in HUD, hide duplicate floating hearts row on phone */
+  #heartsRow{
+    display:none!important;
+  }
+
+  /* Question below the compact HUD, above answer blocks */
+  #question{
+    top:60px!important;
+    width:min(700px,63%)!important;
+    max-height:72px!important;
+    padding:4px 8px 5px!important;
+    font-size:10px!important;
+    line-height:1.14!important;
+    border-width:2px!important;
+    border-radius:12px!important;
+    z-index:10!important;
+  }
+  #question small{
+    font-size:7px!important;
+    padding:1px 6px!important;
+    margin-bottom:1px!important;
+  }
+  #question:after{
+    font-size:7px!important;
+    margin-top:1px!important;
+  }
+
+  /* Slightly smaller controls so gameplay has more room */
+  #mobile{
+    left:8px!important;
+    right:8px!important;
+    bottom:9px!important;
+  }
+  #mobile .mb,#mobile #fireBtn{
+    width:43px!important;
+    height:43px!important;
+    font-size:17px!important;
+  }
+  #mobile #j{right:49px!important}
+  .fireHint{top:-14px!important;font-size:8px!important}
+
+  #progress{
+    left:60px!important;
+    bottom:8px!important;
+    width:min(310px,44%)!important;
+    height:10px!important;
+  }
+}
+
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-width:780px){
+  .brand{display:none!important}
+  .hud{
+    width:100%!important;
+    grid-template-columns:
+      56px 62px
+      minmax(50px,.72fr)
+      minmax(46px,.56fr)
+      minmax(46px,.56fr)
+      minmax(48px,.56fr)
+      minmax(50px,.65fr)
+      60px 54px!important;
+  }
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn{font-size:7px!important;padding:2px!important}
+  .box{font-size:6px!important}
+  .box b{font-size:11px!important}
+  #question{top:58px!important;width:min(670px,66%)!important}
+}
+</style>
+
+
+<style id="v18-18-21-mobile-hud-fit-hearts">
+@media (hover:none) and (pointer:coarse) and (orientation:landscape){
+  /* Hide decorative FINAL brand on mobile to recover width for real HUD data */
+  .brand{
+    display:none!important;
+  }
+
+  .top{
+    width:calc(100% - 10px)!important;
+    height:50px!important;
+    padding:3px!important;
+    gap:2px!important;
+    overflow:visible!important;
+  }
+
+  .hud{
+    width:100%!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:
+      58px 70px
+      minmax(49px,.78fr)
+      minmax(45px,.58fr)
+      minmax(48px,.62fr)
+      minmax(48px,.62fr)
+      minmax(52px,.68fr)
+      58px 54px!important;
+    gap:2px!important;
+    align-items:center!important;
+  }
+
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    padding:2px 3px!important;
+    border-radius:8px!important;
+    font-size:7px!important;
+    line-height:1!important;
+    white-space:normal!important;
+    overflow:hidden!important;
+  }
+
+  .box{
+    width:100%!important;
+    min-width:0!important;
+    height:36px!important;
+    padding:2px!important;
+    border-radius:8px!important;
+    font-size:6px!important;
+    line-height:1!important;
+    overflow:hidden!important;
+  }
+  .box b{
+    margin-top:2px!important;
+    font-size:10px!important;
+    line-height:1!important;
+    white-space:nowrap!important;
+  }
+
+  /* Bring back visible heart icons as a tiny strip */
+  #heartsRow{
+    display:flex!important;
+    top:54px!important;
+    left:10px!important;
+    padding:2px 5px!important;
+    gap:1px!important;
+    border-radius:9px!important;
+    z-index:11!important;
+    transform:scale(.88)!important;
+    transform-origin:left top!important;
+  }
+  #heartsRow .heart{
+    font-size:11px!important;
+  }
+
+  /* Move question down slightly from previous version */
+  #question{
+    top:74px!important;
+    width:min(690px,64%)!important;
+    max-height:72px!important;
+    padding:4px 8px 5px!important;
+    font-size:10px!important;
+    line-height:1.14!important;
+    border-width:2px!important;
+    border-radius:12px!important;
+    z-index:10!important;
+  }
+  #question small{
+    font-size:7px!important;
+    padding:1px 6px!important;
+    margin-bottom:1px!important;
+  }
+  #question:after{
+    font-size:7px!important;
+    margin-top:1px!important;
+  }
+}
+
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (max-width:760px){
+  .hud{
+    grid-template-columns:
+      52px 62px
+      44px 40px 43px 43px 46px
+      52px 48px!important;
+  }
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn{
+    font-size:6px!important;
+    padding:1px 2px!important;
+  }
+  .box{font-size:5.5px!important}
+  .box b{font-size:9px!important}
+  #question{
+    top:72px!important;
+    width:min(650px,66%)!important;
+  }
+}
+</style>
+
+
+<style id="v18-20-6-ipad-balance-fix">
+/* iPad / large tablet landscape tuning */
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (min-width:900px){
+  .top{
+    top:6px!important;
+    left:50%!important;
+    transform:translateX(-50%)!important;
+    width:calc(100% - 18px)!important;
+    height:58px!important;
+    padding:4px 6px!important;
+    gap:4px!important;
+    align-items:center!important;
+    z-index:15!important;
+  }
+
+  .brand{display:none!important;}
+
+  .hud{
+    width:100%!important;
+    margin:0!important;
+    display:grid!important;
+    grid-template-columns:84px 94px repeat(5,minmax(92px,1fr)) 86px 80px!important;
+    gap:4px!important;
+    align-items:center!important;
+  }
+
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn,
+  .box{
+    width:100%!important;
+    min-width:0!important;
+    height:46px!important;
+    border-radius:11px!important;
+    padding:4px 6px!important;
+    overflow:hidden!important;
+  }
+
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn{
+    font-size:9px!important;
+    line-height:1.05!important;
+    white-space:normal!important;
+  }
+
+  .box{
+    font-size:8px!important;
+    line-height:1.05!important;
+  }
+
+  .box b{
+    margin-top:3px!important;
+    font-size:17px!important;
+    line-height:1.05!important;
+    white-space:nowrap!important;
+  }
+
+  #heartsRow{
+    top:64px!important;
+    left:16px!important;
+    padding:4px 8px!important;
+    gap:3px!important;
+    border-radius:12px!important;
+    transform:none!important;
+    z-index:12!important;
+  }
+  #heartsRow .heart{font-size:15px!important;}
+
+  #question{
+    top:98px!important;
+    width:min(820px,58%)!important;
+    max-height:98px!important;
+    padding:10px 18px 12px!important;
+    font-size:18px!important;
+    line-height:1.22!important;
+    border-width:3px!important;
+    border-radius:18px!important;
+    overflow:auto!important;
+    z-index:11!important;
+  }
+  #question small{
+    font-size:11px!important;
+    padding:2px 10px!important;
+    margin:0 0 5px!important;
+    line-height:1.1!important;
+  }
+  #question:after{
+    font-size:10px!important;
+    line-height:1.1!important;
+    margin-top:3px!important;
+  }
+
+  #progress{
+    left:18px!important;
+    bottom:18px!important;
+    width:min(520px,45%)!important;
+    height:14px!important;
+  }
+
+  #mobile{
+    right:22px!important;
+    bottom:22px!important;
+    gap:12px!important;
+    align-items:end!important;
+  }
+  #mobile .mb,
+  #mobile #fireBtn{
+    width:64px!important;
+    height:64px!important;
+    font-size:28px!important;
+  }
+  #mobile .fireHint{
+    top:-20px!important;
+    font-size:13px!important;
+    padding:3px 10px!important;
+  }
+}
+
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (min-width:1180px){
+  .hud{
+    grid-template-columns:86px 96px repeat(5,minmax(98px,1fr)) 90px 84px!important;
+  }
+  .backBtn,.exitBtn,.stopBtn,.pauseBtn,.box{height:48px!important;}
+  #question{top:102px!important;width:min(860px,60%)!important;font-size:19px!important;}
+  #mobile .mb,#mobile #fireBtn{width:68px!important;height:68px!important;font-size:30px!important;}
+}
+</style>
+
+
+<style id="v18-20-7-ipad-play-fix">
+@media (hover:none) and (pointer:coarse) and (orientation:landscape) and (min-width:900px){
+  #mobile{
+    right:18px!important;
+    bottom:34px!important;
+    gap:14px!important;
+    align-items:flex-end!important;
+    z-index:16!important;
+  }
+  #mobile .mb,
+  #mobile #fireBtn{
+    width:72px!important;
+    height:72px!important;
+    font-size:31px!important;
+    border-width:3px!important;
+  }
+  #mobile #j{margin-right:10px!important;}
+  #mobile .fireWrap{
+    margin-left:8px!important;
+    position:relative!important;
+    display:flex!important;
+    align-items:center!important;
+    justify-content:center!important;
+    flex:0 0 auto!important;
+  }
+  #mobile .fireHint{
+    top:-22px!important;
+    font-size:13px!important;
+  }
+}
+</style>
+
+
+<style id="season4-graphics-polish">
+/* Cosmetic layer: responsive dimensions and touch controls use the existing rules. */
+html,body{background:radial-gradient(ellipse at 50% 0%,#d4eef6,#6389a0 70%,#3f667e)}
+#shell{box-shadow:0 22px 65px #15344c55,0 0 0 1px #ffffff80}
+.brand{background:linear-gradient(135deg,#1b7e91,#235478);border-color:#a7e5ec;text-shadow:0 1px 2px #143d54;letter-spacing:.3px}
+.box{background:linear-gradient(145deg,#244d69ed,#193b55f5);border-color:#a2d5df88;box-shadow:0 3px 0 #153349, inset 0 1px 0 #ffffff44}
+.box b{color:#fff1a2;font-variant-numeric:tabular-nums}
+#heartsRow{background:#244d69d9;border-color:#b9e2e777;box-shadow:0 4px 10px #15334933}
+#question{background:linear-gradient(120deg,#fffef8,#edf9ff);border-color:#eac463;box-shadow:0 0 0 2px #6fb3cc,0 5px 0 #397d9c,0 10px 20px #1e506422}
+.card{background:linear-gradient(145deg,#fffef9,#edf8fc);border-color:#9bd7e7;box-shadow:0 7px 0 #397e9d,0 20px 45px #15334955}
+.mb{background:linear-gradient(145deg,#387f9de8,#23526fec);border-color:#c4edf3;box-shadow:0 4px 0 #173c56,0 6px 16px #163d4944}
+#j{background:linear-gradient(145deg,#58b68b,#227459)}
+#progress{background:#214e60aa;border-color:#c6e4e788}
+#bar{background:linear-gradient(90deg,#80d9b6,#fff0a4)}
+button:focus-visible{outline:3px solid #fff3ac;outline-offset:3px}
+</style>
+</head>
+<body>
+<div id="shell">
+<canvas id="cv" width="1280" height="720"></canvas>
+
+<div class="top">
+<div class="brand">🛡️ FOOD SAFETY FINAL QUEST</div>
+<div class="hud">
+<button class="backBtn" id="backBtn">🏠 HOME</button>
+<button class="exitBtn" id="exitBtn">🚪 ออกจากเกม</button>
+  <div class="box">Checkpoint<b id="cp">0 / 20</b></div>
+  <div class="box">Score<b id="score">0</b></div>
+  <div class="box">Stars<b id="stars">0 / 30</b></div>
+  <div class="box">Hearts<b id="hearts">5 / 5</b></div>
+  <div class="box">Time<b id="time">02:00</b></div>
+  <button class="stopBtn" id="stopBtn">⏹ STOP & SAVE</button>
+  <button class="pauseBtn" id="pauseBtn">⏸ PAUSE</button>
+</div>
+</div>
+
+<div id="heartsRow"></div>
+<div id="question"><small id="stage">CHECKPOINT 01</small><span id="qt"></span></div>
+<div id="notice"></div>
+<div id="progress"><div id="bar"></div></div>
+<div id="mobile"><button class="mb" id="l">◀</button><button class="mb" id="r">▶</button><button class="mb" id="j">↑</button><div class="fireWrap"><div class="fireHint">SHIFT / 0</div><button class="fireBtn" id="fireBtn" title="กด Shift ซ้าย/ขวา หรือเลข 0 เพื่อยิงลูกไฟ">🔥</button></div></div>
+
+<div id="intro">
+<div class="card">
+<div class="icon">🏃‍♀️🛒🏭🧠🏆</div>
+<h1>Continuous Final Quest</h1>
+<div class="sub">Season 4 • 20 Checkpoints • One Continuous Map</div>
+<div id="seasonStatus" class="mini">⏳ กำลังโหลดคำถาม Season 4...</div>
+<div class="mobile-intro-note" style="display:none">ใช้ปุ่มด้านซ้ายเพื่อเดินและกระโดด • ใช้ปุ่มลูกไฟด้านขวา</div>
+<p class="intro-summary" style="color:#48697e;font-weight:700;line-height:1.72;margin:0 0 12px">
+วิ่งในแผนที่เดียวต่อเนื่อง ไม่ตัดฉาก<br>
+เจอ Question Gate → โหม่งคำตอบ → Gate เปิด → วิ่งต่อ<br>
+เวลารวม 2 นาทีสำหรับ 20 ข้อ
+</p>
+<div class="player-block" style="margin:0 0 14px"><div id="loginInfo" class="input" style="text-align:left">กำลังเชื่อมต่อผู้เล่น...</div><input type="hidden" id="playerName" value="Player 1"></div>
+<div class="mini save-rule-note" style="margin:0 0 10px">PAUSE = หยุดชั่วคราว (ไม่บันทึกคะแนน) • STOP & SAVE = จบ Run และบันทึกคะแนนสะสมทันที • Time Out / Game Over / เล่นจบ = บันทึกอัตโนมัติ</div>
+<div class="control-help" style="margin:0 0 16px;padding:12px 14px;border-radius:14px;background:#eaf7ff;border:2px solid #9bdcff;color:#174d6a;font-weight:800;line-height:1.7;text-align:left">
+  <div style="font-size:14px;color:#0b6c9c;margin-bottom:4px">⌨ การควบคุมด้วยแป้นคีย์บอร์ด</div>
+  <div style="font-size:13px">← → หรือ A / D = เดินซ้าย–ขวา</div>
+  <div style="font-size:13px">Space / ↑ / W = Jump</div>
+  <div style="font-size:13px"><b>Shift ซ้าย/ขวา หรือเลข 0 บนแป้นพิมพ์</b> = ยิงลูกไฟ 🔥</div>
+  <div style="font-size:13px">P หรือ Esc = Pause / Resume</div>
+</div>
+<div class="startActions">
+  <button class="startExitBtn" id="startExitBtn">🚪 EXIT</button>
+  <button class="startExitBtn" id="fullscreenBtn">⛶ เล่นเต็มจอ</button>
+  <button class="btn" id="start">▶ START RUN</button>
+</div>
+</div>
+</div>
+
+<div id="finish">
+<div class="card">
+<div class="icon">🏆✨</div>
+<h1 id="ft">FOOD SAFETY CHAMPION!</h1>
+<div class="sub" id="fs">Final Quest Complete</div>
+<p id="fr" style="color:#48697e;font-weight:700;line-height:1.75;margin:0 0 18px"></p>
+<div class="row finishBtns">
+  <button class="btn endBtn" id="endGame">⏹ จบเกม</button>
+  <button class="btn playAgainBtn" id="again">▶ เล่นอีกครั้ง</button>
+</div>
+</div>
+</div>
+<div id="pauseModal">
+  <div class="card" style="max-width:560px">
+    <div class="icon">⏸️</div>
+    <h1>Game Paused</h1>
+    <div class="sub">หยุดเกมชั่วคราว</div>
+    <p id="pauseSummary" style="color:#48697e;font-weight:700;line-height:1.7;margin:0 0 14px"></p>
+    <div class="row" style="margin:0 0 10px">
+      <button class="btn" id="resumeBtn" style="margin:0">▶ RESUME</button>
+    </div>
+    <div class="row">
+</div>
+    <div class="mini" id="saveStatus" style="margin-top:14px">หากยังไม่ได้ตั้งค่า Google Apps Script URL ระบบจะเก็บสำรองไว้ใน Local Storage ก่อน</div>
+  </div>
+</div>
+</div>
+
+
+<div class="exitConfirmOverlay" id="exitConfirmOverlay">
+  <div class="exitConfirmCard" role="dialog" aria-modal="true" aria-labelledby="exitConfirmTitle">
+    <div class="exitConfirmIcon">🏠</div>
+    <div class="exitConfirmTitle" id="exitConfirmTitle">ออกจาก Season 4?</div>
+    <div class="exitConfirmText">
+      ระบบจะพาคุณกลับไปหน้า Home ของ Food Safety Hunting Game<br>
+      คะแนนที่บันทึกแล้วจะยังคงอยู่
+    </div>
+    <div class="exitConfirmActions">
+      <button class="exitConfirmBtn exitConfirmCancel" id="exitConfirmCancel">▶ เล่นต่อ</button>
+      <button class="exitConfirmBtn exitConfirmHome" id="exitConfirmHome">🏠 กลับ Home</button>
+    </div>
+  </div>
+
+
+<div id="fsBuildBadge" style="
+ position:absolute;left:10px;bottom:8px;z-index:99998;
+ font:700 9px Arial;color:rgba(255,255,255,.58);
+ pointer-events:none">S4 V18.20.8</div>
+
+<script>
+const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
+const ground=620, worldW=21500;
+const shell=document.getElementById("shell");
+const mobileLandscapeQuery=window.matchMedia("(hover:none) and (pointer:coarse) and (orientation:landscape)");
+function isTabletLandscape(){
+  const vv=window.visualViewport;
+  const side=Math.max(vv?.width||0,vv?.height||0,window.innerWidth,window.innerHeight);
+  return mobileLandscapeQuery.matches && side>=900;
+}
+
+// Chrome mobile's 100vh can include space hidden behind its URL/navigation bars.
+// Fit the complete 16:9 game to the actually visible viewport instead.
+function fitShellToVisibleViewport(){
+  const vv=window.visualViewport;
+  const vw=Math.max(1,vv?.width||window.innerWidth);
+  const vh=Math.max(1,vv?.height||window.innerHeight);
+  const w=Math.min(vw,vh*16/9);
+  const h=w*9/16;
+  shell.style.position="fixed";
+  shell.style.width=`${w}px`;shell.style.height=`${h}px`;
+  shell.style.left=`${(vv?.offsetLeft||0)+(vw-w)/2}px`;
+  shell.style.top=`${(vv?.offsetTop||0)+(vh-h)/2}px`;
+}
+fitShellToVisibleViewport();
+requestAnimationFrame(fitShellToVisibleViewport);
+setTimeout(fitShellToVisibleViewport,250);
+setTimeout(fitShellToVisibleViewport,900);
+window.addEventListener("resize",fitShellToVisibleViewport,{passive:true});
+window.addEventListener("orientationchange",()=>setTimeout(fitShellToVisibleViewport,150),{passive:true});
+if(window.visualViewport){
+  window.visualViewport.addEventListener("resize",fitShellToVisibleViewport,{passive:true});
+  window.visualViewport.addEventListener("scroll",fitShellToVisibleViewport,{passive:true});
+}
+if(mobileLandscapeQuery.addEventListener)mobileLandscapeQuery.addEventListener("change",fitShellToVisibleViewport);
+const BACKEND_URL="https://script.google.com/macros/s/AKfycbyh0ZdjF0gBopIq6ZqcPM-oyTs6k3kMxqRgCsV_X2z7ahr7GWYkprzI5zJcBkU09zJGpA/exec";
+const SAVE_URL=BACKEND_URL;
+const params=new URLSearchParams(location.search);
+let playerEmail=(params.get("email")||"").trim().toLowerCase();
+let returnUrl=params.get("return")||"index.html";
+let runId="";
+let correctAnswers=0,wrongAnswers=0,fireKills=0,stomps=0,playScoreBeforeBonus=0,lastTimeBonus=0;
+async function api(body, timeoutMs=6500, attempts=1){
+  let lastErr=null;
+  for(let attempt=1;attempt<=attempts;attempt++){
+    const controller=new AbortController();
+    const timer=setTimeout(()=>controller.abort(),timeoutMs);
+    try{
+      const r=await fetch(BACKEND_URL,{
+        method:"POST",
+        headers:{"Content-Type":"text/plain;charset=utf-8"},
+        body:JSON.stringify(body),
+        mode:"cors",
+        cache:"no-store",
+        signal:controller.signal
+      });
+      clearTimeout(timer);
+      if(!r.ok) throw new Error(`HTTP ${r.status}`);
+      const text=await r.text();
+      let d;
+      try{ d=JSON.parse(text); }
+      catch(_){ throw new Error("Backend ส่งข้อมูลกลับมาไม่ใช่ JSON"); }
+      if(!d?.ok) throw new Error(d?.error||"Backend error");
+      return d;
+    }catch(err){
+      clearTimeout(timer);
+      lastErr=err;
+      if(attempt<attempts) await new Promise(r=>setTimeout(r,350));
+    }
+  }
+  if(lastErr?.name==="AbortError") throw new Error("Backend ตอบช้าเกิน 6.5 วินาที");
+  throw lastErr||new Error("เชื่อมต่อ Backend ไม่สำเร็จ");
+}
+let qs=[];
+
+const checkpointXs=Array.from({length:20},(_,i)=>700+i*1000);
+const player={x:130,y:558,w:44,h:62,vx:0,vy:0,speed:5.6,jump:-15.4,onGround:false,dir:1};
+let cam=0,keys={},active=0,answered=0,score=0,seconds=120,timer=null,state="intro",locked=false;
+let blocks=[],gateClosed=false;
+const correctSlotPattern=[1,2,0,2,1,0,1,0,2,1,2,0,2,0,1,2,1,0,1,2];
+let stars=[],enemies=[],particles=[],fireballs=[],starCount=0,lives=10,invincible=0,fireCooldown=0,playerName="Player 1",saveLock=false,lastSaveKey="";
+
+const cp=document.getElementById("cp"),scoreEl=document.getElementById("score"),starEl=document.getElementById("stars"),heartEl=document.getElementById("hearts"),timeEl=document.getElementById("time"),heartsRow=document.getElementById("heartsRow"),qBox=document.getElementById("question"),qt=document.getElementById("qt"),stage=document.getElementById("stage"),note=document.getElementById("notice"),bar=document.getElementById("bar"),pauseBtn=document.getElementById("pauseBtn"),stopBtn=document.getElementById("stopBtn"),pauseModal=document.getElementById("pauseModal"),resumeBtn=document.getElementById("resumeBtn"),pauseSummary=document.getElementById("pauseSummary"),saveStatus=document.getElementById("saveStatus"),playerNameInput=document.getElementById("playerName"),fireBtn=document.getElementById("fireBtn");
+
+function fmt(s){return String(Math.floor(Math.max(0,s)/60)).padStart(2,"0")+":"+String(Math.max(0,s)%60).padStart(2,"0")}
+function renderHearts(){
+  heartEl.textContent=lives+" / 5";
+  heartsRow.innerHTML=Array.from({length:5},(_,i)=>`<span class="heart ${i<lives?'':'off'}">❤</span>`).join('');
+}
+function setHUD(){cp.textContent=answered+" / 20";scoreEl.textContent=score;starEl.textContent=starCount+" / 30";timeEl.textContent=fmt(seconds);renderHearts();bar.style.width=(answered/20*100)+"%"}
+function getSnapshot(reason="manual"){
+  const computedPlayScore=Math.max(0,Math.round(((score-Number(lastTimeBonus||0))+Number.EPSILON)*100)/100);
+  const ps=(playScoreBeforeBonus!==0||lastTimeBonus>0)?playScoreBeforeBonus:computedPlayScore;
+  return {playerName,email:playerEmail,runId,score,playScore:ps,timeBonus:lastTimeBonus,correct:correctAnswers,wrong:wrongAnswers,stars:starCount,fireKills,stomps,hearts:lives,checkpoint:answered,timeLeft:seconds,status:reason,updatedAt:new Date().toISOString()};
+}
+async function saveScore(reason="manual"){
+  const snap=getSnapshot(reason);
+  const saveKey=`${snap.playerName}|${snap.status}|${snap.score}|${snap.checkpoint}|${snap.timeLeft}|${snap.hearts}`;
+  if(reason!=="pause" && saveKey===lastSaveKey) return {ok:true, skipped:true, mode:"dedup"};
+  if(saveLock) return {ok:false, mode:"busy"};
+  saveLock=true;
+  try{
+    const history=JSON.parse(localStorage.getItem("foodSafetySavedScores")||"[]");
+    history.unshift(snap);
+    localStorage.setItem("foodSafetySavedScores", JSON.stringify(history.slice(0,100)));
+    if(!SAVE_URL || SAVE_URL.includes("PUT_YOUR_GOOGLE_APPS_SCRIPT_WEB_APP_URL_HERE")){
+      lastSaveKey=saveKey;
+      return {ok:true, mode:"local"};
+    }
+    const out=await api({action:"s4submit",...snap});
+    lastSaveKey=saveKey;
+    return {ok:true, mode:"sheet", backend:out};
+  }catch(err){
+    console.error(err);
+    return {ok:false, mode:"error", error:err};
+  }finally{ saveLock=false; }
+}
+function refreshPauseSummary(msg=""){
+  pauseSummary.innerHTML=`ผู้เล่น <b>${playerName}</b><br>คะแนน <b style="color:#168943">${score}</b> • ผ่าน ${answered}/20 • ⭐ ${starCount}/30 • ❤ ${lives}/5 • เวลา ${fmt(seconds)}`;
+  if(msg) saveStatus.textContent=msg;
+}
+function pauseGame(){
+  if(state!=="play") return;
+  state="pause";
+  pauseModal.style.display="flex";
+  refreshPauseSummary("หยุดชั่วคราว — ยังไม่บันทึกคะแนน • หากต้องการจบ Run ให้กด STOP & SAVE ที่แถบด้านบน");
+  pauseBtn.textContent="▶ RESUME";
+}
+function resumeGame(){
+  if(state!=="pause") return;
+  state="play";
+  pauseModal.style.display="none";
+  pauseBtn.textContent="⏸ PAUSE";
+}
+async function stopAndSave(){
+  if(!["play","question","pause"].includes(state)) return;
+  clearInterval(timer); state="end"; pauseModal.style.display="none"; pauseBtn.textContent="⏸ PAUSE"; playScoreBeforeBonus=score; lastTimeBonus=0;
+  const f=document.getElementById("finish");f.style.display="flex";document.getElementById("ft").textContent="RUN STOPPED";document.getElementById("fs").textContent="หยุดการเล่นและบันทึกคะแนนแล้ว";
+  document.getElementById("fr").innerHTML=`คะแนนสะสมจาก Run นี้ <b style="font-size:30px;color:#168943">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5 • เวลาเหลือ ${fmt(seconds)}<br><span id="stopSaveStatus" style="font-size:12px;color:#537286">กำลังบันทึก...</span>`;
+  const r=await saveScore("stopped"); const el=document.getElementById("stopSaveStatus"); if(el)el.textContent=r.mode==="sheet"?"✓ บันทึกคะแนนสะสมลง Google Sheet แล้ว":r.mode==="local"?"เก็บคะแนนสำรองในเครื่องแล้ว":"บันทึกคะแนนไม่สำเร็จ";
+}
+async function autoSaveEnd(reason){
+  const r=await saveScore(reason);
+  const t=r.mode==="sheet"?"บันทึกคะแนนไป Google Sheet อัตโนมัติแล้ว":r.mode==="local"?"ยังไม่ได้ตั้งค่า Google Apps Script URL — เก็บสำรองคะแนนในเครื่องแล้ว":"บันทึกคะแนนอัตโนมัติไม่สำเร็จ";
+  document.getElementById("fr").innerHTML += `<br><span style="font-size:12px;color:#537286">${t}</span>`;
+}
+function setupGate(){
+  if(active>=20){
+    gateClosed=false;
+    locked=false;
+    blocks=[];
+    qBox.style.display="none";
+    return;
+  }
+  const gx=checkpointXs[active];
+  const q=qs[active], ans=q[2], correctIdx=q[3];
+  const tablet=isTabletLandscape();
+  const bw=tablet?252:225, bh=tablet?94:74, gap=tablet?18:24;
+  const total=bw*3+gap*2, start=gx-total/2;
+  const blockY=tablet?386:375;
+  const correctSlot=correctSlotPattern[active%correctSlotPattern.length];
+  const wrongChoices=ans.map((txt,idx)=>({txt,idx})).filter(o=>o.idx!==correctIdx);
+  for(let i=wrongChoices.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [wrongChoices[i],wrongChoices[j]]=[wrongChoices[j],wrongChoices[i]];
+  }
+  const arranged=new Array(3);
+  arranged[correctSlot]={txt:ans[correctIdx],originalIndex:correctIdx,correct:true};
+  let wi=0;
+  for(let slot=0;slot<3;slot++){
+    if(arranged[slot]) continue;
+    const w=wrongChoices[wi++];
+    arranged[slot]={txt:w.txt,originalIndex:w.idx,correct:false};
+  }
+  blocks=arranged.map((item,slot)=>({x:start+slot*(bw+gap),y:blockY,w:bw,h:bh,i:slot,txt:item.txt,originalIndex:item.originalIndex,correct:item.correct,bounce:0,flash:0}));
+  gateClosed=true;
+}
+function showQuestion(){
+  const q=qs[active];stage.textContent="CHECKPOINT "+String(active+1).padStart(2,"0")+" • "+q[0].toUpperCase();qt.textContent=q[1];qBox.style.display="block";
+}
+function hideQuestion(){qBox.style.display="none"}
+function clamp(v,min,max){return Math.max(min,Math.min(max,v))}
+function nearGateZone(x,pad=420){return checkpointXs.some(cp=>Math.abs(x-cp)<pad)}
+function safeEnemySpawnAhead(seed=0){
+  const zoneBoost = active>=16 ? 1000 : active>=12 ? 550 : 0;
+  let x=player.x+1150+zoneBoost+(seed%4)*320+Math.random()*260;
+  let guard=0;
+  while(nearGateZone(x,470)&&guard<24){x+=320;guard++;}
+  return Math.min(worldW-180,x);
+}
+
+function initCollectibles(){
+  starCount=0; stars=[]; enemies=[]; particles=[]; fireballs=[];
+
+  // ⭐ 30 large stars, placed only in the clear running lanes BETWEEN question gates.
+  // Answer blocks extend roughly 360 px from each checkpoint center, so we keep a generous buffer.
+  const starPattern=[
+    {dx:445,dy:150},{dx:520,dy:215},{dx:555,dy:165}
+  ];
+  let sid=0;
+  for(let i=0;i<19 && stars.length<30;i++){
+    const base=checkpointXs[i];
+    const count=i<11?2:1;
+    for(let j=0;j<count && stars.length<30;j++){
+      const p=starPattern[(i+j)%starPattern.length];
+      const x=base+(j===0?445:555);
+      const y=ground-p.dy-(i%3)*8;
+      stars.push({x,y,r:22,collected:false,phase:sid*.7});
+      sid++;
+    }
+  }
+
+  // 👾 Endless-runner enemies: spaced across the world, always moving toward the player.
+  // They never stop at a lane edge. After passing behind the player they respawn far ahead.
+  for(let i=0;i<8;i++){
+    let x=1350+i*1850;
+    while(nearGateZone(x,470)) x+=520;
+    enemies.push({
+      x,y:ground-34,w:42,h:34,
+      speed:1.95+(i%4)*0.18,
+      alive:true,
+      phase:i*.83,
+      respawnDelay:0
+    });
+  }
+
+}
+function burst(x,y,kind='star'){
+  for(let i=0;i<10;i++) particles.push({x,y,vx:(Math.random()-.5)*5,vy:-2-Math.random()*4,life:36+Math.random()*16,kind});
+}
+function hit(a,b){return a.x+a.w>b.x&&a.x<b.x+b.w&&a.y+a.h>b.y&&a.y<b.y+b.h}
+function startGame(){
+ if(qs.length!==20){flash("ยังโหลดคำถาม Season 4 ไม่ครบ","bad");return;}
+ playerName=(playerNameInput.value||playerEmail||"Player 1").trim()||"Player 1";
+ runId="S4RUN-"+(crypto.randomUUID?crypto.randomUUID():(Date.now()+"-"+Math.random().toString(36).slice(2)));
+ correctAnswers=wrongAnswers=fireKills=stomps=0;playScoreBeforeBonus=0;lastTimeBonus=0;
+ state="play";active=answered=score=0;seconds=120;cam=0;locked=false;lives=5;invincible=0;fireCooldown=0;lastSaveKey="";pauseModal.style.display="none";pauseBtn.textContent="⏸ PAUSE";saveStatus.textContent="หากยังไม่ได้ตั้งค่า Google Apps Script URL ระบบจะเก็บสำรองไว้ใน Local Storage ก่อน";initCollectibles();player.x=130;player.y=ground-player.h;player.vx=player.vy=0;setupGate();hideQuestion();setHUD();
+ document.getElementById("intro").style.display="none";document.getElementById("finish").style.display="none";
+ clearInterval(timer);timer=setInterval(()=>{if(state!=="play")return;seconds--;setHUD();if(seconds<=0)finish(false)},1000)
+}
+function s4FullscreenElement(){return document.fullscreenElement||document.webkitFullscreenElement||null}
+async function toggleS4Fullscreen(){
+ try{
+  if(s4FullscreenElement()){
+   const exit=document.exitFullscreen||document.webkitExitFullscreen;
+   if(exit)await exit.call(document);
+  }else{
+   const target=document.documentElement;
+   const request=target.requestFullscreen||target.webkitRequestFullscreen;
+   if(!request)throw new Error("FULLSCREEN_UNSUPPORTED");
+   await request.call(target);
+   try{if(screen.orientation?.lock)await screen.orientation.lock("landscape")}catch(_){}
+  }
+ }catch(_){flash("อุปกรณ์นี้ไม่อนุญาต Fullscreen • ยังเล่นแบบปกติได้","bad")}
+}
+function syncS4Fullscreen(){
+ const btn=document.getElementById("fullscreenBtn");
+ if(btn)btn.textContent=s4FullscreenElement()?"✓ เต็มจอแล้ว":"⛶ เล่นเต็มจอ";
+ setTimeout(()=>{if(typeof fitShellToVisibleViewport==="function")fitShellToVisibleViewport()},80);
+}
+document.getElementById("start").onclick=startGame;document.getElementById("again").onclick=startGame;document.getElementById("endGame").onclick=goToIntro;
+document.getElementById("fullscreenBtn").onclick=toggleS4Fullscreen;
+document.addEventListener("fullscreenchange",syncS4Fullscreen);
+document.addEventListener("webkitfullscreenchange",syncS4Fullscreen);
+
+function goToIntro(){
+ clearInterval(timer);
+ state="intro";
+ document.getElementById("finish").style.display="none";
+ pauseModal.style.display="none";
+ document.getElementById("intro").style.display="flex";
+}
+function jump(){if(state==="play"&&player.onGround){player.vy=player.jump;player.onGround=false}}
+function shoot(){
+ if(state!=="play"||fireCooldown>0)return;
+ fireCooldown=22;
+ const dir=player.dir||1;
+ fireballs.push({x:player.x+player.w/2+dir*34,y:player.y+26,r:11,vx:dir*9.8,vy:-2.2,life:150,spin:0,bounces:0,bouncePower:4.9});
+ burst(player.x+player.w/2+dir*24,player.y+28,'fire');
+}
+addEventListener("keydown",e=>{if(["KeyP","Escape"].includes(e.code)){e.preventDefault();state==="play"?pauseGame():state==="pause"&&resumeGame();return;}if(["Digit0","Numpad0","ShiftLeft","ShiftRight"].includes(e.code)){e.preventDefault();shoot();return;}keys[e.code]=true;if(["ArrowLeft","ArrowRight","ArrowUp","Space"].includes(e.code))e.preventDefault();if(["Space","ArrowUp","KeyW"].includes(e.code))jump()});
+addEventListener("keyup",e=>keys[e.code]=false);
+function touch(id,code,j=false){const el=document.getElementById(id),dn=e=>{e.preventDefault();keys[code]=true;if(j)jump()},up=e=>{e.preventDefault();keys[code]=false};el.addEventListener("pointerdown",dn);["pointerup","pointercancel","pointerleave"].forEach(x=>el.addEventListener(x,up))}
+touch("l","ArrowLeft");touch("r","ArrowRight");touch("j","Space",true);
+fireBtn.addEventListener("pointerdown",e=>{e.preventDefault();shoot()});
+
+/* V18.18.18 — suppress Android/iPad long-press copy/selection on game controls only */
+(function(){
+  const controlSel="#mobile, #mobile *, .mb, .fireBtn, .fireWrap, .fireHint, #l, #r, #j, #fireBtn";
+  const isControl=t=>!!t?.closest?.(controlSel);
+  const block=e=>{
+    if(!isControl(e.target))return;
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  ["contextmenu","selectstart","dragstart","copy"].forEach(type=>{
+    document.addEventListener(type,block,{capture:true});
+  });
+
+  // On touch controls, preventing the native touch gesture is safe and
+  // keeps continuous left/right presses working via pointer events.
+  document.addEventListener("touchstart",e=>{
+    if(isControl(e.target))e.preventDefault();
+  },{capture:true,passive:false});
+
+  document.addEventListener("touchmove",e=>{
+    if(isControl(e.target))e.preventDefault();
+  },{capture:true,passive:false});
+
+  document.addEventListener("touchend",e=>{
+    if(isControl(e.target))e.preventDefault();
+  },{capture:true,passive:false});
+
+  document.querySelectorAll(controlSel).forEach(el=>{
+    el.setAttribute("draggable","false");
+    el.setAttribute("oncontextmenu","return false");
+  });
+})();
+
+// Mobile fallback: answer by tapping a visible yellow choice.
+// Desktop players can still jump and hit the block from below as before.
+cv.addEventListener("pointerdown",e=>{
+  if(state!=="play"||!gateClosed||locked||qBox.style.display==="none") return;
+  const rect=cv.getBoundingClientRect();
+  const px=(e.clientX-rect.left)*W/rect.width;
+  const py=(e.clientY-rect.top)*H/rect.height;
+  const picked=blocks.find(b=>{
+    const bx=b.x-cam,by=b.y-b.bounce;
+    return px>=bx&&px<=bx+b.w&&py>=by&&py<=by+b.h;
+  });
+  if(!picked)return;
+  e.preventDefault();
+  answer(picked);
+},{passive:false});
+
+function update(){
+ if(state!=="play")return;
+ let m=0;if(keys.ArrowLeft||keys.KeyA)m--;if(keys.ArrowRight||keys.KeyD)m++;
+ player.vx=m*player.speed;if(m)player.dir=m>0?1:-1;
+ let nx=player.x+player.vx;
+ if(active<20 && gateClosed){
+   const gx=checkpointXs[active];
+   if(nx>gx+360) nx=gx+360;
+ }else if(active>=20){
+   gateClosed=false;
+   locked=false;
+ }
+ player.x=Math.max(20,Math.min(worldW-80,nx));
+ player.vy+=.72;player.y+=player.vy;
+ if(player.y+player.h>=ground){player.y=ground-player.h;player.vy=0;player.onGround=true}
+ if(invincible>0) invincible--;
+ if(fireCooldown>0) fireCooldown--;
+
+ // 🟨 Answer blocks are solid platforms from ABOVE only.
+ // Landing/running on them does NOT answer the question; head-butting from below still does.
+ if(gateClosed && active<20 && player.vy>=0){
+   const prevBottom=player.y+player.h-player.vy;
+   const newBottom=player.y+player.h;
+   for(const b of blocks){
+     const top=b.y-b.bounce;
+     if(player.x+player.w>b.x+4 && player.x<b.x+b.w-4 && prevBottom<=top+4 && newBottom>=top){
+       player.y=top-player.h;player.vy=0;player.onGround=true;break;
+     }
+   }
+ }
+
+ // 🔥 Fireballs
+ for(const f of fireballs){
+   f.x+=f.vx;f.y+=f.vy;f.vy+=0.18;f.life--;f.spin+=0.28;
+   if(f.y+f.r>=ground){
+     f.y=ground-f.r;
+     f.vy=-f.bouncePower;
+     f.bouncePower=Math.max(3.4,f.bouncePower*0.93);
+     f.vx*=0.995;
+     f.bounces++;
+   }
+   for(let ei=0;ei<enemies.length;ei++){
+     const e=enemies[ei]; if(!e.alive)continue;
+     const fb={x:f.x-f.r,y:f.y-f.r,w:f.r*2,h:f.r*2};
+     if(hit(fb,e)){
+       e.alive=false;e.respawnDelay=80;f.life=0;score+=5;seconds+=5;fireKills++;
+       burst(e.x+e.w/2,e.y+e.h/2,'fire');flash('🔥 HIT +5 • +5 sec','ok');setHUD();break;
+     }
+   }
+ }
+ fireballs=fireballs.filter(f=>f.life>0 && f.x>player.x-900 && f.x<player.x+1600);
+
+ // ⭐ Star collection: touching a large star gives +20 points
+ for(const st of stars){
+   if(st.collected) continue;
+   const dx=(player.x+player.w/2)-st.x, dy=(player.y+player.h/2)-st.y;
+   if(Math.hypot(dx,dy)<44){
+     st.collected=true; starCount++; score+=5;
+     burst(st.x,st.y,'star'); flash('⭐ STAR +5','ok'); setHUD();
+   }
+ }
+
+ // 👾 Endless-runner enemies: continuous motion, never parked at a fixed point
+ for(let ei=0;ei<enemies.length;ei++){
+   const e=enemies[ei];
+   e.phase+=0.18;
+   if(!e.alive){
+     e.respawnDelay--;
+     if(e.respawnDelay<=0){e.alive=true;e.x=safeEnemySpawnAhead(ei);}
+     continue;
+   }
+
+   e.x-=e.speed;
+
+   // Once far behind the player, recycle invisibly to a safe position well ahead.
+   if(e.x<player.x-720){
+     e.x=safeEnemySpawnAhead(ei);
+     e.speed=1.95+(ei%4)*0.18+Math.random()*.12;
+   }
+
+   // Never let an enemy enter the active Question Gate/answer area.
+   // Recycle it ahead before it reaches that zone instead of stopping it there.
+   if(active<20 && gateClosed){
+     const gx=checkpointXs[active];
+     if(e.x>gx+400 && e.x-e.speed<=gx+400 && player.x>gx-520){
+       e.x=safeEnemySpawnAhead(ei+3);
+     }
+   }
+
+   if(hit(player,e)){
+     const playerBottom=player.y+player.h;
+     const stomp=player.vy>1 && playerBottom-e.y<24;
+     if(stomp){
+       e.alive=false;e.respawnDelay=100;player.vy=-10.5;score+=10;seconds+=5;lives=Math.min(5,lives+1);stomps++;
+       burst(e.x+e.w/2,e.y,'enemy');flash('👾 STOMP +10 • ❤ +1 • +5 sec','ok');setHUD();
+     }else if(invincible<=0){
+       lives=Math.max(0,lives-1);invincible=100;player.vy=-8.5;player.x+=(player.x<e.x?-70:70);
+       burst(player.x+player.w/2,player.y+player.h/2,'enemy');flash('💔 HIT! -1 HEART','bad');setHUD();
+       e.x=safeEnemySpawnAhead(ei+5);
+       if(lives<=0){gameOver();return;}
+     }
+   }
+ }
+
+ // particle animation
+ particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.18;p.life--});
+ particles=particles.filter(p=>p.life>0);
+
+ if(active<20){
+  const gx=checkpointXs[active];
+  if(Math.abs(player.x-gx)<470 && gateClosed) showQuestion();
+  if(player.x<gx-520) hideQuestion();
+  if(player.vy<0 && gateClosed && !locked){
+    for(const b of blocks){
+      const head=player.y, by=b.y+b.h;
+      if(player.x+player.w>b.x && player.x<b.x+b.w && head<=by && head>=by-18){
+        player.y=by;player.vy=4;b.bounce=14;answer(b);break
+      }
+    }
+  }
+ }
+ blocks.forEach(b=>{if(b.bounce>0)b.bounce*=.72;if(b.flash>0)b.flash--});
+ let targetBase=player.x-330;
+ if(isTabletLandscape() && active<20 && gateClosed){
+   targetBase=checkpointXs[active]-W*0.46;
+ }
+ const target=Math.max(0,Math.min(worldW-W,targetBase));cam+=(target-cam)*.11;
+
+ if(active>=20){
+   const finishX=checkpointXs[19]+560;
+   // Entering the arch itself is enough to finish.
+   if(player.x+player.w>=finishX+8){
+     finish(true);
+     return;
+   }
+ }
+}
+function clearFinalRunway(){
+  if(active<20) return;
+  gateClosed=false;
+  locked=false;
+  blocks=[];
+  hideQuestion();
+
+  const finishX=checkpointXs[19]+560;
+
+  // Remove / recycle enemies near the final runway so they cannot trap the player.
+  for(let i=0;i<enemies.length;i++){
+    const e=enemies[i];
+    if(!e) continue;
+    if(e.x>checkpointXs[19]-500 && e.x<finishX+420){
+      e.alive=false;
+      e.respawnDelay=999999;
+    }
+  }
+}
+
+function answer(b){
+ locked=true;
+ const good=!!b.correct;b.flash=28;
+ if(good){score+=20;correctAnswers++;flash("✓ CORRECT! +20","ok")}
+ else{score=Math.max(0,score-10);wrongAnswers++;flash("✕ WRONG! -10 pts","bad")}
+ answered++;
+ active++;
+ setHUD();
+ hideQuestion();
+ gateClosed=false;
+
+ if(active>=20){
+   clearFinalRunway();
+   flash("🏁 ครบ 20 ข้อแล้ว • วิ่งเข้า FINISH!","ok");
+   return;
+ }
+
+ setTimeout(()=>{
+   locked=false;
+   setupGate();
+ },520);
+}
+function flash(t,c){note.textContent=t;note.className="show "+c;setTimeout(()=>note.className="",470)}
+function gameOver(){
+ if(state==="end")return; state="end"; clearInterval(timer);
+ burst(player.x+player.w/2,player.y+player.h/2,'enemy');
+ const f=document.getElementById("finish");f.style.display="flex";
+ document.getElementById("ft").textContent="GAME OVER!";
+ document.getElementById("fs").textContent="หัวใจหมดแล้ว — ต้องเริ่มใหม่";
+ document.getElementById("fr").innerHTML=`คะแนน <b style="font-size:29px;color:#d63c3c">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5`;
+ playScoreBeforeBonus=score;lastTimeBonus=0;autoSaveEnd("game_over");
+}
+function finish(ok){
+ if(state==="end")return;state="end";clearInterval(timer);
+ const f=document.getElementById("finish");f.style.display="flex";
+ document.getElementById("ft").textContent=ok?"FOOD SAFETY CHAMPION!":"TIME OUT";
+ document.getElementById("fs").textContent=ok?"คุณวิ่งผ่านครบ 20 Checkpoints":"หมดเวลาก่อนถึงเส้นชัย";
+ if(ok){
+   const playScore=score;
+   playScoreBeforeBonus=playScore;
+   const timeBonus=Math.round((Math.max(0,seconds)*(20/60)+Number.EPSILON)*100)/100;
+   lastTimeBonus=timeBonus;score=Math.round((playScore+timeBonus+Number.EPSILON)*100)/100;
+   setHUD();
+   document.getElementById("fr").innerHTML=`คะแนนจากการเล่น <b>${playScore}</b><br>⏱ Time Bonus ${fmt(seconds)} = <b style="color:#d88400">+${timeBonus}</b> คะแนน<br>คะแนนรวม <b style="font-size:30px;color:#168943">${score}</b><br><span style="font-size:12px;color:#60798a">คิด Time Bonus นาทีละ 20 คะแนน (เศษวินาทีคิดตามสัดส่วน)</span><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5`;
+ }else{
+   playScoreBeforeBonus=score;lastTimeBonus=0;
+   document.getElementById("fr").innerHTML=`คะแนนรวม <b style="font-size:29px;color:#168943">${score}</b><br>ผ่าน ${answered} / 20 checkpoints • ⭐ ${starCount}/30 • ❤ เหลือ ${lives}/5 • เวลาเหลือ ${fmt(seconds)}`;
+ }
+ autoSaveEnd(ok?"completed":"time_out");
+}
+
+function zoneAt(x){ if(x<checkpointXs[5]-230)return 0;if(x<checkpointXs[10]-230)return 1;if(x<checkpointXs[15]-230)return 2;return 3}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath()}
+// Graphics edition: all world and collision coordinates remain in the original 1280x720 space.
+function artRect(x,y,w,h,r,fill){ctx.fillStyle=fill;rr(x,y,w,h,r);ctx.fill()}
+function artEllipse(x,y,rx,ry,fill){ctx.fillStyle=fill;ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fill()}
+function drawWorld(){
+ const z=zoneAt(player.x);
+ const colors=[['#76cef1','#eefcfa','#6dbd96','#16765e'],['#8dcfe9','#eef9ff','#91b8cb','#326780'],['#aaa1ef','#f5f1ff','#b1a0dc','#6854a4'],['#ffbc89','#fff7df','#e8ba80','#ae7347']][z];
+ const sky=ctx.createLinearGradient(0,0,0,620);sky.addColorStop(0,colors[0]);sky.addColorStop(1,colors[1]);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+ const glow=ctx.createRadialGradient(1020,160,4,1020,160,200);glow.addColorStop(0,'#fffce5');glow.addColorStop(.25,'#fffce599');glow.addColorStop(1,'#fffce500');ctx.fillStyle=glow;ctx.fillRect(780,0,500,400);
+ artEllipse(1020,160,38,38,'#fffbe8');
+ // Repeating parallax layers span the complete twenty-checkpoint route.
+ for(let i=-1;i<7;i++){
+  const x=i*300-((cam*.08)%300),y=118+((i+7)%3)*48;
+  artEllipse(x,y,66,17,'#ffffff88');artEllipse(x-23,y-9,30,24,'#ffffff88');artEllipse(x+20,y-10,39,27,'#ffffff88');
+ }
+ for(let i=-1;i<6;i++){
+  const x=i*360-((cam*.16)%360);
+  ctx.fillStyle=colors[2]+'55';ctx.beginPath();ctx.moveTo(x,555);ctx.bezierCurveTo(x+40,300,x+220,315,x+360,555);ctx.fill();
+ }
+ // Each district has its own architecture, with no external image downloads.
+ for(let i=-1;i<7;i++){
+  const n=Math.floor(cam*.32/240)+i,x=i*240-((cam*.32)%240),y=344+(Math.abs(n)%3)*19;
+  ctx.save();
+  artRect(x+10,y+12,206,210,12,colors[2]+'55');
+  artRect(x,y,200,220,12,'#f9fcf9');
+  artRect(x+8,y+8,184,8,4,'#ffffff');
+  if(z===0){
+   artRect(x+10,y+30,180,34,6,'#207f73');ctx.fillStyle='#fff';ctx.font='bold 15px Arial';ctx.textAlign='center';ctx.fillText(Math.abs(n)%2?'FRESH MARKET':'FOOD HALL',x+100,y+53);
+   for(let k=0;k<6;k++)artRect(x+10+k*30,y+68,30,24,3,k%2?'#fff4d1':'#eaa85f');
+   artRect(x+16,y+101,106,99,4,'#bde6e3');artRect(x+132,y+101,50,113,4,'#2f7278');
+   ctx.fillStyle='#e8fff8';ctx.fillRect(x+67,y+102,3,98);ctx.fillRect(x+18,y+146,104,3);
+   for(let k=0;k<4;k++){artRect(x+21+k*23,y+173,18,22,3,['#efaf57','#7ab96a','#dc7760','#efc668'][k]);}
+  }else if(z===1){
+   artRect(x+20,y-58,23,65,4,'#85a6b8');artRect(x+55,y-35,23,42,4,'#b5cbd8');
+   artRect(x+10,y+28,180,30,5,'#356c8a');ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.fillText('QUALITY WORKS',x+100,y+49);
+   for(let k=0;k<4;k++)artRect(x+15+k*45,y+75,35,44,4,'#a4dceb');
+   artRect(x+18,y+138,164,74,5,'#638c9e');for(let k=0;k<5;k++){ctx.fillStyle='#b3d0d9';ctx.fillRect(x+20,y+143+k*13,160,2);}
+  }else if(z===2){
+   artRect(x+10,y+26,180,33,6,'#7563ae');ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.fillText('SAFETY ACADEMY',x+100,y+48);
+   for(let k=0;k<3;k++){artRect(x+18+k*57,y+79,46,62,5,'#d4c9ed');artRect(x+24+k*57,y+86,34,5,2,'#fff9');}
+   artRect(x+71,y+155,58,65,7,'#7b72ac');artEllipse(x+100,y+178,13,13,'#eee5ff');
+  }else{
+   artRect(x+10,y+28,180,31,6,'#bd8755');ctx.fillStyle='#fff';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.fillText('CHAMPIONS PLAZA',x+100,y+49);
+   for(let k=0;k<3;k++){artRect(x+20+k*57,y+82,44,115,19,'#f0ddac');artRect(x+28+k*57,y+94,28,88,12,'#a4c9ca');}
+  }
+  ctx.restore();
+ }
+ // Planters and trees add foreground depth without covering answer blocks.
+ for(let i=-1;i<7;i++){
+  const x=i*260-((cam*.48)%260);
+  artRect(x+15,496,8,51,3,'#8d7657');artEllipse(x+20,482,29,34,colors[3]);artEllipse(x+8,471,20,25,colors[2]);artEllipse(x+31,460,15,21,colors[2]);
+  artRect(x-13,535,65,18,6,'#f4ede0');
+ }
+ // Walkable floor remains exactly y=620.
+ const lawn=ctx.createLinearGradient(0,548,0,620);lawn.addColorStop(0,'#a0df87');lawn.addColorStop(1,'#448860');ctx.fillStyle=lawn;ctx.fillRect(0,548,W,72);
+ ctx.fillStyle='#e5f4bd';ctx.fillRect(0,548,W,4);
+ for(let x=-(cam%64);x<W;x+=64){artEllipse(x,588,17,3,'#255e4220');ctx.fillStyle='#f4f1af';ctx.fillRect(x+22,561,3,4);}
+ const path=ctx.createLinearGradient(0,620,0,720);path.addColorStop(0,'#d5b78f');path.addColorStop(1,'#997b62');ctx.fillStyle=path;ctx.fillRect(0,620,W,100);
+ ctx.fillStyle='#fff1cd';ctx.fillRect(0,620,W,5);ctx.fillStyle='#765d49';ctx.fillRect(0,625,W,5);
+ for(let row=0;row<3;row++)for(let x=-100-(cam%100)+(row%2)*50;x<W;x+=100){artRect(x+3,638+row*30,94,24,4,'#ffffff13');}
+ // zone transition signs - glossy
+ const signs=[[checkpointXs[0]-450,"🛒 MODERN TRADE"],[checkpointXs[5]-300,"🏭 FACTORY"],[checkpointXs[10]-300,"🧠 CULTURE"],[checkpointXs[15]-300,"🏆 FINAL MIX"]];
+ for(const [wx,label] of signs){const x=wx-cam;if(x>-260&&x<W+40){ctx.save();ctx.shadowColor="rgba(0,0,0,.22)";ctx.shadowBlur=12;ctx.shadowOffsetY=7;let sg2=ctx.createLinearGradient(x,485,x,537);sg2.addColorStop(0,"#1976ae");sg2.addColorStop(1,"#083f63");ctx.fillStyle=sg2;rr(x,482,230,54,14);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle="rgba(255,255,255,.55)";ctx.lineWidth=2;ctx.stroke();ctx.fillStyle="#fff";ctx.font="bold 17px Tahoma";ctx.textAlign="center";ctx.fillText(label,x+115,516);ctx.restore();}}
+}
+function wrap(t,x,y,mw,lh,maxLines=3){
+ const a=[...String(t||"")];let lines=[],cur="";
+ for(const c of a){
+   if(ctx.measureText(cur+c).width>mw && cur){lines.push(cur);cur=c}else cur+=c;
+ }
+ if(cur)lines.push(cur);
+ lines=lines.slice(0,maxLines);
+ const sy=y-(lines.length-1)*lh/2;
+ lines.forEach((l,i)=>ctx.fillText(l,x,sy+i*lh));
+}
+function drawGate(){
+ if(active>=20)return;
+ const gx=checkpointXs[active]-cam;
+ // 3D pillars
+ for(const px of [gx-390,gx+360]){
+   ctx.save();ctx.shadowColor="rgba(0,0,0,.28)";ctx.shadowBlur=16;ctx.shadowOffsetY=9;
+   let pg=ctx.createLinearGradient(px,445,px+30,620);pg.addColorStop(0,"#29a6e5");pg.addColorStop(.45,"#0b6d9f");pg.addColorStop(1,"#064264");ctx.fillStyle=pg;rr(px,445,30,175,8);ctx.fill();ctx.shadowColor="transparent";ctx.fillStyle="rgba(255,255,255,.35)";ctx.fillRect(px+5,452,5,155);ctx.restore();
+ }
+ // floating gate title
+ ctx.save();ctx.shadowColor="rgba(0,0,0,.25)";ctx.shadowBlur=12;ctx.shadowOffsetY=5;let tg=ctx.createLinearGradient(gx-120,458,gx+120,505);tg.addColorStop(0,"#fff48b");tg.addColorStop(.5,"#ffd53d");tg.addColorStop(1,"#f2a515");ctx.fillStyle=tg;rr(gx-125,458,250,46,14);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle="#fff5b4";ctx.lineWidth=3;ctx.stroke();ctx.fillStyle="#754400";ctx.font="bold 18px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("QUESTION GATE",gx,481);ctx.restore();
+ // answer blocks - glossy 3D
+ for(const b of blocks){
+   const x=b.x-cam,y=b.y-b.bounce;if(x<-300||x>W+300)continue;
+   const ok=b.flash>0&&b.correct,bad=b.flash>0&&!b.correct;
+   ctx.save();ctx.shadowColor="rgba(0,0,0,.28)";ctx.shadowBlur=13;ctx.shadowOffsetY=9;
+   let bg=ctx.createLinearGradient(x,y,x,y+b.h);if(ok){bg.addColorStop(0,"#72ee8c");bg.addColorStop(1,"#1ba447")}else if(bad){bg.addColorStop(0,"#ff8d8d");bg.addColorStop(1,"#c72a2a")}else{bg.addColorStop(0,"#ffd85e");bg.addColorStop(.48,"#f5b62e");bg.addColorStop(1,"#cc7c09")};ctx.fillStyle=bg;rr(x,y,b.w,b.h,15);ctx.fill();ctx.shadowColor="transparent";ctx.strokeStyle=ok?"#d9ffe2":bad?"#ffdcdc":"#fff0a0";ctx.lineWidth=3;ctx.stroke();
+   ctx.fillStyle="rgba(255,255,255,.32)";rr(x+7,y+7,b.w-14,12,6);ctx.fill();
+   const tablet=isTabletLandscape();
+   ctx.fillStyle=ok?"#ffffff":bad?"#ffffff":"#4b2b00";
+   ctx.font=`bold ${tablet?16:17}px Tahoma`;
+   ctx.textAlign="center";ctx.textBaseline="middle";ctx.shadowColor="transparent";ctx.shadowBlur=0;
+   wrap(b.txt,x+b.w/2,y+b.h/2+(tablet?2:2),b.w-(tablet?26:20),tablet?18:20,tablet?3:3);ctx.restore();
+ }
+}
+function drawCheckpoints(){
+ for(let i=0;i<20;i++){
+  const x=checkpointXs[i]-cam;if(x<-110||x>W+110)continue;
+  const done=i<answered, current=i===active&&gateClosed;
+  ctx.save();
+  // simple checkpoint pole
+  ctx.strokeStyle=done?"#2fbf55":"#2f6078";ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(x,500);ctx.lineTo(x,620);ctx.stroke();
+
+  if(current){
+    // clear compact badge below QUESTION GATE — no flag overlap
+    const bw=86,bh=34,bx=x-bw/2,by=516;
+    ctx.shadowColor="rgba(0,0,0,.22)";ctx.shadowBlur=10;ctx.shadowOffsetY=5;
+    let cg=ctx.createLinearGradient(bx,by,bx,by+bh);cg.addColorStop(0,"#ffffff");cg.addColorStop(1,"#dff3ff");
+    ctx.fillStyle=cg;rr(bx,by,bw,bh,12);ctx.fill();
+    ctx.shadowColor="transparent";ctx.strokeStyle="#ffbf2e";ctx.lineWidth=3;ctx.stroke();
+    ctx.fillStyle="#0d4f87";ctx.font="bold 16px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("ข้อ "+String(i+1),x,by+bh/2+1);
+  }else{
+    // small subtle flag for non-current checkpoints
+    ctx.fillStyle=done?"#48df70":"#ffc83d";ctx.beginPath();ctx.moveTo(x+3,500);ctx.lineTo(x+48,514);ctx.lineTo(x+3,528);ctx.closePath();ctx.fill();
+    ctx.fillStyle="#fff";ctx.font="bold 11px Tahoma";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(i+1),x+21,514);
+  }
+  ctx.restore();
+ }
+ // finish arch
+ const fx=checkpointXs[19]+560-cam;
+ if(fx>-140&&fx<W+140){
+   ctx.fillStyle="#145f89";
+   ctx.fillRect(fx,410,25,210);
+   ctx.fillRect(fx+155,410,25,210);
+   ctx.fillRect(fx,410,180,28);
+   ctx.fillStyle="#fff";
+   ctx.font="bold 18px Arial";
+   ctx.fillText("FINISH",fx+90,432);
+ }
+}
+
+function drawCollectibles(){
+  // glossy 3D stars
+  for(const st of stars){
+    if(st.collected) continue;
+    const x=st.x-cam,y=st.y+Math.sin(performance.now()/260+st.phase)*7;if(x<-60||x>W+60)continue;
+    ctx.save();ctx.translate(x,y);ctx.rotate(performance.now()/1000+st.phase);ctx.shadowColor='rgba(255,196,34,.95)';ctx.shadowBlur=24;
+    let sg=ctx.createRadialGradient(-8,-10,2,0,0,28);sg.addColorStop(0,'#fffbd2');sg.addColorStop(.22,'#fff46c');sg.addColorStop(.58,'#ffd52e');sg.addColorStop(1,'#e79709');ctx.fillStyle=sg;ctx.strokeStyle='#fff7a8';ctx.lineWidth=4;
+    ctx.beginPath();for(let k=0;k<10;k++){const a=-Math.PI/2+k*Math.PI/5,r=k%2?10:24;const px=Math.cos(a)*r,py=Math.sin(a)*r;k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fill();ctx.stroke();
+    ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.78)';ctx.beginPath();ctx.ellipse(-8,-8,6,3,-.5,0,7);ctx.fill();ctx.restore();
+  }
+  // cute 3D enemies with a visible running cycle
+  for(const e of enemies){
+    const x=e.x-cam;if(x<-70||x>W+70||!e.alive)continue;
+    const bob=Math.sin(e.phase)*2.6, y=e.y+bob, dir=-1,step=Math.sin(e.phase*1.8)*5;
+    ctx.save();
+    ctx.fillStyle='rgba(0,0,0,.2)';ctx.beginPath();ctx.ellipse(x+21,ground+2,24-Math.abs(bob),7,0,0,7);ctx.fill();
+    ctx.shadowColor='rgba(47,21,88,.34)';ctx.shadowBlur=12;ctx.shadowOffsetY=6;let eg=ctx.createRadialGradient(x+12,y+7,3,x+22,y+18,30);eg.addColorStop(0,'#d7a5ff');eg.addColorStop(.35,'#9f61ec');eg.addColorStop(1,'#6230b3');ctx.fillStyle=eg;rr(x,y,e.w,e.h,14);ctx.fill();ctx.shadowColor='transparent';ctx.strokeStyle='#5a279d';ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='rgba(255,255,255,.28)';ctx.beginPath();ctx.ellipse(x+13,y+7,9,4,-.3,0,7);ctx.fill();
+    ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(x+13,y+13,7,0,7);ctx.arc(x+29,y+13,7,0,7);ctx.fill();ctx.fillStyle='#18233a';ctx.beginPath();ctx.arc(x+13+dir*2,y+14,2.7,0,7);ctx.arc(x+29+dir*2,y+14,2.7,0,7);ctx.fill();
+    ctx.strokeStyle='#452171';ctx.lineWidth=2;ctx.beginPath();ctx.arc(x+21,y+24,7,.15,Math.PI-.15);ctx.stroke();
+    ctx.fillStyle='#ffd85c';rr(x+4+step,y+29,12,6,3);ctx.fill();rr(x+26-step,y+29,12,6,3);ctx.fill();
+    ctx.restore();
+  }
+  for(const p of particles){const x=p.x-cam;ctx.globalAlpha=Math.max(0,p.life/50);ctx.shadowColor=p.kind==='star'?'rgba(255,220,70,.9)':p.kind==='fire'?'rgba(255,90,30,.9)':'rgba(255,255,255,.8)';ctx.shadowBlur=9;ctx.fillStyle=p.kind==='star'?'#ffe35e':p.kind==='fire'?'#ff7635':'#ffffff';ctx.beginPath();ctx.arc(x,p.y,2.5+Math.random()*2,0,7);ctx.fill()}ctx.globalAlpha=1;ctx.shadowBlur=0;
+}
+function drawFireballs(){
+ for(const f of fireballs){
+   const x=f.x-cam,y=f.y;if(x<-40||x>W+40)continue;
+   ctx.save();ctx.translate(x,y);ctx.rotate(f.spin);ctx.shadowColor='rgba(255,82,25,.9)';ctx.shadowBlur=18;
+   let g=ctx.createRadialGradient(-3,-4,1,0,0,f.r+5);g.addColorStop(0,'#fffbd0');g.addColorStop(.25,'#ffd74d');g.addColorStop(.58,'#ff6b27');g.addColorStop(1,'#bc1d15');ctx.fillStyle=g;ctx.beginPath();ctx.arc(0,0,f.r,0,7);ctx.fill();
+   ctx.shadowBlur=0;ctx.fillStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.ellipse(-3,-4,4,2,-.5,0,7);ctx.fill();ctx.restore();
+ }
+}
+function drawPlayer(){
+ if(invincible>0 && Math.floor(invincible/6)%2===0) return;
+ const x=player.x-cam,y=player.y;ctx.save();if(player.dir<0){ctx.translate(x+22,0);ctx.scale(-1,1);ctx.translate(-(x+22),0)}
+ // shadow
+ ctx.fillStyle="rgba(0,0,0,.22)";ctx.beginPath();ctx.ellipse(x+22,ground+3,29,8,0,0,7);ctx.fill();
+ const stride=player.onGround?Math.sin(performance.now()/95)*Math.min(1,Math.abs(player.vx)/3)*4:0;
+ // shoes 3D
+ let shoe=ctx.createLinearGradient(x,y+56,x,y+66);shoe.addColorStop(0,"#4b6070");shoe.addColorStop(1,"#182833");ctx.fillStyle=shoe;rr(x+2+stride,y+56,19,9,4);ctx.fill();rr(x+25-stride,y+56,19,9,4);ctx.fill();ctx.fillStyle="rgba(255,255,255,.35)";ctx.fillRect(x+5,y+57,10,2);ctx.fillRect(x+28,y+57,10,2);
+ // legs
+ ctx.fillStyle="#f4f7fa";rr(x+7+stride,y+46,12,14,5);ctx.fill();rr(x+27-stride,y+46,12,14,5);ctx.fill();
+ // body glossy uniform
+ ctx.save();ctx.shadowColor="rgba(0,50,90,.3)";ctx.shadowBlur=10;ctx.shadowOffsetY=5;let bg=ctx.createLinearGradient(x+7,y+18,x+38,y+54);bg.addColorStop(0,"#4eb8ff");bg.addColorStop(.35,"#1789cf");bg.addColorStop(1,"#07518d");ctx.fillStyle=bg;rr(x+7,y+18,31,36,9);ctx.fill();ctx.shadowColor="transparent";ctx.fillStyle="rgba(255,255,255,.26)";rr(x+11,y+22,18,5,3);ctx.fill();ctx.restore();
+ ctx.fillStyle="#0d5f98";ctx.fillRect(x+21,y+22,3,28);
+ // arms
+ ctx.strokeStyle="#efb17c";ctx.lineWidth=7;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x+9,y+29);ctx.lineTo(x+1,y+41);ctx.stroke();ctx.beginPath();ctx.moveTo(x+36,y+29);ctx.lineTo(x+43,y+40);ctx.stroke();
+ // head 3D
+ let skin=ctx.createRadialGradient(x+17,y+5,2,x+22,y+11,18);skin.addColorStop(0,"#ffd3aa");skin.addColorStop(.55,"#f2b782");skin.addColorStop(1,"#cf8759");ctx.fillStyle=skin;ctx.beginPath();ctx.arc(x+22,y+11,14,0,7);ctx.fill();
+ // Soft white hygiene cap, shaded to read clearly on a small screen.
+ ctx.fillStyle='#eaf8ff';ctx.beginPath();ctx.ellipse(x+22,y+1,15,9,0,Math.PI,Math.PI*2);ctx.fill();
+ ctx.strokeStyle='#a5cadc';ctx.lineWidth=1.2;ctx.stroke();
+ // cap / hair rim
+ ctx.strokeStyle="#edf8ff";ctx.lineWidth=4;ctx.beginPath();ctx.arc(x+22,y+8,14,Math.PI,Math.PI*2);ctx.stroke();ctx.fillStyle="rgba(255,255,255,.7)";ctx.beginPath();ctx.ellipse(x+17,y+5,5,2,-.4,0,7);ctx.fill();
+ // face details
+ ctx.fillStyle="#2b241f";ctx.beginPath();ctx.arc(x+17,y+10,1.8,0,7);ctx.arc(x+27,y+10,1.8,0,7);ctx.fill();
+ ctx.strokeStyle="#6a432f";ctx.lineWidth=1.4;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x+14.5,y+6.5);ctx.lineTo(x+19,y+6);ctx.moveTo(x+25,y+6);ctx.lineTo(x+29.5,y+6.5);ctx.stroke();
+ ctx.strokeStyle="#b76f4f";ctx.lineWidth=1.2;ctx.beginPath();ctx.moveTo(x+22,y+11);ctx.lineTo(x+21,y+14);ctx.lineTo(x+23,y+14);ctx.stroke();
+ ctx.strokeStyle="#8d3f42";ctx.lineWidth=1.6;ctx.beginPath();ctx.arc(x+22,y+16,4.2,.2,Math.PI-.2);ctx.stroke();
+ ctx.fillStyle="rgba(240,100,120,.28)";ctx.beginPath();ctx.arc(x+13,y+14,2.2,0,7);ctx.arc(x+31,y+14,2.2,0,7);ctx.fill();
+ ctx.fillStyle="#fff";ctx.font="bold 9px Arial";ctx.textAlign="left";ctx.fillText("FS",x+14,y+39);ctx.restore()
+}
+function draw(){drawWorld();drawCheckpoints();drawCollectibles();if(state!=="intro"&&gateClosed)drawGate();drawFireballs();drawPlayer()}
+function loop(){update();draw();requestAnimationFrame(loop)}
+pauseBtn.onclick=()=> state==="play"?pauseGame():state==="pause"&&resumeGame();
+stopBtn.onclick=stopAndSave;
+resumeBtn.onclick=resumeGame;
+
+const S4_CACHE_KEY="fs_s4_questions_cache_v2";
+
+function normalizeS4Questions(list){
+  return (list||[]).map(q=>[
+    q.zone ?? q[0],
+    q.question ?? q[1],
+    q.choices ?? q[2],
+    Number((q.correctChoice ?? ((Number(q[3])||0)+1))||1)-1
+  ]);
+}
+function readS4Cache(){
+  try{
+    const c=JSON.parse(localStorage.getItem(S4_CACHE_KEY)||"null");
+    if(!c?.questions||!Array.isArray(c.questions))return null;
+    const out=normalizeS4Questions(c.questions);
+    return out.length===20?{questions:out,savedAt:c.savedAt||0}:null;
+  }catch(_){return null}
+}
+function writeS4Cache(raw){
+  try{
+    localStorage.setItem(S4_CACHE_KEY,JSON.stringify({
+      savedAt:Date.now(),
+      questions:raw
+    }));
+  }catch(_){}
+}
+
+async function initSeason4Integration(forceRefresh=false){
+  const startBtn=document.getElementById("start");
+  const statusEl=document.getElementById("seasonStatus");
+
+  if(!playerEmail){
+    try{
+      const u=JSON.parse(localStorage.getItem("fs_hunting_user_v1")||"null");
+      playerEmail=(u?.email||"").toLowerCase();
+    }catch(_){}
+  }
+
+  const user=(()=>{
+    try{return JSON.parse(localStorage.getItem("fs_hunting_user_v1")||"null")}
+    catch(_){return null}
+  })();
+
+  playerNameInput.value=user?.displayName||playerEmail||"Player 1";
+  document.getElementById("loginInfo").innerHTML=
+    `👤 <b>${user?.displayName||playerEmail||"Player 1"}</b>`+
+    (playerEmail?`<br><span style="font-size:12px">${playerEmail}</span>`:"");
+
+  const cached=readS4Cache();
+
+  // Fast path: cached questions make Season 4 immediately playable.
+  if(cached && !forceRefresh){
+    qs=cached.questions;
+    startBtn.disabled=false;
+    startBtn.onclick=startGame;
+    startBtn.textContent="▶ START RUN";
+    statusEl.textContent="🟢 พร้อมเล่น • ใช้คำถามที่บันทึกไว้ • กำลังตรวจอัปเดตเบื้องหลัง";
+
+    // Refresh quietly; failure does not block play.
+    setTimeout(async()=>{
+      if(!playerEmail)return;
+      try{
+        const d=await api({action:"s4questions",email:playerEmail},6500,1);
+        const fresh=normalizeS4Questions(d.questions||[]);
+        if(fresh.length===20){
+          qs=fresh;
+          writeS4Cache(d.questions||[]);
+          statusEl.textContent="🟢 Season 4 OPEN • ข้อมูลล่าสุดพร้อมแล้ว";
+        }
+      }catch(err){
+        console.warn("S4 background refresh failed",err);
+        statusEl.textContent="🟢 พร้อมเล่นจากข้อมูลสำรอง • การอัปเดตออนไลน์ยังไม่สำเร็จ";
+      }
+    },250);
+    return;
+  }
+
+  startBtn.disabled=true;
+  startBtn.textContent="กำลังโหลด Season 4...";
+  statusEl.innerHTML='<span style="color:#537286">⏳ กำลังโหลดคำถาม Season 4...</span>';
+
+  try{
+    if(!playerEmail) throw new Error("ไม่พบผู้เล่น กรุณากลับไป Login จากเกมหลักก่อน");
+
+    const d=await api({action:"s4questions",email:playerEmail},6500,1);
+    const fresh=normalizeS4Questions(d.questions||[]);
+    if(fresh.length!==20) throw new Error(`พบคำถาม ${fresh.length}/20 ข้อ`);
+
+    qs=fresh;
+    writeS4Cache(d.questions||[]);
+    statusEl.textContent="🟢 Season 4 OPEN • โหลดคำถามครบ 20 ข้อ";
+    startBtn.disabled=false;
+    startBtn.onclick=startGame;
+    startBtn.textContent="▶ START RUN";
+
+  }catch(err){
+    console.error("Season4 init error:",err);
+    const msg=String(err?.message||err||"เชื่อมต่อไม่สำเร็จ");
+
+    // Last chance: stale cache is still better than failing to enter Season 4.
+    const fallback=readS4Cache();
+    if(fallback){
+      qs=fallback.questions;
+      statusEl.innerHTML='<span style="color:#397154">🟡 ออนไลน์ไม่สำเร็จ • ใช้คำถามสำรองในเครื่อง เล่นได้ตามปกติ</span>';
+      startBtn.disabled=false;
+      startBtn.onclick=startGame;
+      startBtn.textContent="▶ START RUN";
+      return;
+    }
+
+    if(msg.includes("SEASON_LOCKED")){
+      statusEl.innerHTML='<span class="lockedMsg">🔒 Season 4 ยัง LOCKED ใน SEASON_CONTROL</span>';
+      startBtn.textContent="SEASON 4 LOCKED";
+      startBtn.disabled=true;
+    }else{
+      statusEl.innerHTML=`<span class="lockedMsg">⚠ ${msg}</span>`;
+      startBtn.textContent="ลองโหลดอีกครั้ง";
+      startBtn.disabled=false;
+      startBtn.onclick=()=>initSeason4Integration(true);
+    }
+  }
+}
+
+function getHomeUrl(){
+  try{
+    // Prefer explicit return URL from main game, but reject accidental Season 4 self-links.
+    if(returnUrl){
+      const explicit=new URL(returnUrl,location.href);
+      if(!/season4_final_quest_integrated/i.test(explicit.pathname)){
+        explicit.searchParams.set("fsHome","1");
+        return explicit.href;
+      }
+    }
+    // Current file sits in the project root on GitHub Pages.
+    const root=new URL("./",location.href);
+    root.search="";
+    root.hash="";
+    root.searchParams.set("fsHome","1");
+    return root.href;
+  }catch(_){
+    return "./?fsHome=1";
+  }
+}
+function goHome(){
+  const target=getHomeUrl();
+  // replace prevents Back button from bouncing straight back into Season 4.
+  location.replace(target);
+}
+
+document.getElementById("backBtn").onclick=()=>goHome();
+document.getElementById("startExitBtn").onclick=()=>openExitConfirm();
+
+const exitConfirmOverlay=document.getElementById("exitConfirmOverlay");
+const exitConfirmCancel=document.getElementById("exitConfirmCancel");
+const exitConfirmHome=document.getElementById("exitConfirmHome");
+
+function openExitConfirm(){
+  exitConfirmOverlay.style.display="flex";
+}
+function closeExitConfirm(){
+  exitConfirmOverlay.style.display="none";
+}
+
+document.getElementById("exitBtn").onclick=()=>openExitConfirm();
+exitConfirmCancel.onclick=()=>closeExitConfirm();
+
+exitConfirmOverlay.addEventListener("click",(ev)=>{
+  if(ev.target===exitConfirmOverlay) closeExitConfirm();
+});
+
+exitConfirmHome.onclick=async()=>{
+  exitConfirmHome.disabled=true;
+  exitConfirmHome.textContent="กำลังกลับ Home...";
+  try{
+    if(state==="play" || state==="question" || state==="pause"){
+      await Promise.race([
+        saveScore("quit"),
+        new Promise(resolve=>setTimeout(resolve,2000))
+      ]);
+    }
+  }catch(err){
+    console.warn("Exit save failed:",err);
+  }finally{
+    goHome();
+  }
+};
+
+// V18.14.1 FIX:
+ // Do NOT call setupGate() here. qs[] is still empty until Google Sheet questions finish loading.
+ // startGame() already calls setupGate() after the player presses START.
+initCollectibles();setHUD();loop();
+initSeason4Integration();
+</script>
+</div>
+
+</body>
+</html>
