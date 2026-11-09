@@ -217,6 +217,7 @@ function setTotal(v){e.totalScore.textContent=v||0;e.sideTotalScore.textContent=
 async function openGame(){renderUser();e.loginScreen.classList.add("hidden");e.gameScreen.classList.remove("hidden");questions=masterQuestions();preload(questions);startSession()}
 function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 function startSession(){
+  toast("ปิดการเล่นและรับคะแนนใหม่ทุกด่านแล้ว");return;
   clearInterval(timer); started=false; ended=false;
   order=(C.RANDOMIZE_QUESTIONS?shuffle(questions.map((_,i)=>i)):questions.map((_,i)=>i).sort((a,b)=>String(questions[a].questionId).localeCompare(String(questions[b].questionId))));
   idx=0;loadQ(false)
@@ -244,6 +245,7 @@ function loadQ(startImmediately=false){
   window.scrollTo({top:0,behavior:"smooth"})
 }
 async function startQuestion(){
+  toast("ปิดการเล่นและรับคะแนนใหม่ทุกด่านแล้ว");return;
   if(started||ended)return;
 
   const normalText=(idx+1)===1?"▶ START ข้อ 1":"▶ START ข้อนี้";
@@ -331,6 +333,7 @@ function timeoutQuestion(){
   e.resultOverlay.classList.remove("hidden-layer");
 }
 async function submit(auto=false){
+  toast("ปิดการเล่นและรับคะแนนใหม่ทุกด่านแล้ว");return;
   if(ended)return;
   if(seconds<=0){timeoutQuestion();return}
   if(!started){toast("กด START ก่อน");return}
