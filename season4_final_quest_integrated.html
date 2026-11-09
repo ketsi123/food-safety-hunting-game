@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Food Safety Final Quest - Season 4</title>
-<meta name="fs-build" content="V18.21.1-VIEWPORT-FIT">
+<meta name="fs-build" content="V18.22.2-ALL-SEASONS-CLOSED">
 <style>
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
@@ -850,6 +850,7 @@ button:focus-visible{outline:3px solid #fff3ac;outline-offset:3px}
  pointer-events:none">S4 V18.20.8</div>
 
 <script>
+const ALL_SEASONS_CLOSED=true;
 const cv=document.getElementById("cv"),ctx=cv.getContext("2d"),W=cv.width,H=cv.height;
 const ground=620, worldW=21500;
 const shell=document.getElementById("shell");
@@ -945,6 +946,7 @@ function getSnapshot(reason="manual"){
   return {playerName,email:playerEmail,runId,score,playScore:ps,timeBonus:lastTimeBonus,correct:correctAnswers,wrong:wrongAnswers,stars:starCount,fireKills,stomps,hearts:lives,checkpoint:answered,timeLeft:seconds,status:reason,updatedAt:new Date().toISOString()};
 }
 async function saveScore(reason="manual"){
+  if(ALL_SEASONS_CLOSED) return {ok:false, mode:"closed", error:"SEASON_LOCKED"};
   const snap=getSnapshot(reason);
   const saveKey=`${snap.playerName}|${snap.status}|${snap.score}|${snap.checkpoint}|${snap.timeLeft}|${snap.hearts}`;
   if(reason!=="pause" && saveKey===lastSaveKey) return {ok:true, skipped:true, mode:"dedup"};
@@ -1081,6 +1083,7 @@ function burst(x,y,kind='star'){
 }
 function hit(a,b){return a.x+a.w>b.x&&a.x<b.x+b.w&&a.y+a.h>b.y&&a.y<b.y+b.h}
 function startGame(){
+ if(ALL_SEASONS_CLOSED){document.getElementById("seasonStatus").textContent="🔒 ปิดการเล่นและรับคะแนนใหม่แล้ว";return;}
  if(qs.length!==20){flash("ยังโหลดคำถาม Season 4 ไม่ครบ","bad");return;}
  playerName=(playerNameInput.value||playerEmail||"Player 1").trim()||"Player 1";
  runId="S4RUN-"+(crypto.randomUUID?crypto.randomUUID():(Date.now()+"-"+Math.random().toString(36).slice(2)));
@@ -1625,99 +1628,12 @@ function writeS4Cache(raw){
 }
 
 async function initSeason4Integration(forceRefresh=false){
+  // Never enable play from cached questions or stale OPEN responses during closure.
   const startBtn=document.getElementById("start");
-  const statusEl=document.getElementById("seasonStatus");
-
-  if(!playerEmail){
-    try{
-      const u=JSON.parse(localStorage.getItem("fs_hunting_user_v1")||"null");
-      playerEmail=(u?.email||"").toLowerCase();
-    }catch(_){}
-  }
-
-  const user=(()=>{
-    try{return JSON.parse(localStorage.getItem("fs_hunting_user_v1")||"null")}
-    catch(_){return null}
-  })();
-
-  playerNameInput.value=user?.displayName||playerEmail||"Player 1";
-  document.getElementById("loginInfo").innerHTML=
-    `👤 <b>${user?.displayName||playerEmail||"Player 1"}</b>`+
-    (playerEmail?`<br><span style="font-size:12px">${playerEmail}</span>`:"");
-
-  const cached=readS4Cache();
-
-  // Fast path: cached questions make Season 4 immediately playable.
-  if(cached && !forceRefresh){
-    qs=cached.questions;
-    startBtn.disabled=false;
-    startBtn.onclick=startGame;
-    startBtn.textContent="▶ START RUN";
-    statusEl.textContent="🟢 พร้อมเล่น • ใช้คำถามที่บันทึกไว้ • กำลังตรวจอัปเดตเบื้องหลัง";
-
-    // Refresh quietly; failure does not block play.
-    setTimeout(async()=>{
-      if(!playerEmail)return;
-      try{
-        const d=await api({action:"s4questions",email:playerEmail},6500,1);
-        const fresh=normalizeS4Questions(d.questions||[]);
-        if(fresh.length===20){
-          qs=fresh;
-          writeS4Cache(d.questions||[]);
-          statusEl.textContent="🟢 Season 4 OPEN • ข้อมูลล่าสุดพร้อมแล้ว";
-        }
-      }catch(err){
-        console.warn("S4 background refresh failed",err);
-        statusEl.textContent="🟢 พร้อมเล่นจากข้อมูลสำรอง • การอัปเดตออนไลน์ยังไม่สำเร็จ";
-      }
-    },250);
-    return;
-  }
-
   startBtn.disabled=true;
-  startBtn.textContent="กำลังโหลด Season 4...";
-  statusEl.innerHTML='<span style="color:#537286">⏳ กำลังโหลดคำถาม Season 4...</span>';
-
-  try{
-    if(!playerEmail) throw new Error("ไม่พบผู้เล่น กรุณากลับไป Login จากเกมหลักก่อน");
-
-    const d=await api({action:"s4questions",email:playerEmail},6500,1);
-    const fresh=normalizeS4Questions(d.questions||[]);
-    if(fresh.length!==20) throw new Error(`พบคำถาม ${fresh.length}/20 ข้อ`);
-
-    qs=fresh;
-    writeS4Cache(d.questions||[]);
-    statusEl.textContent="🟢 Season 4 OPEN • โหลดคำถามครบ 20 ข้อ";
-    startBtn.disabled=false;
-    startBtn.onclick=startGame;
-    startBtn.textContent="▶ START RUN";
-
-  }catch(err){
-    console.error("Season4 init error:",err);
-    const msg=String(err?.message||err||"เชื่อมต่อไม่สำเร็จ");
-
-    // Last chance: stale cache is still better than failing to enter Season 4.
-    const fallback=readS4Cache();
-    if(fallback){
-      qs=fallback.questions;
-      statusEl.innerHTML='<span style="color:#397154">🟡 ออนไลน์ไม่สำเร็จ • ใช้คำถามสำรองในเครื่อง เล่นได้ตามปกติ</span>';
-      startBtn.disabled=false;
-      startBtn.onclick=startGame;
-      startBtn.textContent="▶ START RUN";
-      return;
-    }
-
-    if(msg.includes("SEASON_LOCKED")){
-      statusEl.innerHTML='<span class="lockedMsg">🔒 Season 4 ยัง LOCKED ใน SEASON_CONTROL</span>';
-      startBtn.textContent="SEASON 4 LOCKED";
-      startBtn.disabled=true;
-    }else{
-      statusEl.innerHTML=`<span class="lockedMsg">⚠ ${msg}</span>`;
-      startBtn.textContent="ลองโหลดอีกครั้ง";
-      startBtn.disabled=false;
-      startBtn.onclick=()=>initSeason4Integration(true);
-    }
-  }
+  startBtn.onclick=null;
+  startBtn.textContent="SEASON 4 LOCKED";
+  document.getElementById("seasonStatus").textContent="🔒 ปิดการเล่นและรับคะแนนใหม่แล้ว คะแนนเดิมยังคงอยู่";
 }
 
 function getHomeUrl(){
