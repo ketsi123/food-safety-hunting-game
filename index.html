@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta name="fs-build" content="V18.22.1-S2-HOTSPOT-COUNT-FIX">
+<meta name="fs-build" content="V18.22.2-ALL-SEASONS-CLOSED">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -5368,7 +5368,9 @@ window.FS_CONFIG = {
 <script id="v15-inline-app">
 (()=>{"use strict";console.info("Food Safety Hunting Game V18.16.2 • S3 FAST + S4 QUALIFIER 800");
 const C=window.FS_CONFIG,$=id=>document.getElementById(id),S_EMAIL="fs_hunting_email_v1",S_USER="fs_hunting_user_v1",S_USERS="fs_hunting_users_by_email_v1",S_Q="fs_questions_v7",S_QT="fs_questions_v7_time",S_TOTAL_USERS="fs_total_users_v1",S_LEADERBOARD="fs_leaderboard_cache_v1";
-let seasonControl={1:'OPEN',2:'OPEN',3:'OPEN',4:'OPEN'};
+// Administrative closure: all four seasons remain closed until explicitly reopened.
+const ALL_SEASONS_CLOSED=true;
+let seasonControl={1:'LOCKED',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
 let activeSeason=1;
 let seasonControlLoaded=false;
 
@@ -5530,6 +5532,7 @@ async function supabaseRpc(functionName,params,timeoutMs=12000){
 }
 
 async function submitToSupabase(payload){
+  if(ALL_SEASONS_CLOSED) throw new Error("SEASON_LOCKED: ปิดรับคะแนนใหม่ทุกด่านแล้ว");
   return supabaseRpc("game_submit_v1",{
     p_attempt_id:payload.attemptId,
     p_user_email:payload.email,
@@ -5734,8 +5737,8 @@ async function login(){
     return;
   }
 
-  // V18.12: Season 1 is permanently open, so enter immediately like the old flow.
-  seasonControl[1]='OPEN';
+  // Administrative closure: login remains available for existing results.
+  seasonControl[1]='LOCKED';
   seasonControlLoaded=true;
   activeSeason=1;
   // Frontend metadata is already embedded, so the stage picker is usable immediately.
@@ -5756,7 +5759,7 @@ async function login(){
       }
 
       if(loginData?.seasons)setSeasonControlFromServer(loginData.seasons);
-      seasonControl[1]='OPEN';
+      seasonControl[1]='LOCKED';
       applySeasonControlUI();
 
       renderTotalUsers(loginData?.totalUsers);
@@ -5872,21 +5875,14 @@ function seasonMeta(season){
 
 
 function setSeasonControlFromServer(rows){
-  const next={1:'LOCKED',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
-  (rows||[]).forEach(r=>{
-    const s=Number(r?.season||0);
-    if(s>=1&&s<=4) next[s]=String(r?.status||'LOCKED').toUpperCase()==='OPEN'?'OPEN':'LOCKED';
-  });
-  // Safety fallback: Season 1 stays open only if the backend did not return control data.
-  if(!Array.isArray(rows)||!rows.length) next[1]='OPEN';
-  next[1]='OPEN'; // V18.12: Season 1 is permanently open.
-  seasonControl=next;
-  seasonControlLoaded=Array.isArray(rows)&&rows.length>0;
+  // Ignore stale server OPEN responses during the administrative closure.
+  seasonControl={1:'LOCKED',2:'LOCKED',3:'LOCKED',4:'LOCKED'};
+  seasonControlLoaded=true;
   applySeasonControlUI();
 }
 
 function isSeasonOpenFrontend(season){
-  return seasonControl[Number(season||1)]==='OPEN';
+  return !ALL_SEASONS_CLOSED && seasonControl[Number(season||1)]==='OPEN';
 }
 
 function applySeasonControlUI(){
@@ -5905,8 +5901,8 @@ function showSeasonLockedScreen(season){
   const s=Number(season||1),m=seasonMeta(s);
   activeSeason=s;
 
-  if(e.seasonLockTitle)e.seasonLockTitle.textContent=`Season ${s} ยังไม่เปิดให้เล่น`;
-  if(e.seasonLockText)e.seasonLockText.textContent=`${m.title} ยังถูกล็อกอยู่ กรุณารอการเปิดจากผู้ดูแลระบบ`;
+  if(e.seasonLockTitle)e.seasonLockTitle.textContent=`Season ${s} ปิดการเล่นแล้ว`;
+  if(e.seasonLockText)e.seasonLockText.textContent=`ปิดการเล่นและรับคะแนนใหม่ทุกด่าน คะแนนเดิมและตารางอันดับยังคงอยู่`;
 
   if(e.seasonLockScreen)e.seasonLockScreen.classList.remove("hidden");
   document.querySelector(".season-bar")?.classList.add("hidden");
@@ -5918,6 +5914,7 @@ function showSeasonLockedScreen(season){
 }
 
 function hideSeasonLockedScreen(){
+  if(ALL_SEASONS_CLOSED){showSeasonLockedScreen(activeSeason);return;}
   if(e.seasonLockScreen)e.seasonLockScreen.classList.add("hidden");
   document.querySelector(".season-bar")?.classList.remove("hidden");
   document.querySelector(".play-card")?.classList.remove("hidden");
@@ -5951,11 +5948,11 @@ async function refreshSeasonControl(){
     const d=await api({action:"seasonstatus",email:user?.email||""});
     if(d?.seasons){
       setSeasonControlFromServer(d.seasons);
-      seasonControl[1]='OPEN';
+      seasonControl[1]='LOCKED';
       applySeasonControlUI();
 
-      // Season 1 is always open. Only Season 2-4 can be locked by the Sheet.
-      if(activeSeason!==1 && !isSeasonOpenFrontend(activeSeason)){
+      // Closure applies equally to all four seasons.
+      if(!isSeasonOpenFrontend(activeSeason)){
         showSeasonLockedScreen(activeSeason);
       }else{
         hideSeasonLockedScreen();
@@ -6037,7 +6034,7 @@ function openGame(){
   renderTotalUsers();
 
   activeSeason=1;
-  seasonControl[1]='OPEN';
+  seasonControl[1]='LOCKED';
 
   e.loginScreen.classList.add("hidden");
   e.gameScreen.classList.remove("hidden");
@@ -6198,6 +6195,7 @@ function ensurePreStartPopupPortal(){
 }
 let pendingPrestartBegin=null;
 function startGameAfterHint(){
+  if(ALL_SEASONS_CLOSED){clearInterval(timer);showSeasonLockedScreen(activeSeason);return;}
   hidePreStartHint(false);
   const fn=pendingPrestartBegin;
   pendingPrestartBegin=null;
@@ -6258,6 +6256,7 @@ document.getElementById("preHintNext")?.addEventListener("click",startGameAfterH
 let startFlowActive=false;
 
 function startSession(){
+  if(ALL_SEASONS_CLOSED){clearInterval(timer);showSeasonLockedScreen(activeSeason);return;}
   clearInterval(timer); started=false; ended=false; startFlowActive=false; preHintShownSeasons=new Set(); clearInterval(preMissionTimer); preMissionTimer=null; document.getElementById("preStartMission")?.classList.add("hidden");
   order=(C.RANDOMIZE_QUESTIONS
     ? smartRandomOrder()
@@ -6265,6 +6264,7 @@ function startSession(){
   idx=0;loadQ(false)
 }
 function loadQ(startImmediately=false){
+  if(ALL_SEASONS_CLOSED){clearInterval(timer);showSeasonLockedScreen(activeSeason);return;}
   clearInterval(timer);clearInterval(preMissionTimer);clearInterval(preHintTimer);preMissionTimer=null;preHintTimer=null;document.getElementById("preStartMission")?.classList.add("hidden");document.getElementById("preStartHint")?.classList.add("hidden");selections=[];ended=false;started=false;paused=false;startFlowActive=false;currentAttemptId=null;
   e.markerLayer.innerHTML="";e.revealLayer.innerHTML="";e.clickLayer.style.pointerEvents="auto";if(e.resultIcon)e.resultIcon.textContent="🏆";const resultCard=e.resultOverlay.querySelector(".result-modal");if(resultCard)resultCard.classList.remove("timeout");
   e.reasonList.innerHTML='<div class="empty-reason">กด START เพื่อเริ่มจับคู่เหตุผล</div>';
@@ -6296,6 +6296,7 @@ function loadQ(startImmediately=false){
   window.scrollTo({top:0,behavior:"smooth"})
 }
 function startQuestion(){
+  if(ALL_SEASONS_CLOSED){clearInterval(timer);showSeasonLockedScreen(activeSeason);return;}
   if(started||ended||startFlowActive)return;
   startFlowActive=true;
   e.questionGate.classList.add("off");
@@ -6894,6 +6895,7 @@ function timeoutQuestion(){
   syncAllOverlayGeometry();e.resultOverlay.classList.remove("hidden-layer");
 }
 async function submit(auto=false){
+  if(ALL_SEASONS_CLOSED){clearInterval(timer);showSeasonLockedScreen(activeSeason);return;}
   if(ended)return;
   if(seconds<=0&&!auto){timeoutQuestion();return}
   if(!started){toast("กด START ก่อน");return}
@@ -7342,7 +7344,7 @@ async function openMobileSeason(s){
     // Keep normal server gating when it is available.
     // Season 1 is always open. For S2/S3, allow cached/open state only.
     if(s!==1 && seasonControlLoaded && !isSeasonOpenFrontend(s)){
-      setMobileStageStatus(`Season ${s} ยังไม่เปิดให้เล่น`,false,"offline");
+      setMobileStageStatus(`Season ${s} ปิดการเล่นแล้ว`,false,"offline");
       return;
     }
 
